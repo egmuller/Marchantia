@@ -128,7 +128,7 @@ def ToCart(Alpha,Radius, **kwargs):
     
     return(X,Y)
 
-# 4.1 Euclidian distance between two points in carthesian coordinates 
+# 4.1 Euclidian distance between two arrays of points in carthesian coordinates 
 def dist(x1,y1,x2,y2):
     
     d = np.sqrt(np.square(x1-x2)+np.square(y1-y2))
