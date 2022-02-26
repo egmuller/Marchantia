@@ -79,8 +79,10 @@ P220124_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220124_DV6_Ctrls\
 P220124_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220124_DV6_Ctrls\Ctrl2'
 P220203_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220203_DV6_Ctrls\Ctrl1'
 P220203_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220203_DV6_Ctrls\Ctrl2'
-P220214_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls\Ctrl1'
-P220214_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls\Ctrl2'
+P220214_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls\TimeEvolution\Ctrl1'
+P220214_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls\TimeEvolution\Ctrl2'
+
+PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu'
 
 
 
@@ -230,7 +232,8 @@ StackList220203_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','
 # flow, chip ctrl 1
 StackList220214_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
                       'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35']
+                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG35','PPG36','PPG37',
+                      'PPG38','PPG39','PPG40','PPG41','PPG42','PPG43']
                 
 # experiments of 14-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 2
