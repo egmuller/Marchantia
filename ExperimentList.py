@@ -215,17 +215,15 @@ StackList220124_Ct2 = ['PPG1','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','
 
 # experiments of 03-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 1
-StackList220203_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
-                      'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35']
+StackList220203_Ct1 = ['PPG1','PPG2','PPG3','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
+                      'PPG14','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
+                      'PPG26','PPG27','PPG28']
                 
 # experiments of 03-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 2
 StackList220203_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
                       'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37',
-                      'PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49',
-                      'PPG50','PPG51','PPG52','PPG53']
+                      'PPG26']
 
 
 # experiments of 14-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
