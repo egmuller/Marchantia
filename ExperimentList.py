@@ -280,9 +280,9 @@ StackList220301_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','P
 # experiments of 14-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 2
 StackList220301_M100 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
-                      'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
+                      'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
                       'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37',
-                      'PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44']
+                      'PPG38','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50','PPG51','PPG52']
 
 # experiments of 14-02-2022, double puce V6, degased medium, Osmotic choc after time evolution chip ctrl 1
 StackList220301_Ct_Osmo = ['PPG1','PPG4','PPG5','PPG6','PPG7','PPG8','PPG11','PPG13','PPG14','PPG16','PPG17','PPG20','PPG24','PPG25',
@@ -290,9 +290,7 @@ StackList220301_Ct_Osmo = ['PPG1','PPG4','PPG5','PPG6','PPG7','PPG8','PPG11','PP
                            'PPG44','PPG45','PPG46','PPG48','PPG49']
                 
 # experiments of 14-02-2022, double puce V6, degased medium, Osmotic choc after time evolution chip ctrl 2
-StackList220301_M100_Osmo = ['PPG1','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG19','PPG20','PPG22',
-                            'PPG23','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37',
-                            'PPG38','PPG39','PPG40','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50','PPG51','PPG52',
-                            'PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61','PPG62']
+StackList220301_M100_Osmo = ['PPG1','PPG7','PPG8','PPG10','PPG11','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG34','PPG37',
+                      'PPG38','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG47','PPG49','PPG50','PPGA','PPGB','PPGC','PPGD','PPGE','PPGF']
 
 print('Data choice made.')
