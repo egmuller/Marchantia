@@ -212,22 +212,22 @@ StackList220114_S1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','P
 # Stade3 (close to the edge) cups
 StackList220114_S3 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
                       'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31'] # ,'PPG3233'
+                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31'] # ,'PPG3233',
                         
 
 # experiments of 24-01-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 1
-StackList220124_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
-                      'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35']
+StackList220124_Ct1 = ['PPG1','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
+                      'PPG14','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
+                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35'] # 'PPG2', poussiere qui touche, 'PPG15', partiellement morte
                 
 # experiments of 24-01-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 2
-StackList220124_Ct2 = ['PPG1','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
-                      'PPG14','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37',
+StackList220124_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
+                      'PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
+                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG34','PPG35','PPG36',
                       'PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49',
-                      'PPG50','PPG51','PPG52','PPG53'] # 'PPG2', poussiere qui touche, 'PPG15', partiellement morte
+                      'PPG50','PPG51','PPG52','PPG53'] # PPG33, 37
 
 
 # experiments of 03-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
@@ -260,7 +260,7 @@ StackList220214_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','
 # experiments of 14-02-2022, double puce V6, degased medium, Osmotic choc after time evolution chip ctrl 1
 StackList220214_Ct1_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG7','PPG9','PPG10','PPG11','PPG12','PPG14','PPG18','PPG20','PPG21','PPG22',
                             'PPG23','PPG24','PPG26','PPG28','PPG29','PPG31','PPG32','PPG33','PPG35','PPG36','PPG37','PPG38','PPG39',
-                            'PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG51','PPG52','PPG53','PPG54','PPG55']
+                            'PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG51','PPG52','PPG53','PPG55']
                 
 # experiments of 14-02-2022, double puce V6, degased medium, Osmotic choc after time evolution chip ctrl 2
 StackList220214_Ct2_Osmo = ['PPG1','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG19','PPG20','PPG22',
