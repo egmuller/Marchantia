@@ -48,6 +48,10 @@ Scale220124 = 1.94 # Spatial scale (µm/px) for 16X 24-01-2022
 FPH220124 = 2 # Frames per hour
 Delay220124 = 40 # Delay between imbibition and experiment start
 
+ScaleTest = 1.94 # Spatial scale (µm/px) for 16X 24-01-2022
+FPHTest = 2 # Frames per hour
+DelayTest = 40 # Delay between imbibition and experiment start
+
 Scale220203 = 1.94 # Spatial scale (µm/px) for 16X 03-02-2022
 FPH220203 = 2 # Frames per hour
 Delay220203 = 30 # Delay between imbibition and experiment start
@@ -95,6 +99,12 @@ P220114_S3 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220114_DV6_Stade1&
 P220114_S1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220114_DV6_Stade1&3\Stade1'
 P220124_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220124_DV6_Ctrls\Ctrl1'
 P220124_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220124_DV6_Ctrls\Ctrl2'
+
+
+PTest_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Test_DV6_Ctrls\Ctrl1'
+PTest_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Test_DV6_Ctrls\Ctrl2'
+
+
 P220203_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220203_DV6_Ctrls\Ctrl1'
 P220203_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220203_DV6_Ctrls\Ctrl2'
 P220214_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\TimeEvolution\Ctrl1'
@@ -239,6 +249,13 @@ StackList220124_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','
                       'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG34','PPG35','PPG36',
                       'PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49',
                       'PPG50','PPG51','PPG52','PPG53'] # PPG33, 37
+# experiments of 24-01-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
+# flow, chip ctrl 1
+StackListTest_Ct1 = ['PPG1','PPG2','PPG3','PPG4'] 
+                
+# experiments of 24-01-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
+# flow, chip ctrl 2
+StackListTest_Ct2 = ['PPG1','PPG2','PPG3','PPG4'] 
 
 
 # experiments of 03-02-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
