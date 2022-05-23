@@ -120,7 +120,7 @@ P220405_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+
 P220405_Ct1_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+OC\OsmoticChoc\Ctrl1'
 P220405_Ct2_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+OC\OsmoticChoc\Ctrl2'
 
-PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu'
+PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
 
@@ -239,8 +239,8 @@ StackList220114_S3 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','P
 # experiments of 24-01-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 1
 StackList220124_Ct1 = ['PPG1','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13',
-                      'PPG14','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25',
-                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35'] # 'PPG2', poussiere qui touche, 'PPG15', partiellement morte
+                      'PPG14','PPG16','PPG17','PPG18','PPG19','PPG20','PPG22','PPG23','PPG24','PPG25',
+                      'PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35'] # 'PPG2', poussiere qui touche, 'PPG15', partiellement morte, ,'PPG21' trop de mouvement en Z
                 
 # experiments of 24-01-2022, double puce V6, degased medium, no coating with 500ul/heure medium 
 # flow, chip ctrl 2
