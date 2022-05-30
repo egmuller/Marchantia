@@ -99,12 +99,8 @@ P220114_S3 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220114_DV6_Stade1&
 P220114_S1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220114_DV6_Stade1&3\Stade1'
 P220124_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220124_DV6_Ctrls\Ctrl1'
 P220124_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220124_DV6_Ctrls\Ctrl2'
-
-
 PTest_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Test_DV6_Ctrls\Ctrl1'
 PTest_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Test_DV6_Ctrls\Ctrl2'
-
-
 P220203_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220203_DV6_Ctrls\Ctrl1'
 P220203_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220203_DV6_Ctrls\Ctrl2'
 P220214_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\TimeEvolution\Ctrl1'
@@ -119,7 +115,8 @@ P220405_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+
 P220405_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+OC\TimeEvolution\Ctrl2'
 P220405_Ct1_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+OC\OsmoticChoc\Ctrl1'
 P220405_Ct2_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220405_DV6_Ctrls+OC\OsmoticChoc\Ctrl2'
-
+P220518_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220518_DV7_Ctrl+ABA0.7uM_Natalia\Ctrl'
+P220518_ABA = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220518_DV7_Ctrl+ABA0.7uM_Natalia\ABA'
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
