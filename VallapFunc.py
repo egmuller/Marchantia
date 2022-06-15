@@ -14,7 +14,7 @@ import pandas as pd
 import mpmath as mpm
 
 import matplotlib.pyplot as plt
-import seaborn
+import seaborn as sns
 
 from scipy.spatial.distance import directed_hausdorff 
 
@@ -49,35 +49,52 @@ def LoadImageJResults(FilePath,Columns):
         
         return(Data) # return dataframe
     
-#  2. Plotting boxplots with data points on top (from panda dataframe)
+#  2. Plotting boxplots with data points on top 
 
-# A function combining panda.dataframe.plot with seaborn's swarmplot for a better display of data
+# A function combining boxplot with seaborn's swarmplot for a better display of data
 
-def df2boxswarm(Data,columns,**kwargs):
+def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
 
-    Title = None
+    fig,ax = plt.subplots(dpi = 250,facecolor='black',figsize = (5,3.5))
+    fig.suptitle(Title)
+    
+    color = 'white'
     
     for key, value in kwargs.items(): 
-        if key == 'suptitle':
-            Title = value
+        if key == 'color':
+            color = value
         else:            
             print('Unknown key : ' + key+ '. Kwarg ignored.')
     
-    Ld = len(Data)
-    Lc = len(columns)
+    cap= [None]*len(Data)
+    med= [None]*len(Data)
     
-    xGrouping = np.concatenate(([0],np.concatenate(([np.ones(Ld)*x for x in range(1,Lc+1)]))))
+    grouping = []
     
+    for dat,col,lab,i in zip(Data,facecolors,Labels,range(len(Data))):
     
-    seaborn.swarmplot(x=xGrouping,
-                      y=np.concatenate(([10],np.concatenate(([Data[c].to_np() for c in columns])))))  
-    plt.xticks(ticks = list(range(1,Lc+1)), labels = columns)
-    Data.boxplot(columns)                                    
+        # plots properties
+        plotprops = {'color':'white'}
+        boxprops = {'color':'white','facecolor':col}
+        
+        lab = lab + '\nn = ' + str(len(dat))
+
+        bp = ax.boxplot(dat, positions = [i], labels = [lab],patch_artist =True, boxprops=boxprops, capprops =plotprops,
+                    showfliers=False,whiskerprops=plotprops,medianprops =plotprops)
+        
+        grouping = np.append(grouping,np.ones(len(dat))*i)
     
-    plt.xlim(0.5,Lc+0.5)
-    fig = plt.gcf()
-    fig.set_dpi(150)
-    fig.suptitle(Title)
+        cap[i] = bp['caps'][1].get_ydata(orig=True)[0]
+        med[i] = bp['medians'][0].get_ydata(orig=True)[0]
+    
+    sns.swarmplot(x=grouping,y=pd.concat(Data),color = 'white', size=2, ax = ax)
+    
+    ax.set_ylabel(Ylabel)
+    
+    ax.set_xticklabels(Labels)
+    
+    return(fig,ax,cap,med)
+    
 
 # 3. Coordinate conversion from cartesian to circular (in deg) an vice versa
 
