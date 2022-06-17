@@ -276,9 +276,9 @@ def normaliseContourByArea(X,Y):
     XNorm = np.divide(X,np.sqrt(area))
     YNorm = np.divide(Y,np.sqrt(area))
 
-    CntNorm = np.array([[x,y] for x,y in zip(XNorm,YNorm)], dtype=np.float32)
+    # CntNorm = np.array([[x,y] for x,y in zip(XNorm,YNorm)], dtype=np.float32)
 
-    areaNorm = cv.contourArea(CntNorm)
+    # areaNorm = cv.contourArea(CntNorm)
     
  #   print('Contour normalized area : ' + str(areaNorm))
         
