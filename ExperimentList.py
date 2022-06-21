@@ -302,7 +302,7 @@ StackList220214_Ct1_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG7','PPG9','PPG10','P
 StackList220214_Ct2_Osmo = ['PPG1','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG19','PPG20','PPG22',
                             'PPG23','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37',
                             'PPG38','PPG39','PPG40','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50','PPG51','PPG52',
-                            'PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61','PPG62']
+                            'PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61']
 
 
 
