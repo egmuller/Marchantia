@@ -474,20 +474,25 @@ def compareFit(GD, label):
 # Th : R2 threshold, label : experiment name
 
 # Kwargs : showHist (True/False) display histogram of validated data in function of R2
+# Key : The column name to get the R2 for different fits
 
 def selectR2s(GD, CD, Th, label, **kwargs):
     
     showHist = False
+    Key = 'fitR2'
+    
     print('Analyzing : ' + label)
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
             showHist = value
+        elif key == 'key':
+            Key = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
-    R2sPos = ~np.isnan(GD['fitR2'].values)
-    R2s = GD['fitR2'].values[R2sPos]
+    R2sPos = ~np.isnan(GD[Key].values)
+    R2s = GD[Key].values[R2sPos]
     goodR2s = R2s>=Th
     frac = np.round(sum(goodR2s)/len(goodR2s)*1000)/10
     

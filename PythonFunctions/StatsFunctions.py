@@ -6,10 +6,17 @@ Created on Thu Jun 23 15:43:06 2022
 """
 
 # Imports
-from scipy.stats import ranksums
+from scipy.stats import ranksums, linregress
 
 import numpy as np
+import numpy.matlib as mtl
+import pandas as pd
 
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
+
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 #%% Compute and plot ranksum significativity between two distributions
 
@@ -35,3 +42,104 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
         ax.set_ylim(top=h+fullstep+step)
 
     return(fullstep)
+
+
+#%% Computes and displays correlation between input variables
+
+# GDs : dataframe containing variables to correlate, 
+# labels : conditions name for each dataframe
+
+
+# Kwargs : 'corrmethod' ('pearson'/'kendall'/'spearman') choice of correlation type to use,
+# 'dfcols' (string name of dataframe columns) data to correlate, 'columnslabels' (string list) name 
+# to use for each columns chosen by dfcols, 'PlotFits' (True/False), 'colors' (RGB 0-1 triplets)
+
+def Corr(GDs,labels, **kwargs):
+    
+    corrmethod = 'pearson'
+    dfcols = ['A0fit','Area','Tau','tdeb']
+    colslab = dfcols
+    colors = mtl.repmat([0.8, 0, 0.7],len(GDs),1)
+    PlotFits = False
+
+    
+    for key, value in kwargs.items(): 
+        if key == 'corrmethod':
+            corrmethod = value 
+        elif key == 'columns':
+            dfcols = value
+            colslab = dfcols
+        elif key == 'columnslabels':
+            colslab = value
+        elif key == 'colors':
+            colors = value
+        elif key == 'PlotFits':
+            PlotFits = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+
+        
+    for GD,lab,colo in zip(GDs,labels,colors) :
+        
+        GDtoCorr = GD.loc[GD['Img'] == 0, dfcols]
+        corrMat = GDtoCorr.corr(method=corrmethod)
+        
+        plt.figure(dpi=250)
+        plt.title('Correlation heatmap for ' + lab)
+        mask = np.zeros_like(corrMat)
+        mask[np.tril_indices_from(mask,k=-1)] = True
+        sns.heatmap(corrMat,mask = mask,square=True,vmin=-1,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8}) #,cmap = 'YlGnBu'
+        
+        if PlotFits:
+        
+            for i in range(0,len(dfcols)-1):
+                for j in range(i+1,len(dfcols)):
+
+                    x,y = (GDtoCorr[dfcols[i]],GDtoCorr[dfcols[j]])
+
+                    mask = ~np.isnan(x) & ~np.isnan(y)
+                    
+                    linreg = linregress(x[mask],y[mask])
+
+                    g = sns.jointplot(x=x[mask],y=y[mask],kind='reg',color = colo,height = 12)
+                    g.fig.suptitle('Correlation between ' + dfcols[i] + ' and ' + dfcols[j] +
+                                   '.\n Experiment : ' + lab + ' - n = ' + str(len(x[mask])),fontsize=30)
+
+                    g.ax_joint.set_xlabel(colslab[i],fontsize = 25)
+                    g.ax_joint.set_ylabel(colslab[j],fontsize = 25)
+                    g.ax_joint.tick_params(axis='both', labelsize=20)
+                    g.ax_joint.legend([f"S = {linreg.slope:.2f}",
+                                       f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
+                                      fontsize='xx-large')
+                    g.fig.tight_layout() 
+            
+     
+#%% Compute Two-way ANOVA
+
+# var : Variable on which to do analysis (in GDs), catgs1/2 : categories identifiers
+# GDs dataframe to compare data from
+
+def TwowayANOVA(var,catgs1,catgs2,GDs):
+    
+    FullANOVAdataset = pd.DataFrame(data=None,columns=['Date','Condition',var]) 
+    
+    # create complete data set
+    for C1,C2,GD in zip(catgs1,catgs2,GDs):
+        
+        values = GD.loc[(GD['Img'] == 0),var].values
+        nsample = np.size(values)
+
+        ANOVAdataset = pd.DataFrame({'Date':np.repeat(C1,nsample),'Condition':np.repeat(C2,nsample),var:values})
+        
+        FullANOVAdataset = FullANOVAdataset.append(ANOVAdataset)
+    
+    #perform two-way ANOVA
+    model = ols(var + ' ~ C(Date) + C(Condition) + C(Date):C(Condition)', data=FullANOVAdataset).fit()
+    res = sm.stats.anova_lm(model, typ=2)
+    
+    print('Two way ANOVA for : ' + var)
+    print(res)
+    print('\n')
+
+    return(res)
+    
