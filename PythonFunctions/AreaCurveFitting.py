@@ -13,6 +13,7 @@ import numpy as np
 from itertools import compress
 
 from scipy.optimize import curve_fit
+from scipy.signal import savgol_filter
 
 import VallapFunc as vf
 
@@ -134,7 +135,11 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         inv_A = np.divide(1,AreaC)
         
+        GR = np.multiply(inv_A[0:-1],dAdt)
+        GR_S5 = savgol_filter(GR, 5, 3)
+        GR_S11 = savgol_filter(GR, 11, 3)
         
+        GR_2h = np.mean(GR_S11[-5:])
 
         
         fig, [ax1,ax2] = plt.subplots(ncols=2, dpi=300)
@@ -174,8 +179,11 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax2.plot(Time[0:-1],dAdt)
             ax2.set_title('area differential')
             
-            ax3.plot(Time[0:-1],np.multiply(inv_A[0:-1],dAdt))
-            ax3.set_title('Growth rate local')
+            ax3.plot(Time[0:-1],GR,lw=1)
+            ax3.plot(Time[0:-1],GR_S5,lw=1)
+            ax3.plot(Time[0:-1],GR_S11,lw=1)
+            ax3.plot(Time[-6:-1],np.ones(5)*GR_2h,'r-')
+            ax3.set_title('Growth rate local (smoothed)')
             
             fig.tight_layout()
             
@@ -217,6 +225,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2_4
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h
         
         
 
