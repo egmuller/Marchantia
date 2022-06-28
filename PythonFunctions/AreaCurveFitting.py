@@ -125,6 +125,17 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         R2_4 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params4[0],params4[1],params4[2]))*1000)/1000
         
         
+        ### Growth rate 1/A * dA/dt computation
+        
+        dA = np.diff(AreaC)
+        dt = np.diff(Time)
+        
+        dAdt = np.multiply(dA,dt)
+        
+        inv_A = np.divide(1,AreaC)
+        
+        
+
         
         fig, [ax1,ax2] = plt.subplots(ncols=2, dpi=300)
 
@@ -152,6 +163,22 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         fig.tight_layout()
         
         if DebugPlots:
+            fig,[[ax0,ax1],[ax2,ax3]] = plt.subplots(nrows = 2, ncols = 2, dpi = 300)
+            
+            ax0.plot(Time,AreaC)
+            ax0.set_title('Area evolution')
+            
+            ax1.plot(Time,inv_A)
+            ax1.set_title('Area inverse')
+            
+            ax2.plot(Time[0:-1],dAdt)
+            ax2.set_title('area differential')
+            
+            ax3.plot(Time[0:-1],np.multiply(inv_A[0:-1],dAdt))
+            ax3.set_title('Growth rate local')
+            
+            fig.tight_layout()
+            
             plt.show()
         else:
             plt.close(fig)
