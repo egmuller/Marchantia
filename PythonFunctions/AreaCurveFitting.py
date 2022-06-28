@@ -192,21 +192,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
         
-        ## Additionnal growth fitting (end-10h -> end) for correlation with osmotic chocs
-        
-        def expfitf(t,Tau):
-            return(np.exp(np.divide(t,Tau)))
-        
-        params, cov = curve_fit(f=expfitf, xdata=Time[-20:len(Time)], ydata=AreaC[-20:len(Time)]/params4[2], p0=params4[0],
-                                  bounds=(0, np.inf), method='trf', loss='soft_l1')
-        
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau10h'] = params[0]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Tau10h'] = 1/params[0]
-        
-        params, cov = curve_fit(f=expfitf, xdata=Time[-10:len(Time)], ydata=AreaC[-10:len(Time)]/params4[2], p0=params[0],
-                                  bounds=(0, np.inf), method='trf', loss='soft_l1')
-        
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau5h'] = params[0]
 
     
     return(GD)
