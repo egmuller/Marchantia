@@ -14,6 +14,7 @@ from itertools import compress
 
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
+from scipy.interpolate import interp1d
 
 import VallapFunc as vf
 
@@ -86,7 +87,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         print('Fitting area curve for : ' + s.ljust(5), end='\n')           
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
-        AreaC = GD.loc[s,'Area'].values
+        AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         
         # first fit to determine tdeb
         params1, cov1 = curve_fit(f=fitFunc, xdata=Time, ydata=AreaC, p0=[100, 30, AreaC[0]], bounds=(0, np.inf), method='trf', loss='soft_l1')
@@ -128,18 +129,27 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         ### Growth rate 1/A * dA/dt computation
         
-        dA = np.diff(AreaC)
+        dA = np.diff(AreaC)        
         dt = np.diff(Time)
         
         dAdt = np.multiply(dA,dt)
+        dAdt_S = savgol_filter(dAdt, 11, 3)
+        
+
+        
+        intTime = Time[0:-1]+dt/2
         
         inv_A = np.divide(1,AreaC)
+        inv_f = interp1d(Time,inv_A)
+        inv_A_timed = inv_f(intTime)
         
-        GR = np.multiply(inv_A[0:-1],dAdt)
-        GR_S5 = savgol_filter(GR, 5, 3)
-        GR_S11 = savgol_filter(GR, 11, 3)
+        inv_A_S = savgol_filter(inv_A_timed,11, 3)
         
-        GR_2h = np.mean(GR_S11[-5:])
+        
+        GR = np.multiply(inv_A_timed,dAdt)
+        GR_S = np.multiply(inv_A_S,dAdt_S)
+        
+        GR_2h = np.mean(GR_S[-4:])
 
         
         fig, [ax1,ax2] = plt.subplots(ncols=2, dpi=300)
@@ -174,16 +184,18 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax0.set_title('Area evolution')
             
             ax1.plot(Time,inv_A)
+            ax1.plot(intTime,inv_A_S)
             ax1.set_title('Area inverse')
             
             ax2.plot(Time[0:-1],dAdt)
+            ax2.plot(Time[0:-1],dAdt_S)
             ax2.set_title('area differential')
             
-            ax3.plot(Time[0:-1],GR,lw=1)
-            ax3.plot(Time[0:-1],GR_S5,lw=1)
-            ax3.plot(Time[0:-1],GR_S11,lw=1)
-            ax3.plot(Time[-6:-1],np.ones(5)*GR_2h,'r-')
-            ax3.set_title('Growth rate local (smoothed)')
+            ax3.plot(Time[0:-1],GR,'-*',lw=1,ms=2)
+            ax3.plot(Time[0:-1],GR_S,'-*',lw=1,ms=2)
+            ax3.plot(Time[-5:-1],np.ones(4)*GR_2h,'r-')
+            ax3.plot(Time[np.argmin(np.abs(Time-params4[1]))],GR_S[np.argmin(np.abs(Time-params4[1]))],'r*',ms=5)
+            ax3.set_title('Growth rate local')
             
             fig.tight_layout()
             
@@ -264,7 +276,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         print('Fitting curve for : ' + s.ljust(5), end='\n')           
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
-        AreaC = GD.loc[s,'Area'].values
+        AreaC = savgol_filter(GD.loc[s,'Area'].values, 5, 3)
         
         
         # data for compression fit
