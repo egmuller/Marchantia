@@ -116,7 +116,8 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         GD, CD, R2s, goodList = selectR2s(GD,CD,R2Threshold,stringName, showHist = showHist)
 
         # Fit convergence 
-        compareFit(GD, stringName)
+        if DebugPlots:
+            compareFit(GD, stringName)
         
         # Saving sorted contour and fit data
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')

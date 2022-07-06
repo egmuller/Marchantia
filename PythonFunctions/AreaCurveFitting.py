@@ -15,6 +15,7 @@ from itertools import compress
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
+from scipy.stats import linregress
 
 import VallapFunc as vf
 
@@ -81,8 +82,15 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             FitWindow = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
+
+    
+    # Matrix for averaging growth rate
+    
+    GRmat = np.empty((200,len(StackList)))
+    
+    GRmat[:] = np.nan
             
-    for s,row in zip(StackList,Rows):
+    for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
         print('Fitting area curve for : ' + s.ljust(5), end='\n')           
         
@@ -150,34 +158,74 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GR_S = np.multiply(inv_A_S,dAdt_S)
         
         GR_2h = np.mean(GR_S[-4:])
-
         
-        fig, [ax1,ax2] = plt.subplots(ncols=2, dpi=300)
-
-        ax1.set_title(s + ' - tdeb = ' + str(round(params1[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs1[1]*10)/10) + ' min.\n' +
-        'T = ' + str(round(params1[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs1[0]/60*10)/10) + ' hours.\nR2 = ' 
-                      + str(R2_1))
-        ax1.plot(Time,AreaC,'*r',ms=3)
-        ax1.plot(Time,fitFunc(Time,params1[0],params1[1],params1[2]),'--b')
-        ax1.set_xlabel('Time (min)')
-        ax1.set_ylabel('Area')
-        # ax1.set_xscale('log')
-        # ax1.set_yscale('log')
-
-        ax2.set_title(s + ' - tdeb = ' + str(round(params2[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs2[1]*10)/10) + ' min.\n' +
-        'T = ' + str(round(params2[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs2[0]/60*10)/10) + ' hours.\nR2 = ' 
-                      + str(R2_2))
-        ax2.plot(Time,AreaC,'*r',ms=3)
-        ax2.plot(Time[fitInterval],AreaC[fitInterval],'*g',ms=3)
-        ax2.plot(Time,fitFunc(Time,params4[0],params4[1],params4[2]),'--b',lw=1)
-        ax2.set_xlabel('Time (min)')
-        ax2.set_ylabel('Area')
-        # ax2.set_xscale('log')
-        # ax2.set_yscale('log')
-
-        fig.tight_layout()
+        
+        ### Computing growth start regime from growth rate
+        
+        r2 = 1
+        Len = 2
+        
+        intTime_linfit = intTime[0:Len]
+        GR_S_linfit = GR_S[0:Len]
+        
+        linreg = linregress(intTime_linfit,GR_S_linfit)
+        
+        Slope = linreg.slope
+        Intercept = linreg.intercept
+        r2 = np.square(linreg.rvalue)
+        
+        while r2>0.99:
+            
+            # fig,ax = plt.subplots(dpi=200)
+            # fig.suptitle('R2 = ' + str(np.round(r2*1000)/1000))
+            # ax.plot(intTime,GR_S,'-*',lw=1,ms=2)
+            # ax.plot(intTime_linfit,GR_S_linfit,'o',ms=2)
+            # ax.plot(intTime_linfit,Intercept + intTime_linfit*Slope,lw=0.5)
+            
+            # plt.show()
+            
+            Len += 1
+                                    
+            intTime_linfit = intTime[0:Len]
+            GR_S_linfit = GR_S[0:Len]
+            
+            linreg = linregress(intTime_linfit,GR_S_linfit)
+            
+            Slope = linreg.slope
+            Intercept = linreg.intercept
+            r2 = np.square(linreg.rvalue)
+        
+        
+        GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
+        
         
         if DebugPlots:
+            
+            fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
+
+            ax01.set_title(s + ' - tdeb = ' + str(round(params1[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs1[1]*10)/10) + ' min.\n' +
+            'T = ' + str(round(params1[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs1[0]/60*10)/10) + ' hours.\nR2 = ' 
+                          + str(R2_1))
+            ax01.plot(Time,AreaC,'*r',ms=3)
+            ax01.plot(Time,fitFunc(Time,params1[0],params1[1],params1[2]),'--b')
+            ax01.set_xlabel('Time (min)')
+            ax01.set_ylabel('Area')
+            # ax01.set_xscale('log')
+            # ax01.set_yscale('log')
+
+            ax02.set_title(s + ' - tdeb = ' + str(round(params2[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs2[1]*10)/10) + ' min.\n' +
+            'T = ' + str(round(params2[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs2[0]/60*10)/10) + ' hours.\nR2 = ' 
+                          + str(R2_2))
+            ax02.plot(Time,AreaC,'*r',ms=3)
+            ax02.plot(Time[fitInterval],AreaC[fitInterval],'*g',ms=3)
+            ax02.plot(Time,fitFunc(Time,params4[0],params4[1],params4[2]),'--b',lw=1)
+            ax02.set_xlabel('Time (min)')
+            ax02.set_ylabel('Area')
+            # ax02.set_xscale('log')
+            # ax02.set_yscale('log')
+
+            fig0.tight_layout()
+            
             fig,[[ax0,ax1],[ax2,ax3]] = plt.subplots(nrows = 2, ncols = 2, dpi = 300)
             
             ax0.plot(Time,AreaC)
@@ -187,21 +235,21 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax1.plot(intTime,inv_A_S)
             ax1.set_title('Area inverse')
             
-            ax2.plot(Time[0:-1],dAdt)
-            ax2.plot(Time[0:-1],dAdt_S)
+            ax2.plot(intTime,dAdt)
+            ax2.plot(intTime,dAdt_S)
             ax2.set_title('area differential')
             
-            ax3.plot(Time[0:-1],GR,'-*',lw=1,ms=2)
-            ax3.plot(Time[0:-1],GR_S,'-*',lw=1,ms=2)
-            ax3.plot(Time[-5:-1],np.ones(4)*GR_2h,'r-')
-            ax3.plot(Time[np.argmin(np.abs(Time-params4[1]))],GR_S[np.argmin(np.abs(Time-params4[1]))],'r*',ms=5)
+            ax3.plot(intTime,GR,'-*',lw=1,ms=2)
+            ax3.plot(intTime,GR_S,'-*',lw=1,ms=2)
+            ax3.plot(intTime[-4:],np.ones(4)*GR_2h,'r-')
+            ax3.plot(intTime[np.argmin(np.abs(Time-params4[1]))],GR_S[np.argmin(np.abs(Time-params4[1]))],'ro',ms=5)
+            ax3.plot(intTime[Len-1],GR_S[Len-1],'go',ms=3)
             ax3.set_title('Growth rate local')
             
             fig.tight_layout()
             
             plt.show()
-        else:
-            plt.close(fig)
+
         
 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_full'] = params1[1] + Delay
@@ -228,8 +276,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDTau_interé'] = stdevs3[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_inter2'] = R2_3
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = params4[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params4[1])) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_fit'] = params4[1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_fit'] = np.argmin(np.abs(Time-params4[1])) # img shift for alignement on tdeb        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = params4[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = params4[2]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDtdeb'] = stdevs4[1]
@@ -241,7 +289,20 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h
         
         
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = intTime[Len-1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = Len-1 # img shift for alignement on tdeb
+        
 
+    fulltime = np.linspace(0,100,200)-25
+    GR_mean = np.nanmean(GRmat,axis = 1)
+    
+    fig00,ax = plt.subplots(dpi=200)
+    fig00.suptitle('Growth rates aligned')
+    ax.plot(fulltime,GRmat,lw = 1)
+    ax.plot(fulltime,GR_mean,'w--',lw = 2)
+    
+    
+    ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
     
     return(GD)
 
