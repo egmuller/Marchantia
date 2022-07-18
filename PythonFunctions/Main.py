@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc, selectR2s, compareFit
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
 from StatsFunctions import plotSig, Corr,TwowayANOVA
 
 import matplotlib as mpl
