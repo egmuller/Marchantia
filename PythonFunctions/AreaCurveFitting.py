@@ -116,41 +116,41 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         
         # first fit to determine tdeb
-        params1, cov1 = curve_fit(f=fitFunc, xdata=Time, ydata=AreaC, p0=[100, 30, AreaC[0]], bounds=(0, np.inf), method='trf', loss='soft_l1')
+        params1, cov1 = curve_fit(f=fitFuncMixed2, xdata=Time, ydata=AreaC, p0=[100, 5000, AreaC[0]], bounds=(0, np.inf), method='trf', loss='soft_l1')
         stdevs1 = np.sqrt(np.diag(cov1))
         
-        R2_1 = np.round(vf.computeR2(AreaC,fitFunc(Time,params1[0],params1[1],params1[2]))*1000)/1000
+        R2_1 = np.round(vf.computeR2(AreaC,fitFuncMixed2(Time,params1[0],params1[1],params1[2]))*1000)/1000
                         
         # Second fit, only until 15 hours after the start of growth
-        fitInterval = Time<(params1[1]+FitWindow*60)
-        params2, cov2 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params1,
+        fitInterval = Time<(params1[1]/(2*params1[0])+FitWindow*60)
+        params2, cov2 = curve_fit(f=fitFuncMixed2, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params1,
                                   bounds=(0, np.inf), method='trf', loss='soft_l1')
         
         
         stdevs2 = np.sqrt(np.diag(cov2))
         
-        R2_2 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params2[0],params2[1],params2[2]))*1000)/1000
+        R2_2 = np.round(vf.computeR2(AreaC[fitInterval],fitFuncMixed2(Time[fitInterval],params2[0],params2[1],params2[2]))*1000)/1000
         
         # Third fit, only until 15 hours after the start of growth, to confirm second
-        fitInterval = Time<(params2[1]+FitWindow*60)
-        params3, cov3 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params2,
+        fitInterval = Time<(params2[1]/(2*params2[0])+FitWindow*60)
+        params3, cov3 = curve_fit(f=fitFuncMixed2, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params2,
                                   bounds=(0, np.inf), method='trf', loss='soft_l1')
         
         
         stdevs3 = np.sqrt(np.diag(cov2))
         
-        R2_3 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params3[0],params3[1],params3[2]))*1000)/1000
+        R2_3 = np.round(vf.computeR2(AreaC[fitInterval],fitFuncMixed2(Time[fitInterval],params3[0],params3[1],params3[2]))*1000)/1000
         
         
         # Fourth fit, only until 15 hours after the start of growth, to confirm third
-        fitInterval = Time<(params3[1]+FitWindow*60)
-        params4, cov4 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params3,
+        fitInterval = Time<(params3[1]/(2*params3[0])+FitWindow*60)
+        params4, cov4 = curve_fit(f=fitFuncMixed2, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params3,
                                   bounds=(0, np.inf), method='trf', loss='soft_l1')
         
         
         stdevs4 = np.sqrt(np.diag(cov2))
         
-        R2_4 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params4[0],params4[1],params4[2]))*1000)/1000
+        R2_4 = np.round(vf.computeR2(AreaC[fitInterval],fitFuncMixed2(Time[fitInterval],params4[0],params4[1],params4[2]))*1000)/1000
         
         
         ### Growth rate 1/A * dA/dt computation
@@ -210,7 +210,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             linreg = linregress(intTime_linfit,GR_S_linfit)
             
             Slope = linreg.slope
-            print('slope :' + str(Slope))
+            # print('slope :' + str(Slope))
             Intercept = linreg.intercept
             r2 = np.square(linreg.rvalue)
         
@@ -222,22 +222,22 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             
             fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
 
-            ax01.set_title(s + ' - tdeb = ' + str(round(params1[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs1[1]*10)/10) + ' min.\n' +
+            ax01.set_title(s + ' - tdeb = ' + str(round(params1[1]/params1[0]*5)/10) + ' min.\n' +
             'T = ' + str(round(params1[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs1[0]/60*10)/10) + ' hours.\nR2 = ' 
                           + str(R2_1))
             ax01.plot(Time,AreaC,'*r',ms=3)
-            ax01.plot(Time,fitFunc(Time,params1[0],params1[1],params1[2]),'--b')
+            ax01.plot(Time,fitFuncMixed2(Time,params1[0],params1[1],params1[2]),'--b')
             ax01.set_xlabel('Time (min)')
             ax01.set_ylabel('Area')
             # ax01.set_xscale('log')
             # ax01.set_yscale('log')
 
-            ax02.set_title(s + ' - tdeb = ' + str(round(params4[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs4[1]*10)/10) + ' min.\n' +
+            ax02.set_title(s + ' - tdeb = ' + str(round(params4[1]/params4[0]*5)/10) + ' min.\n' +
             'T = ' + str(round(params4[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs4[0]/60*10)/10) + ' hours.\nR2 = ' 
                           + str(R2_4))
             ax02.plot(Time,AreaC,'*r',ms=3)
             ax02.plot(Time[fitInterval],AreaC[fitInterval],'*g',ms=3)
-            ax02.plot(Time,fitFunc(Time,params4[0],params4[1],params4[2]),'--b',lw=1)
+            ax02.plot(Time,fitFuncMixed2(Time,params4[0],params4[1],params4[2]),'--b',lw=1)
             ax02.set_xlabel('Time (min)')
             ax02.set_ylabel('Area')
             # ax02.set_xscale('log')
@@ -261,7 +261,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax3.plot(intTime,GR,'-*',lw=1,ms=2)
             ax3.plot(intTime,GR_S,'-*',lw=1,ms=2)
             ax3.plot(intTime[-4:],np.ones(4)*GR_2h,'r-')
-            ax3.plot(intTime[np.argmin(np.abs(Time-params4[1]))],GR_S[np.argmin(np.abs(Time-params4[1]))],'ro',ms=5)
+            ax3.plot(intTime[np.argmin(np.abs(intTime-params4[1]/(2*params4[0])))],GR_S[np.argmin(np.abs(intTime-params4[1]/(2*params4[0])))],'ro',ms=5)
             ax3.plot(intTime[Len-1],GR_S[Len-1],'go',ms=3)
             ax3.set_title('Growth rate local')
             
@@ -271,32 +271,23 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
 
         
 
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_full'] = params1[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_full'] = np.argmin(np.abs(Time-params1[1])) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_full'] = params1[1]/(2*params1[0]) + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau_full'] = params1[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit_full'] = params1[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDtdeb_full'] = stdevs1[1]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDTau_full'] = stdevs1[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_full'] = R2_1
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_inter1'] = params2[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_inter1'] = np.argmin(np.abs(Time-params2[1])) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_inter1'] = params2[1]/(2*params2[0]) + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau_inter1'] = params2[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit_inter1'] = params2[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDtdeb_inter1'] = stdevs2[1]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDTau_inter1'] = stdevs2[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_inter1'] = R2_2
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_inter2'] = params3[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_inter2'] = np.argmin(np.abs(Time-params3[1])) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_inter2'] = params3[1]/(2*params3[0]) + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau_inter2'] = params3[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit_inter2'] = params3[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDtdeb_inter2'] = stdevs3[1]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDTau_interé'] = stdevs3[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_inter2'] = R2_3
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_fit'] = params4[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_fit'] = np.argmin(np.abs(Time-params4[1])) # img shift for alignement on tdeb        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_fit'] = params4[1]/(2*params4[0]) + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_fit'] = np.argmin(np.abs(Time-params4[1]/(2*params4[0]))) # img shift for alignement on tdeb        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = params4[0]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = params4[2]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDtdeb'] = stdevs4[1]
@@ -310,11 +301,11 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = params4[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params4[1])) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = params4[1]/(2*params4[0]) + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params4[1]/(2*params4[0]))) # img shift for alignement on tdeb
         
         
-        print('R2 = ' + str(round(R2_4*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(params4[1]))
+        print('R2 = ' + str(round(R2_4*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(params4[1]/params4[0]/2))
 
     fulltime = np.linspace(0,100,200)-25
     GR_mean = np.nanmean(GRmat,axis = 1)
@@ -524,7 +515,7 @@ def compareFit(GD, label):
     
     Tdebs_inter1 = GD['tdeb_inter1'].values[ValuesPos]    
     Tdebs_inter2 = GD['tdeb_inter2'].values[ValuesPos]
-    Tdebs = GD['tdeb'].values[ValuesPos]
+    Tdebs = GD['tdeb_fit'].values[ValuesPos]
     Tdebs_full = GD['tdeb_full'].values[ValuesPos]
     
     Taus_inter1 = GD['Tau_inter1'].values[ValuesPos]
