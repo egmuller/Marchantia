@@ -35,6 +35,24 @@ def fitFunc(t,T,tdeb,A0): # Exponential growth with a delay
         
     return(f)
 
+# 1bis. Squared exponential follow by normal exponential to fit growth start correctly
+
+def fitFuncMixed(t,T,L,A0): # Exponential growth with a delay
+    
+    f = np.multiply(A0,np.exp(np.divide(np.square(t),np.multiply(t,T)+L)))
+    return(f)
+        
+def fitFuncMixed2(t,T,L,A0): # Exponential growth with a delay
+    
+    tdeb = L/(2*T) 
+    
+    f = np.multiply(A0,np.exp(np.divide((t-tdeb),T))) + np.multiply(A0,np.exp(np.divide(np.square(tdeb),L))-1)
+    
+    f[t<=tdeb] = np.multiply(A0,np.exp(np.divide(np.square(t[t<tdeb]),L)))
+
+        
+    return(f)
+
 # 2. Exponential decay from initial volume to equilibrium volume
 
 def fitFuncOsmChoc(t,T,A0,Aeq,tdeb): # 
@@ -192,6 +210,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             linreg = linregress(intTime_linfit,GR_S_linfit)
             
             Slope = linreg.slope
+            print('slope :' + str(Slope))
             Intercept = linreg.intercept
             r2 = np.square(linreg.rvalue)
         
