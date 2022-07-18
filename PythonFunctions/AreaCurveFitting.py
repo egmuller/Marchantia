@@ -136,11 +136,11 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         
         ### Growth rate 1/A * dA/dt computation
-        
+    
         dA = np.diff(AreaC)        
         dt = np.diff(Time)
         
-        dAdt = np.multiply(dA,dt)
+        dAdt = np.divide(dA,dt)
         dAdt_S = savgol_filter(dAdt, 11, 3)
         
 
@@ -213,9 +213,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             # ax01.set_xscale('log')
             # ax01.set_yscale('log')
 
-            ax02.set_title(s + ' - tdeb = ' + str(round(params2[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs2[1]*10)/10) + ' min.\n' +
-            'T = ' + str(round(params2[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs2[0]/60*10)/10) + ' hours.\nR2 = ' 
-                          + str(R2_2))
+            ax02.set_title(s + ' - tdeb = ' + str(round(params4[1]*10)/10) + ' ' + u"\u00B1" + str(round(stdevs4[1]*10)/10) + ' min.\n' +
+            'T = ' + str(round(params4[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs4[0]/60*10)/10) + ' hours.\nR2 = ' 
+                          + str(R2_4))
             ax02.plot(Time,AreaC,'*r',ms=3)
             ax02.plot(Time[fitInterval],AreaC[fitInterval],'*g',ms=3)
             ax02.plot(Time,fitFunc(Time,params4[0],params4[1],params4[2]),'--b',lw=1)
@@ -286,12 +286,16 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h       
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = Time[Len-1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = intTime[Len-1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = Len-1 # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = params4[1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params4[1])) # img shift for alignement on tdeb
         
+        
+        print('R2 = ' + str(round(R2_4*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(params4[1]))
 
     fulltime = np.linspace(0,100,200)-25
     GR_mean = np.nanmean(GRmat,axis = 1)
