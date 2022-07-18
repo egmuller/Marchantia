@@ -27,6 +27,7 @@ import VallapFunc as vf
 
 from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
+
 #%% Wrapper functions for binarization and Area fit
 
 # 1. Area growth
@@ -105,7 +106,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
         # Retrieve data on PPG position in chip        
-        posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name')        
+        posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
         Rows = posinchip.loc[StackList].values[:,0]
         
         # Fitting area growth
