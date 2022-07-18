@@ -46,15 +46,15 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToDo, **kwargs):
     
       
-    showHist = False
+    DebugAll = False
     DebugPlots = False
     HSVrange = [(25, 25, 70),(60, 120,220)]
     ImgList = [0, 20, 40]
     fitwindow=15
     
     for key, value in kwargs.items(): 
-        if key == 'showHist':
-            showHist = value
+        if key == 'debugAll':
+            DebugAll = value
         elif key == 'debug':
             DebugPlots = value
         elif key == 'debuglist':
@@ -89,12 +89,12 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
     
     # Binarization of stacks
     if DoBin:
-        BinarizeStack(StackList, Path, Scale,debug = DebugPlots, HSVrange = HSVrange, debuglist = ImgList)
+        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList)
     
     if DoCont:
                 
         # Computing contours from binary
-        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugPlots)
+        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll)
 
         # Saving all contours
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
@@ -110,10 +110,10 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         Rows = posinchip.loc[StackList].values[:,0]
         
         # Fitting area growth
-        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debug = DebugPlots,fitwindow = fitwindow)
+        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debug = DebugAll,fitwindow = fitwindow)
 
         # Sorting based on fit quality
-        GD, CD, R2s, goodList = selectR2s(GD,CD,R2Threshold,stringName, showHist = showHist)
+        GD, CD, R2s, goodList = selectR2s(GD,CD,R2Threshold,stringName, showHist = DebugPlots)
 
         # Fit convergence 
         if DebugPlots:
