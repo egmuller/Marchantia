@@ -132,10 +132,12 @@ def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
         if debug:
             if tdebVar<Th:
                 ax.plot(tdeb_old,FitObj.tdeb(),'og',ms=1)
+            elif cnt == maxIter-1:
+                ax.plot(tdeb_old,FitObj.tdeb(),'xr',ms=2)
             elif cnt == 0:
-                ax.plot(tdeb_old,FitObj.tdeb(),'or',ms=1)
+                ax.plot(tdeb_old,FitObj.tdeb(),'ob',ms=1)
             else:
-                ax.plot(tdeb_old,FitObj.tdeb(),'o',ms=0.5)
+                ax.plot(tdeb_old,FitObj.tdeb(),'*w',ms=0.5)
             
 
         cnt += 1       
