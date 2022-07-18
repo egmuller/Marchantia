@@ -110,14 +110,10 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         Rows = posinchip.loc[StackList].values[:,0]
         
         # Fitting area growth
-        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debug = DebugAll,fitwindow = fitwindow)
+        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
 
         # Sorting based on fit quality
         GD, CD, R2s, goodList = selectR2s(GD,CD,R2Threshold,stringName, showHist = DebugPlots)
-
-        # Fit convergence 
-        if DebugPlots:
-            compareFit(GD, stringName)
         
         # Saving sorted contour and fit data
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
