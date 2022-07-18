@@ -188,7 +188,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     else:
         ax=0
             
-    for s,row in zip(StackList,Rows):
+    for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
         print('Fitting area curve for : ' + s.ljust(5), end='\n')           
         
@@ -264,31 +264,33 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
         
+        print('R2 = ' + str(round(FitRes.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitRes.tdeb()))
+
         
         if DebugPlots:
             
             fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
 
-        ax1.set_title(s + ' - tdeb = ' + str(round(params_init[0]*10)/10) +' min.\n' +
-        'T = ' + str(round(params_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
-                      + str(R2_init))
-        ax1.plot(Time,FitRes.values,'*r',ms=3)
-        ax1.plot(Time,FitRes.f(FitRes.time,params_init[0],params_init[1],params_init[2]),'--b')
-        ax1.set_xlabel('Time (min)')
-        ax1.set_ylabel('Area')
-        # ax1.set_xscale('log')
-        # ax1.set_yscale('log')
-
-        ax2.set_title(s + ' - tdeb = ' + str(round(FitRes.tdeb()*10)/10) +  ' min.\n' +
-        'T = ' + str(round(FitRes.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
-                      + str(FitRes.R2()))
-        ax2.plot(Time,AreaC,'*r',ms=3)
-        ax2.plot(Time[FitRes.FI],AreaC[FitRes.FI],'*g',ms=3)
-        ax2.plot(Time,FitRes.f(Time,FitRes.P[0],FitRes.P[1],FitRes.P[2]),'--b',lw=1)
-        ax2.set_xlabel('Time (min)')
-        ax2.set_ylabel('Area')
-        # ax2.set_xscale('log')
-        # ax2.set_yscale('log')
+            ax01.set_title(s + ' - tdeb = ' + str(round(params_init[0]*10)/10) +' min.\n' +
+            'T = ' + str(round(params_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
+                          + str(R2_init))
+            ax01.plot(Time,FitRes.values,'*r',ms=3)
+            ax01.plot(Time,FitRes.f(FitRes.time,params_init[0],params_init[1],params_init[2]),'--b')
+            ax01.set_xlabel('Time (min)')
+            ax01.set_ylabel('Area')
+            # ax01.set_xscale('log')
+            # ax01.set_yscale('log')
+    
+            ax02.set_title(s + ' - tdeb = ' + str(round(FitRes.tdeb()*10)/10) +  ' min.\n' +
+            'T = ' + str(round(FitRes.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
+                          + str(FitRes.R2()))
+            ax02.plot(Time,AreaC,'*r',ms=3)
+            ax02.plot(Time[FitRes.FI],AreaC[FitRes.FI],'*g',ms=3)
+            ax02.plot(Time,FitRes.f(Time,FitRes.P[0],FitRes.P[1],FitRes.P[2]),'--b',lw=1)
+            ax02.set_xlabel('Time (min)')
+            ax02.set_ylabel('Area')
+            # ax2.set_xscale('log')
+            # ax2.set_yscale('log')
 
             fig0.tight_layout()
             
@@ -308,7 +310,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax3.plot(Time[0:-1],GR,'-*',lw=1,ms=2)
             ax3.plot(Time[0:-1],GR_S,'-*',lw=1,ms=2)
             ax3.plot(Time[-5:-1],np.ones(4)*GR_2h,'r-')
-            ax3.plot(Time[np.argmin(np.abs(Time-FitRes.tdeb()))],GR_S[np.argmin(np.abs(Time-FitRes.tdeb()))],'r*',ms=5)
+            ax3.plot(Time[np.argmin(np.abs(Time-FitRes.tdeb()))],GR_S[np.argmin(np.abs(Time-FitRes.tdeb()))],'ro',ms=5)
+            ax3.plot(Time[Len-1],GR_S[Len-1],'g*',ms=5)
             ax3.set_title('Growth rate local')
             
             fig.tight_layout()
@@ -317,8 +320,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
 
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes.tdeb() + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_fit'] = FitRes.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_fit'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes.tau()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes.R2()
@@ -330,11 +333,10 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = params4[1] + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params4[1])) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
         
         
-        print('R2 = ' + str(round(R2_4*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(params4[1]))
 
     fulltime = np.linspace(0,100,200)-25
     GR_mean = np.nanmean(GRmat,axis = 1)
@@ -547,7 +549,7 @@ def selectR2s(GD, CD, Th, label, **kwargs):
     showHist = False
     Key = 'fitR2'
     
-    print('Analyzing : ' + label)
+    print('\nAnalyzing R2s for ' + label)
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
