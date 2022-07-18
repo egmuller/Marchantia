@@ -102,7 +102,7 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
 
 # A. Function to do iterative fit on a specific window after tdeb, iterations until tdeb has converged
 
-def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter):
+def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     
     FitObj = FitClass(t,y)
     
@@ -128,11 +128,20 @@ def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter):
         
         
         tdebVar = np.abs((tdeb_old-FitObj.tdeb())/tdeb_old)
+        
+        if debug:
+            if tdebVar<Th:
+                ax.plot(tdeb_old,FitObj.tdeb(),'og',ms=1)
+            elif cnt == 0:
+                ax.plot(tdeb_old,FitObj.tdeb(),'or',ms=1)
+            else:
+                ax.plot(tdeb_old,FitObj.tdeb(),'o',ms=0.5)
+            
 
         cnt += 1       
     
     print('Number of iterations : ' + str(cnt))
-    
+     
     return(params_init,R2_init,FitObj)
     
     
@@ -158,11 +167,18 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     
     for key, value in kwargs.items(): 
         if key == 'debug':
+            Debug = value
+        elif key == 'debugall':
             DebugPlots = value
-        if key == 'fitwindow':
+        elif key == 'fitwindow':
             FitWindow = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
+            
+    if Debug:
+        fig,ax = plt.subplots(dpi=200)
+    else:
+        ax=0
             
     for s,row in zip(StackList,Rows):
         
@@ -174,47 +190,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         ### Iterative fits for a convergence of Tdeb
                 
-        params_init,R2_init,FitRes = iterFit(ExpDel,FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10)
-        
-        # # first fit to get initial guess
-        # params1, cov1 = curve_fit(f=fitFunc, xdata=Time, ydata=AreaC, p0=[100, 30, AreaC[0]], bounds=(0, np.inf), method='trf', loss='soft_l1')
-        # stdevs1 = np.sqrt(np.diag(cov1))
-        
-        # R2_1 = np.round(vf.computeR2(AreaC,fitFunc(Time,params1[0],params1[1],params1[2]))*1000)/1000
-        
-    
-                        
-        # # Second fit, only until 15 hours after the start of growth
-        # fitInterval = Time<(params1[1]+FitWindow*60)
-        # params2, cov2 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params1,
-        #                           bounds=(0, np.inf), method='trf', loss='soft_l1')
-        
-        
-        # stdevs2 = np.sqrt(np.diag(cov2))
-        
-        # R2_2 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params2[0],params2[1],params2[2]))*1000)/1000
-        
-        # # Third fit, only until 15 hours after the start of growth, to confirm second
-        # fitInterval = Time<(params2[1]+FitWindow*60)
-        # params3, cov3 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params2,
-        #                           bounds=(0, np.inf), method='trf', loss='soft_l1')
-        
-        
-        # stdevs3 = np.sqrt(np.diag(cov2))
-        
-        # R2_3 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params3[0],params3[1],params3[2]))*1000)/1000
-        
-        
-        # # Fourth fit, only until 15 hours after the start of growth, to confirm third
-        # fitInterval = Time<(params3[1]+FitWindow*60)
-        # params4, cov4 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params3,
-        #                           bounds=(0, np.inf), method='trf', loss='soft_l1')
-        
-        
-        # stdevs4 = np.sqrt(np.diag(cov2))
-        
-        # R2_4 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params4[0],params4[1],params4[2]))*1000)/1000
-        
+        params_init,R2_init,FitRes = iterFit(ExpDel,FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10,Debug,ax)
         
         
         ### Growth rate 1/A * dA/dt computation
@@ -494,79 +470,7 @@ def sortChocs(CD,GD,StackList,ImgStart,ImgEq,Plots):
 
 #%% Fits validation and sorting
 
-# 1. Comparing iterative fits for growth curve
-
-# GD : dataframe containing global (area) data, label : experiment name
-
-def compareFit(GD, label):
-    
-    ValuesPos = ~np.isnan(GD['tdeb'].values)
-    
-    Tdebs_inter1 = GD['tdeb_inter1'].values[ValuesPos]    
-    Tdebs_inter2 = GD['tdeb_inter2'].values[ValuesPos]
-    Tdebs = GD['tdeb'].values[ValuesPos]
-    Tdebs_full = GD['tdeb_full'].values[ValuesPos]
-    
-    Taus_inter1 = GD['Tau_inter1'].values[ValuesPos]
-    Taus_inter2 = GD['Tau_inter2'].values[ValuesPos]
-    Taus = GD['Tau'].values[ValuesPos]
-    Taus_full = GD['Tau_full'].values[ValuesPos]
-    
-    A0fits_inter1 = GD['A0fit_inter1'].values[ValuesPos]
-    A0fits_inter2 = GD['A0fit_inter2'].values[ValuesPos]
-    A0fits = GD['A0fit'].values[ValuesPos]
-    A0fits_full = GD['A0fit_full'].values[ValuesPos]
-    
-    
-    MIN = np.min([Tdebs_full, Tdebs, Tdebs_inter1, Tdebs_inter2])
-    MAX = np.max([Tdebs_full, Tdebs, Tdebs_inter1, Tdebs_inter2])
-    
-    fig11, ax11 = plt.subplots(dpi=200)  
-    ax11.set_title(label + ' - Tstart (min)')
-    ax11.plot([MIN,MAX],[MIN,MAX],'-g')
-    ax11.plot(Tdebs_full,Tdebs_inter1,'ro',ms = 5)
-    ax11.plot(Tdebs_inter1,Tdebs_inter2,'mo',ms = 4.5)
-    ax11.plot(Tdebs_inter2,Tdebs,'o',color=np.divide([150, 131, 236],255),ms = 4)
-    ax11.set_xlabel('Previous fit')
-    ax11.set_ylabel('Next fit')
-    ax11.set_xlim(MIN-0.05*MAX,MAX*1.05)
-    ax11.set_ylim(MIN-0.05*MAX,MAX*1.05)
-    
-    
-    MIN = np.min([Taus_full, Taus, Taus_inter1, Taus_inter2])
-    MAX = np.max([Taus_full, Taus, Taus_inter1, Taus_inter2])
-
-    fig21, ax21 = plt.subplots(dpi=200)  
-    ax21.set_title(label + ' - Tau growth (hours)')
-    ax21.plot([MIN,MAX],[MIN,MAX],'-g')
-    ax21.plot(Taus_full,Taus_inter1,'ro',ms = 5)
-    ax21.plot(Taus_inter1,Taus_inter2,'mo',ms = 4.5)
-    ax21.plot(Taus_inter2,Taus,'o',color=np.divide([150, 131, 236],255),ms = 4)
-    ax21.set_xlabel('Previous fit')
-    ax21.set_ylabel('Next fit')
-    ax21.set_xlim(MIN-0.05*MAX,MAX*1.05)
-    ax21.set_ylim(MIN-0.05*MAX,MAX*1.05)
-    
-    
-    MIN = np.min([A0fits_full, A0fits, A0fits_inter1, A0fits_inter2])
-    MAX = np.max([A0fits_full, A0fits, A0fits_inter1, A0fits_inter2])
-
-    fig31, ax31 = plt.subplots(dpi=200)  
-    ax31.set_title(label + ' - A0fit (mm²)')
-    ax31.plot([MIN,MAX],[MIN,MAX],'-g')
-    ax31.plot(A0fits_full,A0fits_inter1,'ro',ms = 5)
-    ax31.plot(A0fits_inter1,A0fits_inter2,'mo',ms = 4.5)
-    ax31.plot(A0fits_inter2,A0fits,'o',color=np.divide([150, 131, 236],255),ms = 4)
-    ax31.set_xlabel('Previous fit')
-    ax31.set_ylabel('Next fit')
-    ax31.set_xlim(MIN-0.05*MAX,MAX*1.05)
-    ax31.set_ylim(MIN-0.05*MAX,MAX*1.05)
-    
-  
-    
-    return
-
-# 2. R2 based selection of data for both growth curve and osmotic chocs fitting
+# 1.  R2 based selection of data for both growth curve and osmotic chocs fitting
 
 # GD : dataframe containing global (area) data, CD : dataframe containing contours ,
 # Th : R2 threshold, label : experiment name
