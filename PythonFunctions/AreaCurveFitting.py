@@ -25,15 +25,57 @@ import matplotlib.pyplot as plt
 
 #%% Fit functions
 
-# 1. Exponetial growth with a delay
+# Super class for fit objects
 
-def fitFunc(t,T,tdeb,A0): # Exponential growth with a delay
+class FitMachin:
     
-    f = np.multiply(A0,np.exp(np.divide((t-tdeb),T)))
+    def __init__(self,t,y):
+        self.time = t
+        self.values = y
+        self.P = []
+        self.FI = t<np.max(t+1)
         
-    f[t<tdeb] = A0
+    def set_params(self,params):
+        self.P = params
         
-    return(f)
+    def set_fitinterval(self,FI):
+        self.FI = FI
+    
+    def tdeb(self):        
+        return(self.P[0])
+    
+    def tau(self):        
+        return(self.P[1])
+    
+    def A0(self):        
+        return(self.P[2])
+    
+    def f(self):
+        pass
+    
+    def R2(self):
+        pass
+
+# 1. Exponetial growth with a delay + tdeb and R2 extraction functions
+
+
+class ExpDel(FitMachin):   
+    
+
+    def f(self,t,tdeb,T,A0): # Exponential growth with a delay
+        
+        f = np.multiply(A0,np.exp(np.divide((t-tdeb),T)))
+            
+        f[t<tdeb] = A0
+            
+        return(f) 
+    
+    
+    def R2(self):
+        
+        return(np.round(vf.computeR2(self.values[self.FI],self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))*1000)/1000)
+    
+    
 
 # 1bis. Squared exponential follow by normal exponential to fit growth start correctly
 
@@ -73,6 +115,46 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
     
     return(f)
 
+
+
+
+
+# A. Function to do iterative fit on a specific window after tdeb, iterations until tdeb has converged
+
+def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter):
+    
+    FitObj = FitClass(t,y)
+    
+    # initial fit on all data -> first tdeb guess
+    
+    FitObj.set_params(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
+    
+    R2_init = FitObj.R2()
+    
+    params_init = FitObj.P[:]
+    
+    tdebVar = 1
+    cnt = 0
+    
+    while (tdebVar>Th) & (cnt<maxIter):
+        
+        tdeb_old = FitObj.tdeb()
+        
+        FitObj.set_fitinterval(t<(FitObj.tdeb()+fitwindow*60))
+        
+        FitObj.set_params(curve_fit(f=FitObj.f, xdata=t[FitObj.FI], ydata=y[FitObj.FI], p0=FitObj.P,                                  
+                                  bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
+        
+        
+        tdebVar = np.abs((tdeb_old-FitObj.tdeb())/tdeb_old)
+
+        cnt += 1       
+    
+    print('Number of iterations : ' + str(cnt))
+    
+    return(params_init,R2_init,FitObj)
+    
+    
 
 #%% Growth curve fit
 
@@ -115,42 +197,50 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         
-        # first fit to determine tdeb
-        params1, cov1 = curve_fit(f=fitFuncMixed2, xdata=Time, ydata=AreaC, p0=[100, 5000, AreaC[0]], bounds=(0, np.inf), method='trf', loss='soft_l1')
-        stdevs1 = np.sqrt(np.diag(cov1))
         
-        R2_1 = np.round(vf.computeR2(AreaC,fitFuncMixed2(Time,params1[0],params1[1],params1[2]))*1000)/1000
+        ### Iterative fits for a convergence of Tdeb
+                
+        params_init,R2_init,FitRes = iterFit(ExpDel,FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10)
+        
+        # # first fit to get initial guess
+        # params1, cov1 = curve_fit(f=fitFunc, xdata=Time, ydata=AreaC, p0=[100, 30, AreaC[0]], bounds=(0, np.inf), method='trf', loss='soft_l1')
+        # stdevs1 = np.sqrt(np.diag(cov1))
+        
+        # R2_1 = np.round(vf.computeR2(AreaC,fitFunc(Time,params1[0],params1[1],params1[2]))*1000)/1000
+        
+    
                         
-        # Second fit, only until 15 hours after the start of growth
-        fitInterval = Time<(params1[1]/(2*params1[0])+FitWindow*60)
-        params2, cov2 = curve_fit(f=fitFuncMixed2, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params1,
-                                  bounds=(0, np.inf), method='trf', loss='soft_l1')
+        # # Second fit, only until 15 hours after the start of growth
+        # fitInterval = Time<(params1[1]+FitWindow*60)
+        # params2, cov2 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params1,
+        #                           bounds=(0, np.inf), method='trf', loss='soft_l1')
         
         
-        stdevs2 = np.sqrt(np.diag(cov2))
+        # stdevs2 = np.sqrt(np.diag(cov2))
         
-        R2_2 = np.round(vf.computeR2(AreaC[fitInterval],fitFuncMixed2(Time[fitInterval],params2[0],params2[1],params2[2]))*1000)/1000
+        # R2_2 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params2[0],params2[1],params2[2]))*1000)/1000
         
-        # Third fit, only until 15 hours after the start of growth, to confirm second
-        fitInterval = Time<(params2[1]/(2*params2[0])+FitWindow*60)
-        params3, cov3 = curve_fit(f=fitFuncMixed2, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params2,
-                                  bounds=(0, np.inf), method='trf', loss='soft_l1')
-        
-        
-        stdevs3 = np.sqrt(np.diag(cov2))
-        
-        R2_3 = np.round(vf.computeR2(AreaC[fitInterval],fitFuncMixed2(Time[fitInterval],params3[0],params3[1],params3[2]))*1000)/1000
+        # # Third fit, only until 15 hours after the start of growth, to confirm second
+        # fitInterval = Time<(params2[1]+FitWindow*60)
+        # params3, cov3 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params2,
+        #                           bounds=(0, np.inf), method='trf', loss='soft_l1')
         
         
-        # Fourth fit, only until 15 hours after the start of growth, to confirm third
-        fitInterval = Time<(params3[1]/(2*params3[0])+FitWindow*60)
-        params4, cov4 = curve_fit(f=fitFuncMixed2, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params3,
-                                  bounds=(0, np.inf), method='trf', loss='soft_l1')
+        # stdevs3 = np.sqrt(np.diag(cov2))
+        
+        # R2_3 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params3[0],params3[1],params3[2]))*1000)/1000
         
         
-        stdevs4 = np.sqrt(np.diag(cov2))
+        # # Fourth fit, only until 15 hours after the start of growth, to confirm third
+        # fitInterval = Time<(params3[1]+FitWindow*60)
+        # params4, cov4 = curve_fit(f=fitFunc, xdata=Time[fitInterval], ydata=AreaC[fitInterval], p0=params3,
+        #                           bounds=(0, np.inf), method='trf', loss='soft_l1')
         
-        R2_4 = np.round(vf.computeR2(AreaC[fitInterval],fitFuncMixed2(Time[fitInterval],params4[0],params4[1],params4[2]))*1000)/1000
+        
+        # stdevs4 = np.sqrt(np.diag(cov2))
+        
+        # R2_4 = np.round(vf.computeR2(AreaC[fitInterval],fitFunc(Time[fitInterval],params4[0],params4[1],params4[2]))*1000)/1000
+        
         
         
         ### Growth rate 1/A * dA/dt computation
@@ -222,26 +312,26 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             
             fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
 
-            ax01.set_title(s + ' - tdeb = ' + str(round(params1[1]/params1[0]*5)/10) + ' min.\n' +
-            'T = ' + str(round(params1[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs1[0]/60*10)/10) + ' hours.\nR2 = ' 
-                          + str(R2_1))
-            ax01.plot(Time,AreaC,'*r',ms=3)
-            ax01.plot(Time,fitFuncMixed2(Time,params1[0],params1[1],params1[2]),'--b')
-            ax01.set_xlabel('Time (min)')
-            ax01.set_ylabel('Area')
-            # ax01.set_xscale('log')
-            # ax01.set_yscale('log')
+        ax1.set_title(s + ' - tdeb = ' + str(round(params_init[0]*10)/10) +' min.\n' +
+        'T = ' + str(round(params_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
+                      + str(R2_init))
+        ax1.plot(Time,FitRes.values,'*r',ms=3)
+        ax1.plot(Time,FitRes.f(FitRes.time,params_init[0],params_init[1],params_init[2]),'--b')
+        ax1.set_xlabel('Time (min)')
+        ax1.set_ylabel('Area')
+        # ax1.set_xscale('log')
+        # ax1.set_yscale('log')
 
-            ax02.set_title(s + ' - tdeb = ' + str(round(params4[1]/params4[0]*5)/10) + ' min.\n' +
-            'T = ' + str(round(params4[0]/60*10)/10)  + ' ' + u"\u00B1" + str(round(stdevs4[0]/60*10)/10) + ' hours.\nR2 = ' 
-                          + str(R2_4))
-            ax02.plot(Time,AreaC,'*r',ms=3)
-            ax02.plot(Time[fitInterval],AreaC[fitInterval],'*g',ms=3)
-            ax02.plot(Time,fitFuncMixed2(Time,params4[0],params4[1],params4[2]),'--b',lw=1)
-            ax02.set_xlabel('Time (min)')
-            ax02.set_ylabel('Area')
-            # ax02.set_xscale('log')
-            # ax02.set_yscale('log')
+        ax2.set_title(s + ' - tdeb = ' + str(round(FitRes.tdeb()*10)/10) +  ' min.\n' +
+        'T = ' + str(round(FitRes.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
+                      + str(FitRes.R2()))
+        ax2.plot(Time,AreaC,'*r',ms=3)
+        ax2.plot(Time[FitRes.FI],AreaC[FitRes.FI],'*g',ms=3)
+        ax2.plot(Time,FitRes.f(Time,FitRes.P[0],FitRes.P[1],FitRes.P[2]),'--b',lw=1)
+        ax2.set_xlabel('Time (min)')
+        ax2.set_ylabel('Area')
+        # ax2.set_xscale('log')
+        # ax2.set_yscale('log')
 
             fig0.tight_layout()
             
@@ -261,7 +351,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax3.plot(intTime,GR,'-*',lw=1,ms=2)
             ax3.plot(intTime,GR_S,'-*',lw=1,ms=2)
             ax3.plot(intTime[-4:],np.ones(4)*GR_2h,'r-')
-            ax3.plot(intTime[np.argmin(np.abs(intTime-params4[1]/(2*params4[0])))],GR_S[np.argmin(np.abs(intTime-params4[1]/(2*params4[0])))],'ro',ms=5)
+            ax3.plot(Time[np.argmin(np.abs(Time-FitRes.tdeb()))],GR_S[np.argmin(np.abs(Time-FitRes.tdeb()))],'r*',ms=5)
             ax3.plot(intTime[Len-1],GR_S[Len-1],'go',ms=3)
             ax3.set_title('Growth rate local')
             
@@ -270,29 +360,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             plt.show()
 
         
-
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_full'] = params1[1]/(2*params1[0]) + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau_full'] = params1[0]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit_full'] = params1[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_full'] = R2_1
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_inter1'] = params2[1]/(2*params2[0]) + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau_inter1'] = params2[0]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit_inter1'] = params2[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_inter1'] = R2_2
-        
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_inter2'] = params3[1]/(2*params3[0]) + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau_inter2'] = params3[0]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit_inter2'] = params3[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_inter2'] = R2_3
-        
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_fit'] = params4[1]/(2*params4[0]) + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_fit'] = np.argmin(np.abs(Time-params4[1]/(2*params4[0]))) # img shift for alignement on tdeb        
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = params4[0]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = params4[2]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDtdeb'] = stdevs4[1]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'STDTau'] = stdevs4[0]
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2_4
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes.tau()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes.A0()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes.R2()
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
