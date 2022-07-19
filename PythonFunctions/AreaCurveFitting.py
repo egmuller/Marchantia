@@ -218,6 +218,9 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
         cnt += 1       
     
     print('Number of iterations : ' + str(cnt))
+    
+    if cnt == maxIter:
+        FitObj.set_fitinterval([])
      
     return(FitObj)
     
@@ -283,7 +286,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         FitRes_mixedTdeb = iterFit(MixedExp_tdeb,'MixedExp_tdeb',FitWindow,Time,AreaC,[FitRes_flat.tdeb(), FitRes_flat.tau(), AreaC[0],FitRes_mixed.L()], 0.001, 10, Debug, ax3)
         
         
-        FitResPlot =copy.deepcopy(FitRes_mixedTdeb)
+        FitResPlot =copy.deepcopy(FitRes_flat)
         
         
         ### Growth rate 1/A * dA/dt computation
