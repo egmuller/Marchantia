@@ -17,6 +17,8 @@ from scipy.signal import savgol_filter
 from scipy.interpolate import interp1d
 from scipy.stats import linregress
 
+import copy
+
 import VallapFunc as vf
 
 import matplotlib.pyplot as plt
@@ -29,11 +31,17 @@ import matplotlib.pyplot as plt
 
 class FitMachin:
     
-    def __init__(self,t,y):
+    def __init__(self,t,y,name):
+        self.name = name
         self.time = t
         self.values = y
         self.P = []
         self.FI = t<np.max(t+1)
+        
+    def set_init_fit(self,params):
+        self.P_init = params
+        self.P = params
+        self.R2_init = self.R2()
         
     def set_params(self,params):
         self.P = params
@@ -156,18 +164,19 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
 
 # A. Function to do iterative fit on a specific window after tdeb, iterations until tdeb has converged
 
-def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
+def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     
-    FitObj = FitClass(t,y)
+    FitObj = FitClass(t,y,name)
+    
+    if debug:
+        ax.set_title('Fit : ' + name + ' - FitWindow : ' + str(fitwindow))
+        ax.set_xlabel('Old tdeb')
+        ax.set_ylabel('New tdeb')
     
     # initial fit on all data -> first tdeb guess
     
-    FitObj.set_params(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
-    
-    R2_init = FitObj.R2()
-    
-    params_init = FitObj.P[:]
-    
+    FitObj.set_init_fit(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
+        
     tdebVar = 1
     cnt = 0
     
@@ -198,7 +207,7 @@ def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     
     print('Number of iterations : ' + str(cnt))
      
-    return(params_init,R2_init,FitObj)
+    return(FitObj)
     
     
 
@@ -251,9 +260,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         
         
-        ### Iterative fits for a convergence of Tdeb
+        ### Iterative fits for a convergence of Tdeb with different fits
                 
-        params_init,R2_init,FitRes = iterFit(MixedExp,FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10,Debug,ax)
+        FitRes = iterFit(MixedExp,'MixedExp',FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10,Debug,ax)
+        
+        
+        FitResPlot =copy.deepcopy(FitRes)
         
         
         ### Growth rate 1/A * dA/dt computation
@@ -326,23 +338,25 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         if DebugPlots:
             
             fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
+            
+            fig0.suptitle(FitResPlot.name)
 
-            ax01.set_title(s + ' - tdeb = ' + str(round(params_init[0]*10)/10) +' min.\n' +
-            'T = ' + str(round(params_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
-                          + str(R2_init))
-            ax01.plot(Time,FitRes.values,'*r',ms=3)
-            ax01.plot(Time,FitRes.f(FitRes.time,params_init[0],params_init[1],params_init[2]),'--b')
+            ax01.set_title(s + ' - tdeb = ' + str(round(FitResPlot.P_init[0]*10)/10) +' min.\n' +
+            'T = ' + str(round(FitResPlot.P_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
+                          + str(FitResPlot.R2_init))
+            ax01.plot(Time,FitResPlot.values,'*r',ms=3)
+            ax01.plot(Time,FitResPlot.f(FitResPlot.time,FitResPlot.P_init[0],FitResPlot.P_init[1],FitResPlot.P_init[2]),'--b')
             ax01.set_xlabel('Time (min)')
             ax01.set_ylabel('Area')
             # ax01.set_xscale('log')
             # ax01.set_yscale('log')
     
-            ax02.set_title(s + ' - tdeb = ' + str(round(FitRes.tdeb()*10)/10) +  ' min.\n' +
-            'T = ' + str(round(FitRes.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
-                          + str(FitRes.R2()))
+            ax02.set_title(s + ' - tdeb = ' + str(round(FitResPlot.tdeb()*10)/10) +  ' min.\n' +
+            'T = ' + str(round(FitResPlot.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
+                          + str(FitResPlot.R2()))
             ax02.plot(Time,AreaC,'*r',ms=3)
-            ax02.plot(Time[FitRes.FI],AreaC[FitRes.FI],'*g',ms=3)
-            ax02.plot(Time,FitRes.f(Time,FitRes.P[0],FitRes.P[1],FitRes.P[2]),'--b',lw=1)
+            ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*g',ms=3)
+            ax02.plot(Time,FitResPlot.f(Time,FitResPlot.P[0],FitResPlot.P[1],FitResPlot.P[2]),'--b',lw=1)
             ax02.set_xlabel('Time (min)')
             ax02.set_ylabel('Area')
             # ax02.set_xscale('log')
@@ -389,8 +403,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes.tdeb() + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitResPlot.tdeb())) # img shift for alignement on tdeb
         
         
 
