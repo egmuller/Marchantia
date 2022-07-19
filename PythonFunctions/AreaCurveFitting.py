@@ -61,8 +61,11 @@ class FitMachin:
     def f(self):
         pass
     
-    def R2(self):        
-        return(np.round(vf.computeR2(self.values[self.FI],self.fC())*1000)/1000)
+    def R2(self):    
+        
+        R2 = max([0, np.round(vf.computeR2(self.values[self.FI],self.fC()[self.FI])*1000)/1000])
+        
+        return(R2)
     
     def fC(self):
         pass
@@ -83,7 +86,7 @@ class ExpDel(FitMachin):
     
     def fC(self):
         
-        return(self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))
+        return(self.f(self.time,self.P[0],self.P[1],self.P[2]))
       
 
     
@@ -97,20 +100,23 @@ class MixedExp(FitMachin):
         
         tdeb = L/(2*T) 
         
-        f = np.multiply(A0,np.exp(np.divide((t-tdeb),T))) + np.multiply(A0,np.exp(np.divide(np.square(tdeb),L))-1)
+        f = np.multiply( np.multiply(A0,np.exp(np.divide(np.square(tdeb),L))), np.exp(np.divide((t-tdeb),T)) )
         
-        f[t<=tdeb] = np.multiply(A0,np.exp(np.divide(np.square(t[t<tdeb]),L)))
+        f[t<tdeb] = np.multiply( A0, np.exp(np.divide(np.square(t[t<tdeb]),L)) )
                 
         return(f)
     
     def fC(self):
         
-        return(self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))
+        return(self.f(self.time,self.P[0],self.P[1],self.P[2]))
 
     
     def tdeb(self):
         
         return(self.P[0]/(2*self.P[1]))
+    
+    def L(self):        
+        return(self.P[0])
     
     
     
@@ -120,16 +126,20 @@ class MixedExp_tdeb(FitMachin):
         
     def f(self,t,tdeb,T,A0,L): # Exponential growth with a delay
         
-        f = np.multiply(A0,np.exp(np.divide((t-tdeb),T))) + np.multiply(A0,np.exp(np.divide(np.square(tdeb),L))-1)
+
+        f = np.multiply( np.multiply(A0,np.exp(np.divide(np.square(tdeb),L))), np.exp(np.divide((t-tdeb),T)) )
         
-        f[t<=tdeb] = np.multiply(A0,np.exp(np.divide(np.square(t[t<tdeb]),L)))
+        f[t<tdeb] = np.multiply( A0, np.exp(np.divide(np.square(t[t<tdeb]),L)) )
                 
         return(f)
     
     
     def fC(self):
         
-        return(self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2],self.P[3]))
+        return(self.f(self.time,self.P[0],self.P[1],self.P[2],self.P[3]))
+    
+    def L(self):        
+        return(self.P[3])
     
     
     
@@ -167,6 +177,8 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
 def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     
     FitObj = FitClass(t,y,name)
+    
+    print('\n' + name)
     
     if debug:
         ax.set_title('Fit : ' + name + ' - FitWindow : ' + str(fitwindow))
@@ -248,7 +260,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     GRmat[:] = np.nan
             
     if Debug:
-        fig,ax = plt.subplots(dpi=200)
+        fig1,ax1 = plt.subplots(dpi=200)
+        fig2,ax2 = plt.subplots(dpi=200)
+        fig3,ax3 = plt.subplots(dpi=200)
     else:
         ax=0
             
@@ -262,10 +276,14 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         ### Iterative fits for a convergence of Tdeb with different fits
                 
-        FitRes = iterFit(MixedExp,'MixedExp',FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10,Debug,ax)
+        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.001, 10, Debug, ax1)
+                
+        FitRes_mixed = iterFit(MixedExp,'MixedExp',FitWindow,Time,AreaC,[1000, FitRes_flat.tau(), AreaC[0]], 0.001, 10, Debug, ax2)
+                
+        FitRes_mixedTdeb = iterFit(MixedExp_tdeb,'MixedExp_tdeb',FitWindow,Time,AreaC,[FitRes_flat.tdeb(), FitRes_flat.tau(), AreaC[0],FitRes_mixed.L()], 0.001, 10, Debug, ax3)
         
         
-        FitResPlot =copy.deepcopy(FitRes)
+        FitResPlot =copy.deepcopy(FitRes_mixedTdeb)
         
         
         ### Growth rate 1/A * dA/dt computation
@@ -332,7 +350,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
         
-        print('R2 = ' + str(round(FitRes.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitRes.tdeb()))
+        print('\n' + FitResPlot.name)
+        print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
         
         
         if DebugPlots:
@@ -345,7 +364,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             'T = ' + str(round(FitResPlot.P_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
                           + str(FitResPlot.R2_init))
             ax01.plot(Time,FitResPlot.values,'*r',ms=3)
-            ax01.plot(Time,FitResPlot.f(FitResPlot.time,FitResPlot.P_init[0],FitResPlot.P_init[1],FitResPlot.P_init[2]),'--b')
+            ax01.plot(Time,FitResPlot.fC(),'--b')
             ax01.set_xlabel('Time (min)')
             ax01.set_ylabel('Area')
             # ax01.set_xscale('log')
@@ -356,7 +375,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
                           + str(FitResPlot.R2()))
             ax02.plot(Time,AreaC,'*r',ms=3)
             ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*g',ms=3)
-            ax02.plot(Time,FitResPlot.f(Time,FitResPlot.P[0],FitResPlot.P[1],FitResPlot.P[2]),'--b',lw=1)
+            ax02.plot(Time,FitResPlot.fC(),'--b',lw=1)
             ax02.set_xlabel('Time (min)')
             ax02.set_ylabel('Area')
             # ax02.set_xscale('log')
@@ -380,7 +399,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax3.plot(intTime,GR,'-*',lw=1,ms=2)
             ax3.plot(intTime,GR_S,'-*',lw=1,ms=2)
             ax3.plot(intTime[-4:],np.ones(4)*GR_2h,'r-')
-            ax3.plot(intTime[np.argmin(np.abs(intTime-FitRes.tdeb()))],GR_S[np.argmin(np.abs(intTime-FitRes.tdeb()))],'ro',ms=5)
+            ax3.plot(intTime[np.argmin(np.abs(intTime-FitResPlot.tdeb()))],GR_S[np.argmin(np.abs(intTime-FitResPlot.tdeb()))],'ro',ms=5)
             ax3.plot(intTime[Len-1],GR_S[Len-1],'g*',ms=5)
             ax3.set_title('Growth rate local')
             
@@ -390,11 +409,16 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
 
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_fit'] = FitRes.tdeb() + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_fit'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes.tau()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes.A0()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes.R2()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_flat'] = np.argmin(np.abs(Time-FitRes_flat.tdeb())) # img shift for alignement on tdeb
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_mixed'] = FitRes_mixed.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_mixed'] = np.argmin(np.abs(Time-FitRes_mixed.tdeb())) # img shift for alignement on tdeb
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_mixedT'] = FitRes_mixedTdeb.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_mixedT'] = np.argmin(np.abs(Time-FitRes_mixedTdeb.tdeb())) # img shift for alignement on tdeb
+        
+        
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
@@ -406,6 +430,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitResPlot.tdeb())) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitResPlot.tau()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
         
         
 
@@ -631,6 +658,8 @@ def selectR2s(GD, CD, Th, label, **kwargs):
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
+    name = GD['fit_name'][0]
+    
     R2sPos = ~np.isnan(GD[Key].values)
     R2s = GD[Key].values[R2sPos]
     goodR2s = R2s>=Th
@@ -646,7 +675,7 @@ def selectR2s(GD, CD, Th, label, **kwargs):
         
         
         fig, ax = plt.subplots(dpi=300)
-        ax.set_title(label + '\n' + str(frac) + '% of data validated based on R2>' + str(Th))
+        ax.set_title(label + ' - ' + name + '\n' + str(frac) + '% of data validated based on R2>' + str(Th))
         n, bins, patches = ax.hist(R2s, bins = np.arange(np.floor(min(R2s)*10)/10, 1.025, 0.025), color = 'r', rwidth = 0.95)
         xl = ax.get_xlim()
         yl = ax.get_ylim()
