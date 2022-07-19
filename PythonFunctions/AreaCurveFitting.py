@@ -53,7 +53,10 @@ class FitMachin:
     def f(self):
         pass
     
-    def R2(self):
+    def R2(self):        
+        return(np.round(vf.computeR2(self.values[self.FI],self.fC())*1000)/1000)
+    
+    def fC(self):
         pass
 
 # 1. Exponetial growth with a delay + tdeb and R2 extraction functions
@@ -70,14 +73,15 @@ class ExpDel(FitMachin):
             
         return(f) 
     
-    
-    def R2(self):
+    def fC(self):
         
-        return(np.round(vf.computeR2(self.values[self.FI],self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))*1000)/1000)
+        return(self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))
+      
+
     
     
 
-# 1bis. Squared exponential follow by normal exponential to fit growth start correctly
+# 1bis. Squared exponential follow by normal exponential 
 
 class MixedExp(FitMachin):
         
@@ -91,13 +95,36 @@ class MixedExp(FitMachin):
                 
         return(f)
     
-    def R2(self):
+    def fC(self):
         
-        return(np.round(vf.computeR2(self.values[self.FI],self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))*1000)/1000)
+        return(self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))
+
     
     def tdeb(self):
         
         return(self.P[0]/(2*self.P[1]))
+    
+    
+    
+# 1ter. Squared exponential follow by normal exponential, tdeb as param
+
+class MixedExp_tdeb(FitMachin):
+        
+    def f(self,t,tdeb,T,A0,L): # Exponential growth with a delay
+        
+        f = np.multiply(A0,np.exp(np.divide((t-tdeb),T))) + np.multiply(A0,np.exp(np.divide(np.square(tdeb),L))-1)
+        
+        f[t<=tdeb] = np.multiply(A0,np.exp(np.divide(np.square(t[t<tdeb]),L)))
+                
+        return(f)
+    
+    
+    def fC(self):
+        
+        return(self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2],self.P[3]))
+    
+    
+    
     
     
 
@@ -120,6 +147,8 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
     f[t<tdeb] = A0
     
     return(f)
+
+
 
 
 
