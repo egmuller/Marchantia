@@ -14,7 +14,9 @@ from itertools import compress
 
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
-from scipy.interpolate import interp1d
+from scipy.stats import linregress
+
+import copy
 
 import VallapFunc as vf
 
@@ -28,11 +30,17 @@ import matplotlib.pyplot as plt
 
 class FitMachin:
     
-    def __init__(self,t,y):
+    def __init__(self,t,y,name):
+        self.name = name
         self.time = t
         self.values = y
         self.P = []
         self.FI = t<np.max(t+1)
+        
+    def set_init_fit(self,params):
+        self.P_init = params
+        self.P = params
+        self.R2_init = self.R2()
         
     def set_params(self,params):
         self.P = params
@@ -52,7 +60,13 @@ class FitMachin:
     def f(self):
         pass
     
-    def R2(self):
+    def R2(self):    
+        
+        R2 = max([0, np.round(vf.computeR2(self.values[self.FI],self.fC()[self.FI])*1000)/1000])
+        
+        return(R2)
+    
+    def fC(self):
         pass
 
 # 1. Exponetial growth with a delay + tdeb and R2 extraction functions
@@ -69,10 +83,11 @@ class ExpDel(FitMachin):
             
         return(f) 
     
-    
-    def R2(self):
+    def fC(self):
         
-        return(np.round(vf.computeR2(self.values[self.FI],self.f(self.time[self.FI],self.P[0],self.P[1],self.P[2]))*1000)/1000)
+        return(self.f(self.time,self.P[0],self.P[1],self.P[2]))
+      
+
     
     
 
@@ -100,20 +115,25 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
 
 
 
+
+
 # A. Function to do iterative fit on a specific window after tdeb, iterations until tdeb has converged
 
-def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
+def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     
-    FitObj = FitClass(t,y)
+    FitObj = FitClass(t,y,name)
+    
+    print('\n' + name)
+    
+    if debug:
+        ax.set_title('Fit : ' + name + ' - FitWindow : ' + str(fitwindow))
+        ax.set_xlabel('Old tdeb')
+        ax.set_ylabel('New tdeb')
     
     # initial fit on all data -> first tdeb guess
     
-    FitObj.set_params(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
-    
-    R2_init = FitObj.R2()
-    
-    params_init = FitObj.P[:]
-    
+    FitObj.set_init_fit(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
+        
     tdebVar = 1
     cnt = 0
     
@@ -143,8 +163,11 @@ def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
         cnt += 1       
     
     print('Number of iterations : ' + str(cnt))
+    
+    if cnt == maxIter:
+        FitObj.set_fitinterval([])
      
-    return(params_init,R2_init,FitObj)
+    return(FitObj)
     
     
 
@@ -165,6 +188,7 @@ def iterFit(FitClass,fitwindow,t,y,params0,Th,maxIter,debug,ax):
 def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     
     DebugPlots = False
+    Debug = True
     FitWindow = 15
     
     for key, value in kwargs.items(): 
@@ -172,118 +196,162 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             Debug = value
         elif key == 'debugall':
             DebugPlots = value
+            Debug = False
         elif key == 'fitwindow':
             FitWindow = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
+
+    
+    # Matrix for averaging growth rate
+    
+    GRmat = np.empty((200,len(StackList)))
+    
+    GRmat[:] = np.nan
             
     if Debug:
-        fig,ax = plt.subplots(dpi=200)
+        fig1,ax1 = plt.subplots(dpi=200)
+        fig2,ax2 = plt.subplots(dpi=200)
+        fig3,ax3 = plt.subplots(dpi=200)
     else:
-        ax=0
+        ax1=0
+        ax2=0
+        ax3=0
             
-    for s,row in zip(StackList,Rows):
+    for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
         print('Fitting area curve for : ' + s.ljust(5), end='\n')           
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         
-        
-        ### Iterative fits for a convergence of Tdeb
-                
-        params_init,R2_init,FitRes = iterFit(ExpDel,FitWindow,Time,AreaC,[30, 100, AreaC[0]],0.001,10,Debug,ax)
-        
-        
         ### Growth rate 1/A * dA/dt computation
-        
-        dA = np.diff(AreaC)        
-        dt = np.diff(Time)
-        
-        dAdt = np.multiply(dA,dt)
-        dAdt_S = savgol_filter(dAdt, 11, 3)
-        
-
-        
-        intTime = Time[0:-1]+dt/2
-        
-        inv_A = np.divide(1,AreaC)
-        inv_f = interp1d(Time,inv_A)
-        inv_A_timed = inv_f(intTime)
-        
-        inv_A_S = savgol_filter(inv_A_timed,11, 3)
-        
-        
-        GR = np.multiply(inv_A_timed,dAdt)
-        GR_S = np.multiply(inv_A_S,dAdt_S)
+    
+        GR, GR_S, intTime = vf.GrowthRate(AreaC,Time)
         
         GR_2h = np.mean(GR_S[-4:])
-
         
-        fig, [ax1,ax2] = plt.subplots(ncols=2, dpi=300)
+        ### Computing growth start regime from growth rate
+        
+        r2 = 1
+        Len = 2
+        
+        intTime_linfit = intTime[0:Len]
+        GR_S_linfit = GR_S[0:Len]
+        
+        linreg = linregress(intTime_linfit,GR_S_linfit)
+        
+        r2 = np.square(linreg.rvalue)
+        
+        while r2>0.99:
+            
+            Slope = linreg.slope
+            Intercept = linreg.intercept
+            
+            Len += 1
+                                    
+            intTime_linfit = intTime[0:Len]
+            GR_S_linfit = GR_S[0:Len]
+            
+            linreg = linregress(intTime_linfit,GR_S_linfit)
 
-        ax1.set_title(s + ' - tdeb = ' + str(round(params_init[0]*10)/10) +' min.\n' +
-        'T = ' + str(round(params_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
-                      + str(R2_init))
-        ax1.plot(Time,FitRes.values,'*r',ms=3)
-        ax1.plot(Time,FitRes.f(FitRes.time,params_init[0],params_init[1],params_init[2]),'--b')
-        ax1.set_xlabel('Time (min)')
-        ax1.set_ylabel('Area')
-        # ax1.set_xscale('log')
-        # ax1.set_yscale('log')
+            r2 = np.square(linreg.rvalue)
+        
+        
+        GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
+        
+        ### Iterative fits for a convergence of Tdeb with different fits
+                
+        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.001, 10, Debug, ax1)
+        
+        FitResPlot =copy.deepcopy(FitRes_flat)
+        
+        
+        ### Growth rate 1/A * dA/dt computation for fits
+        
+        GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI])        
 
-        ax2.set_title(s + ' - tdeb = ' + str(round(FitRes.tdeb()*10)/10) +  ' min.\n' +
-        'T = ' + str(round(FitRes.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
-                      + str(FitRes.R2()))
-        ax2.plot(Time,AreaC,'*r',ms=3)
-        ax2.plot(Time[FitRes.FI],AreaC[FitRes.FI],'*g',ms=3)
-        ax2.plot(Time,FitRes.f(Time,FitRes.P[0],FitRes.P[1],FitRes.P[2]),'--b',lw=1)
-        ax2.set_xlabel('Time (min)')
-        ax2.set_ylabel('Area')
-        # ax2.set_xscale('log')
-        # ax2.set_yscale('log')
-
-        fig.tight_layout()
+        print('\n' + FitResPlot.name)
+        print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
+        
         
         if DebugPlots:
-            fig,[[ax0,ax1],[ax2,ax3]] = plt.subplots(nrows = 2, ncols = 2, dpi = 300)
             
-            ax0.plot(Time,AreaC)
-            ax0.set_title('Area evolution')
+            fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
             
-            ax1.plot(Time,inv_A)
-            ax1.plot(intTime,inv_A_S)
-            ax1.set_title('Area inverse')
+            fig0.suptitle(FitResPlot.name)
+
+            ax01.set_title(s + ' - tdeb = ' + str(round(FitResPlot.P_init[0]*10)/10) +' min.\n' +
+            'T = ' + str(round(FitResPlot.P_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
+                          + str(FitResPlot.R2_init))
+            ax01.plot(Time,FitResPlot.values,'*r',ms=3)
+            ax01.plot(Time,FitResPlot.fC(),'--b')
+            ax01.set_xlabel('Time (min)')
+            ax01.set_ylabel('Area')
+            # ax01.set_xscale('log')
+            # ax01.set_yscale('log')
+    
+            ax02.set_title(s + ' - tdeb = ' + str(round(FitResPlot.tdeb()*10)/10) +  ' min.\n' +
+            'T = ' + str(round(FitResPlot.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
+                          + str(FitResPlot.R2()))
+            ax02.plot(Time,AreaC,'*r',ms=3)
+            ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*g',ms=3)
+            ax02.plot(Time,FitResPlot.fC(),'--b',lw=1)
+            ax02.set_xlabel('Time (min)')
+            ax02.set_ylabel('Area')
+            # ax02.set_xscale('log')
+            # ax02.set_yscale('log')
+    
+            fig0.tight_layout()
             
-            ax2.plot(Time[0:-1],dAdt)
-            ax2.plot(Time[0:-1],dAdt_S)
-            ax2.set_title('area differential')
+            fig,[ax0,ax1] = plt.subplots( ncols = 2, dpi = 300)
             
-            ax3.plot(Time[0:-1],GR,'-*',lw=1,ms=2)
-            ax3.plot(Time[0:-1],GR_S,'-*',lw=1,ms=2)
-            ax3.plot(Time[-5:-1],np.ones(4)*GR_2h,'r-')
-            ax3.plot(Time[np.argmin(np.abs(Time-FitRes.tdeb()))],GR_S[np.argmin(np.abs(Time-FitRes.tdeb()))],'r*',ms=5)
-            ax3.set_title('Growth rate local')
+            ax0.plot(intTime,GR,'-*b',lw=2,ms=3)
+            ax0.plot(intTime,GR_S,'-c',lw=1)
+            ax0.plot(intTime_linfit[0:-2],Intercept + intTime_linfit[0:-2]*Slope,'--r',lw=2)
+            ax0.set_title('Growth rate local + linear fit')
             
+            ax1.plot(intTime,GR_S,'-c',lw=1,ms=2)
+            ax1.plot(intTime_flat,GR_flat,'--ro',lw=1,ms=2)
+            ax1.set_title('Smoothed GR + ExpDel fit')
+           
             fig.tight_layout()
             
             plt.show()
-        else:
-            plt.close(fig)
+
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes.tdeb() + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitRes.tdeb())) # img shift for alignement on tdeb
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes.tau()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes.A0()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes.R2()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_flat'] = np.argmin(np.abs(Time-FitRes_flat.tdeb())) # img shift for alignement on tdeb
+        
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h       
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = Time[Len-1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
+        
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitResPlot.tdeb())) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitResPlot.tau()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
         
         
 
+
+    fulltime = np.linspace(0,100,200)-25
+    GR_mean = np.nanmean(GRmat,axis = 1)
+    
+    fig00,ax = plt.subplots(dpi=200)
+    fig00.suptitle('Growth rates aligned')
+    ax.plot(fulltime,GRmat,lw = 1)
+    ax.plot(fulltime,GR_mean,'w--',lw = 2)
+    
+    
+    ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
     
     return(GD)
 
@@ -495,6 +563,8 @@ def selectR2s(GD, CD, Th, label, **kwargs):
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
+    name = GD['fit_name'][0]
+    
     R2sPos = ~np.isnan(GD[Key].values)
     R2s = GD[Key].values[R2sPos]
     goodR2s = R2s>=Th
@@ -510,7 +580,7 @@ def selectR2s(GD, CD, Th, label, **kwargs):
         
         
         fig, ax = plt.subplots(dpi=300)
-        ax.set_title(label + '\n' + str(frac) + '% of data validated based on R2>' + str(Th))
+        ax.set_title(label + ' - ' + name + '\n' + str(frac) + '% of data validated based on R2>' + str(Th))
         n, bins, patches = ax.hist(R2s, bins = np.arange(np.floor(min(R2s)*10)/10, 1.025, 0.025), color = 'r', rwidth = 0.95)
         xl = ax.get_xlim()
         yl = ax.get_ylim()

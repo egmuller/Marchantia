@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc, selectR2s, compareFit
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
 from StatsFunctions import plotSig, Corr,TwowayANOVA
 
 import matplotlib as mpl
@@ -430,8 +430,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
     tdebs= [None]*len(newGDs)
     taus= [None]*len(newGDs)
-    stdtdebs= [None]*len(newGDs)
-    stdtaus= [None]*len(newGDs)
     captdeb= [None]*len(newGDs)
     captau= [None]*len(newGDs)
     medtdeb= [None]*len(newGDs)
@@ -453,9 +451,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
-        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60
-        stdtdebs[i] = GD.loc[GD['Img'] == 0, 'STDtdeb']
-        stdtaus[i] = GD.loc[GD['Img'] == 0, 'STDTau']/60        
+        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60     
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit']
         
         # swarmplots
@@ -563,7 +559,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig6)
         return  
     elif stats == 'ANOVA':
-        for v,med,fig,ax in zip(['tdeb','Tau','A0fit'],[medtdeb,medtau,medArea0],[fig4,fig5,fig6],[ax4,ax5,ax6]):
+        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit'],[medtdeb,medtau,medArea0],[fig4,fig5,fig6],[ax4,ax5,ax6],
+                                    [pd.concat(tdebs),pd.concat(taus),pd.concat(Area0)]):
 
             res = TwowayANOVA(v,diffcat,groupcat,GDs);
 
@@ -573,6 +570,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ax.set_title('Date significativity (ANOVA) : p = ' + str(round(pDC*1000)/1000))
             ax.plot([0.3, 0.7],[np.mean(med), np.mean(med)],'-w')
             ax.text(0.5,np.mean(med)*1.1,'p = ' + str(round(pGC*1000)/1000), ha='center',fontsize='small')
+            
+            ax.set_ylim([np.max([0, 0.7*np.min(dat)]), 1.5*np.percentile(dat,90)])
+            
+            
     
     else:
         if not showbox:
