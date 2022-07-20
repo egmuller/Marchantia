@@ -242,6 +242,7 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
 def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     
     DebugPlots = False
+    Debug = True
     FitWindow = 15
     
     for key, value in kwargs.items(): 
@@ -249,6 +250,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             Debug = value
         elif key == 'debugall':
             DebugPlots = value
+            Debug = False
         elif key == 'fitwindow':
             FitWindow = value
         else:
