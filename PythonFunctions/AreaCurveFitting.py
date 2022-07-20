@@ -112,11 +112,6 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
     return(f)
 
 
-
-
-
-
-
 # A. Function to do iterative fit on a specific window after tdeb, iterations until tdeb has converged
 
 def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
@@ -237,6 +232,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GR_S_linfit = GR_S[0:Len]
         
         linreg = linregress(intTime_linfit,GR_S_linfit)
+
         
         r2 = np.square(linreg.rvalue)
         
@@ -253,6 +249,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             linreg = linregress(intTime_linfit,GR_S_linfit)
 
             r2 = np.square(linreg.rvalue)
+            
         
         
         GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
@@ -331,7 +328,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h       
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = Time[Len-1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'CaracT_GR'] = 1/np.sqrt(Slope)
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
+        
         
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
