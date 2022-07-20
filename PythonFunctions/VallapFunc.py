@@ -17,6 +17,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from scipy.spatial.distance import directed_hausdorff 
+from scipy.signal import savgol_filter
+from scipy.interpolate import interp1d
 
 import cv2 as cv
 
@@ -278,3 +280,31 @@ def normaliseContourByArea(X,Y):
  #   print('Contour normalized area : ' + str(areaNorm))
         
     return(XNorm,YNorm)
+
+
+# 9. Compute growth rate (1/A * dA/dt) for a curve A and time T 
+
+def GrowthRate(A,Time):
+    
+    dA = np.diff(A)        
+    dt = np.diff(Time)
+    
+    dAdt = np.divide(dA,dt)
+    dAdt_S = savgol_filter(dAdt, 11, 3)    
+    
+    intTime = Time[0:-1]+dt/2
+    
+    inv_A = np.divide(1,A)
+    inv_f = interp1d(Time,inv_A)
+    inv_A_timed = inv_f(intTime)
+    
+    inv_A_S = savgol_filter(inv_A_timed,11, 3)
+    
+    
+    GR = np.multiply(inv_A_timed,dAdt)
+    GR_S = np.multiply(inv_A_S,dAdt_S)
+    
+    return(GR,GR_S,intTime)
+        
+
+        

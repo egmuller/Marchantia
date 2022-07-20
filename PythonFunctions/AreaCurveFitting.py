@@ -14,7 +14,6 @@ from itertools import compress
 
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
-from scipy.interpolate import interp1d
 from scipy.stats import linregress
 
 import copy
@@ -267,7 +266,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         fig2,ax2 = plt.subplots(dpi=200)
         fig3,ax3 = plt.subplots(dpi=200)
     else:
-        ax=0
+        ax1=0
+        ax2=0
+        ax3=0
             
     for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
@@ -276,43 +277,11 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         
-        
-        ### Iterative fits for a convergence of Tdeb with different fits
-                
-        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.001, 10, Debug, ax1)
-                
-        FitRes_mixed = iterFit(MixedExp,'MixedExp',FitWindow,Time,AreaC,[1000, FitRes_flat.tau(), AreaC[0]], 0.001, 10, Debug, ax2)
-                
-        FitRes_mixedTdeb = iterFit(MixedExp_tdeb,'MixedExp_tdeb',FitWindow,Time,AreaC,[FitRes_flat.tdeb(), FitRes_flat.tau(), AreaC[0],FitRes_mixed.L()], 0.001, 10, Debug, ax3)
-        
-        
-        FitResPlot =copy.deepcopy(FitRes_flat)
-        
-        
         ### Growth rate 1/A * dA/dt computation
     
-        dA = np.diff(AreaC)        
-        dt = np.diff(Time)
-        
-        dAdt = np.divide(dA,dt)
-        dAdt_S = savgol_filter(dAdt, 11, 3)
-        
-
-        
-        intTime = Time[0:-1]+dt/2
-        
-        inv_A = np.divide(1,AreaC)
-        inv_f = interp1d(Time,inv_A)
-        inv_A_timed = inv_f(intTime)
-        
-        inv_A_S = savgol_filter(inv_A_timed,11, 3)
-        
-        
-        GR = np.multiply(inv_A_timed,dAdt)
-        GR_S = np.multiply(inv_A_S,dAdt_S)
+        GR, GR_S, intTime = vf.GrowthRate(AreaC,Time)
         
         GR_2h = np.mean(GR_S[-4:])
-        
         
         ### Computing growth start regime from growth rate
         
@@ -324,19 +293,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         linreg = linregress(intTime_linfit,GR_S_linfit)
         
-        Slope = linreg.slope
-        Intercept = linreg.intercept
         r2 = np.square(linreg.rvalue)
         
         while r2>0.99:
             
-            # fig,ax = plt.subplots(dpi=200)
-            # fig.suptitle('R2 = ' + str(np.round(r2*1000)/1000))
-            # ax.plot(intTime,GR_S,'-*',lw=1,ms=2)
-            # ax.plot(intTime_linfit,GR_S_linfit,'o',ms=2)
-            # ax.plot(intTime_linfit,Intercept + intTime_linfit*Slope,lw=0.5)
-            
-            # plt.show()
+            Slope = linreg.slope
+            Intercept = linreg.intercept
             
             Len += 1
                                     
@@ -344,15 +306,41 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             GR_S_linfit = GR_S[0:Len]
             
             linreg = linregress(intTime_linfit,GR_S_linfit)
-            
-            Slope = linreg.slope
-            # print('slope :' + str(Slope))
-            Intercept = linreg.intercept
+
             r2 = np.square(linreg.rvalue)
         
         
         GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
         
+        ### Iterative fits for a convergence of Tdeb with different fits
+                
+        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.001, 10, Debug, ax1)
+                
+        FitRes_mixed = iterFit(MixedExp,'MixedExp',FitWindow,Time,AreaC,[2/Slope, FitRes_flat.tau(), AreaC[0]], 0.001, 10, Debug, ax2)
+    
+        FitRes_mixedTdeb = iterFit(MixedExp_tdeb,'MixedExp_tdeb',FitWindow,Time,AreaC,[FitRes_flat.tdeb(), FitRes_flat.tau(), AreaC[0],2/Slope], 0.001, 10, Debug, ax3)
+        
+        
+        FitResPlot =copy.deepcopy(FitRes_mixedTdeb)
+        
+        
+        ### Growth rate 1/A * dA/dt computation for fits
+        
+        GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI])
+        
+        
+        if not np.array(FitRes_mixed.FI).size == 0:
+            GR_mixed,FFF,intTime_mixed = vf.GrowthRate(FitRes_mixed.fC()[FitRes_mixed.FI],FitRes_mixed.time[FitRes_mixed.FI])
+        else:
+            GR_mixed,intTime_mixed = [0,0]
+        
+        
+        if not np.array(FitRes_mixedTdeb.FI).size == 0:
+            GR_mixedTdeb,FFF,intTime_mixedTdeb = vf.GrowthRate(FitRes_mixedTdeb.fC()[FitRes_mixedTdeb.FI],FitRes_mixedTdeb.time[FitRes_mixedTdeb.FI])
+        else:
+            GR_mixedTdeb,intTime_mixedTdeb = [0,0]
+        
+
         print('\n' + FitResPlot.name)
         print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
         
@@ -388,24 +376,24 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             
             fig,[[ax0,ax1],[ax2,ax3]] = plt.subplots(nrows = 2, ncols = 2, dpi = 300)
             
-            ax0.plot(Time,AreaC)
-            ax0.set_title('Area evolution')
+            ax0.plot(intTime,GR,'-*b',lw=2,ms=3)
+            ax0.plot(intTime,GR_S,'-c',lw=1)
+            ax0.plot(intTime_linfit[0:-2],Intercept + intTime_linfit[0:-2]*Slope,'--r',lw=2)
+            ax0.set_title('Growth rate local + linear fit')
             
-            ax1.plot(Time,inv_A)
-            ax1.plot(intTime,inv_A_S)
-            ax1.set_title('Area inverse')
+            ax1.plot(intTime,GR_S,'-c',lw=1,ms=2)
+            ax1.plot(intTime_flat,GR_flat,'--ro',lw=1,ms=2)
+            ax1.set_title('Smoothed GR + ExpDel fit')
             
-            ax2.plot(intTime,dAdt)
-            ax2.plot(intTime,dAdt_S)
-            ax2.set_title('area differential')
+            ax2.plot(intTime,GR_S,'-c',lw=1,ms=2)
+            ax2.plot(intTime_mixed,GR_mixed,'--ro',lw=1,ms=2)
+            ax2.set_title('Smoothed GR + Mixed fit')
             
-            ax3.plot(intTime,GR,'-*',lw=1,ms=2)
-            ax3.plot(intTime,GR_S,'-*',lw=1,ms=2)
-            ax3.plot(intTime[-4:],np.ones(4)*GR_2h,'r-')
-            ax3.plot(intTime[np.argmin(np.abs(intTime-FitResPlot.tdeb()))],GR_S[np.argmin(np.abs(intTime-FitResPlot.tdeb()))],'ro',ms=5)
-            ax3.plot(intTime[Len-1],GR_S[Len-1],'g*',ms=5)
-            ax3.set_title('Growth rate local')
+            ax3.plot(intTime,GR_S,'-c',lw=1,ms=2)
+            ax3.plot(intTime_mixedTdeb,GR_mixedTdeb,'--ro',lw=1,ms=2)
+            ax3.set_title('Smoothed GR + Mixed_tdeb fit')
             
+           
             fig.tight_layout()
             
             plt.show()
