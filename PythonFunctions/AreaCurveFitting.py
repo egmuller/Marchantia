@@ -211,12 +211,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             
     if Debug:
         fig1,ax1 = plt.subplots(dpi=200)
-        fig2,ax2 = plt.subplots(dpi=200)
-        fig3,ax3 = plt.subplots(dpi=200)
+      
     else:
         ax1=0
-        ax2=0
-        ax3=0
             
     for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
@@ -269,7 +266,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         ### Growth rate 1/A * dA/dt computation for fits
         
-        GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI])        
+        if not np.array(FitRes_flat.FI).size == 0:
+            GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI]) 
+        else:
+            GR_flat,intTime_flat = [0,0]
+
+
 
         print('\n' + FitResPlot.name)
         print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
@@ -304,7 +306,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     
             fig0.tight_layout()
             
-            fig,[ax0,ax1] = plt.subplots( ncols = 2, dpi = 300)
+            fig,[ax0,ax1] = plt.subplots( nrows = 2, dpi = 300)
             
             ax0.plot(intTime,GR,'-*b',lw=2,ms=3)
             ax0.plot(intTime,GR_S,'-c',lw=1)
