@@ -15,6 +15,7 @@ from itertools import compress
 from scipy.optimize import curve_fit
 from scipy.signal import savgol_filter
 from scipy.stats import linregress
+from scipy.interpolate import interp1d
 
 import copy
 
@@ -216,6 +217,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
+        AreaI = interp1d(Time,AreaC,kind = 'quadratic')
         
         ### Growth rate 1/A * dA/dt computation
     
@@ -322,16 +324,15 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb() + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_flat'] = np.argmin(np.abs(Time-FitRes_flat.tdeb())) # img shift for alignement on tdeb
-        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h       
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = Time[Len-1] + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = intTime[Len-1] + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'CaracT_GR'] = 1/np.sqrt(Slope)
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
-        
-        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_GR'] = (AreaI(intTime[Len-1])-AreaC[0])/AreaC[0] # % area increase at tdeb
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() + Delay
@@ -340,8 +341,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
         
-        
-
 
     fulltime = np.linspace(0,100,200)-25
     GR_mean = np.nanmean(GRmat,axis = 1)
