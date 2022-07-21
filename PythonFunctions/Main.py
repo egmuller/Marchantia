@@ -401,10 +401,14 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
     fig5.suptitle(Title + ' - Growth caracteristic time')
     plt.ylabel('Tau growth (hours)')
-      
-    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black')
-    fig6.suptitle(Title + ' - Starting area')
-    plt.ylabel('Starting area from fit (mm²)')
+    
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black') 
+    fig6.suptitle(Title + ' - Starting area') 
+    plt.ylabel('Starting area from fit (mm²)') 
+
+    fig16,ax16 = plt.subplots(dpi = 250,facecolor='black')
+    fig16.suptitle(Title + ' - Initial growth increase')
+    plt.ylabel('Growth at Tstart (%)')
     
     if len(newGDs) == 2:
         # Histogram for distribution comparison
@@ -435,9 +439,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     medtdeb= [None]*len(newGDs)
     medtau= [None]*len(newGDs)    
     
-    Area0 = [None]*len(newGDs)
-    capArea0 = [None]*len(newGDs)
-    medArea0 = [None]*len(newGDs)
+    Area0 = [None]*len(newGDs) 
+    capArea0 = [None]*len(newGDs) 
+    medArea0 = [None]*len(newGDs) 
+    
+    AreaStart = [None]*len(newGDs)
+    capAreaStart = [None]*len(newGDs)
+    medAreaStart = [None]*len(newGDs)
     
     grouping = []
     labs = []
@@ -451,8 +459,9 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
-        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60     
-        Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit']
+        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
+        Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
+        AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
         
         # swarmplots
         grouping = np.append(grouping,np.ones(len(tdebs[i]))*i)
@@ -468,15 +477,20 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         bp5 = ax5.boxplot(taus[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
                     showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
         
-        bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
+        bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops, 
+            showfliers = False,whiskerprops=plotprops,medianprops =plotprops) 
+        
+        bp26 = ax16.boxplot(AreaStart[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
                     showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
     
         captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
         captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
-        capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0]
+        capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0] 
+        capAreaStart[i] = bp6['caps'][1].get_ydata(orig=True)[0]
         medtdeb[i] = bp4['medians'][0].get_ydata(orig=True)[0]
         medtau[i] = bp5['medians'][0].get_ydata(orig=True)[0]
-        medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0]
+        medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
+        medAreaStart[i] = bp26['medians'][0].get_ydata(orig=True)[0]
         
         if len(newGDs) == 2:
         
@@ -488,11 +502,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             
     sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'white', size=2, ax = ax4)
     sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'white', size=2, ax = ax5)
-    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'white', size=2, ax = ax6)
+    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'white', size=2, ax = ax6) 
+    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'white', size=2, ax = ax16)
     
     ax4.set_xticklabels(labs)
     ax5.set_xticklabels(labs)
-    ax6.set_xticklabels(labs)
+    ax6.set_xticklabels(labs) 
+    ax16.set_xticklabels(labs)
 
     if len(newGDs) == 2:
         # Distribution comparison with two-sample kolmogorov smirnov test
@@ -517,15 +533,18 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
     steptdeb = np.max(captdeb)*0.125
     steptau = np.max(captau)*0.125
-    stepArea0 = np.max(capArea0)*0.125
+    stepAreaStart = np.max(capAreaStart)*0.125
+    stepArea0 = np.max(capArea0)*0.125 
     
     fullsteptdeb = 0
     fullsteptau = 0
-    fullstepArea0 = 0
+    fullstepArea0 = 0 
+    fullstepAreaStart = 0
     
     hmaxtdeb = np.max(captdeb)
     hmaxtau = np.max(captau)
-    hmaxArea0 = np.max(capArea0)
+    hmaxArea0 = np.max(capArea0) 
+    hmaxAreaStart = np.max(capAreaStart)
     
     if stats=='ranksum':
         if AllSigs:
@@ -535,16 +554,20 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
                     fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
 
                     fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+                    
+                    fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
-                    fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j)
+                    fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
         else:
             for i,j in sigpairs:
 
                 fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
 
                 fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+ 
+                fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
-                fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j)
+                fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
 
                 
  
@@ -552,15 +575,17 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     if stats=='ranksum':
         fig4.savefig(P + '\\AreaGrowth\\' + Title + '_Tstart.png')
         fig5.savefig(P + '\\AreaGrowth\\'+ Title +  '_TauGrowth.png')
-        fig6.savefig(P + '\\AreaGrowth\\'+ Title +  '_StartingArea.png')
+        fig6.savefig(P + '\\AreaGrowth\\'+ Title +  '_StartingArea.png') 
+        fig16.savefig(P + '\\AreaGrowth\\'+ Title +  '_InitialGrowth.png')
         if not showbox:
             plt.close(fig5)
             plt.close(fig4)
             plt.close(fig6)
+            plt.close(fig16)
         return  
     elif stats == 'ANOVA':
-        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit'],[medtdeb,medtau,medArea0],[fig4,fig5,fig6],[ax4,ax5,ax6],
-                                    [pd.concat(tdebs),pd.concat(taus),pd.concat(Area0)]):
+        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit','GrowthAtStart_flat'],[medtdeb,medtau,medArea0,medAreaStart],[fig4,fig5,fig6,fig16],[ax4,ax5,ax6,ax16],
+                                    [pd.concat(tdebs),pd.concat(taus),pd.concat(Area0),pd.concat(AreaStart)]):
 
             res = TwowayANOVA(v,diffcat,groupcat,GDs);
 
@@ -579,7 +604,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         if not showbox:
             plt.close(fig5)
             plt.close(fig4)
-            plt.close(fig6)
+            plt.close(fig6) 
+            plt.close(fig16)
             return
         else:
             return
