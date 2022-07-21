@@ -379,8 +379,8 @@ def getEdgeAndArea(BinImg,Scale):
     relativeIndicesX = RegXcnt-center[0]
     relativeIndicesY = RegYcnt-center[1]      
     
-    Xlength = (relativeIndicesX.max() - relativeIndicesX.min())*Scale
-    Ylength = (relativeIndicesY.max() - relativeIndicesY.min())*Scale
+    Xlength = relativeIndicesX.max() - relativeIndicesX.min()
+    Ylength = relativeIndicesY.max() - relativeIndicesY.min()
     
     return(relativeIndicesX,relativeIndicesY,center,Area,Xlength,Ylength)
 

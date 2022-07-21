@@ -217,9 +217,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         AreaI = interp1d(Time,AreaC,kind = 'quadratic')
-        W0 = GD.loc[(GD.index == s) & (GD['Img'] == 0),'Ylength'].values[0] # width of gemmae in the direction perpendicular to notche axis
-      
-        print('W0 : ' + str(W0))  
+
         
         ### Growth rate 1/A * dA/dt computation
     
@@ -328,12 +326,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'] = W0*0.47 -138.3
+        # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'] = W0*0.47 -138.3
         
         
-        print('\nH0 estimate : W0 * 0.47 - 138.3 ')
-        print('W0 = ' + str(W0) + ' µm')  
-        print('H0 = ' + str(W0*0.47 -138.3) + ' µm')
+        # print('\nH0 estimate : W0 * 0.47 - 138.3 ')
+        # print('W0 = ' + str(W0) + ' µm')  
+        # print('H0 = ' + str(W0*0.47 -138.3) + ' µm')
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h       
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = intTime[Len-1] + Delay
@@ -433,9 +431,9 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = E             
         GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Ecomp'] = 1/E       
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Comp'] = Lh      
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Comp'] = Lh*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']
+        # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Comp'] = Lh*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Comp'] = 1/Lh
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Comp'] = 1/(GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']*Lh)
+        # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Comp'] = 1/(GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']*Lh)
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tdeb'] = params[3]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params[3])) # img shift for alignemen
         
@@ -476,9 +474,9 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Erel'] = Erel            
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Erel'] = 1/Erel     
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Rel'] = LhRel    
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Rel'] = LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'] 
+            # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Rel'] = LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'] 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Rel'] = 1/LhRel
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
+            # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TdebRel'] = paramsRel[3]
                  
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2          
