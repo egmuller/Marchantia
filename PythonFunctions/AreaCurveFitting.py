@@ -119,8 +119,6 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     
     FitObj = FitClass(t,y,name)
     
-    print('\n' + name)
-    
     if debug:
         ax.set_title('Fit : ' + name + ' - FitWindow : ' + str(fitwindow))
         ax.set_xlabel('Old tdeb')
@@ -157,7 +155,7 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
             
 
         cnt += 1       
-    
+    print('\nModel for fit : ' + FitObj.name)
     print('Number of iterations : ' + str(cnt))
     
     if cnt == maxIter:
@@ -213,7 +211,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             
     for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
-        print('Fitting area curve for : ' + s.ljust(5), end='\n')           
+        print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
+        print('\nFitting area curve for : ' + s)           
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
@@ -270,11 +269,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         else:
             GR_flat,intTime_flat = [0,0]
 
-
-
-        print('\n' + FitResPlot.name)
-        print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
-        
         
         if DebugPlots:
             
@@ -319,6 +313,10 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             fig.tight_layout()
             
             plt.show()
+            
+            print('\nType of fit displayed : ' + FitResPlot.name)
+            print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
+            
 
         
         
@@ -342,16 +340,17 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
         
 
-    fulltime = np.linspace(0,100,200)-25
-    GR_mean = np.nanmean(GRmat,axis = 1)
-    
-    fig00,ax = plt.subplots(dpi=200)
-    fig00.suptitle('Growth rates aligned')
-    ax.plot(fulltime,GRmat,lw = 1)
-    ax.plot(fulltime,GR_mean,'w--',lw = 2)
-    
-    
-    ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
+    if Debug:
+        fulltime = np.linspace(0,100,200)-25
+        GR_mean = np.nanmean(GRmat,axis = 1)
+        
+        fig00,ax = plt.subplots(dpi=200)
+        fig00.suptitle('Growth rates aligned')
+        ax.plot(fulltime,GRmat,lw = 1)
+        ax.plot(fulltime,GR_mean,'w--',lw = 2)
+        
+        
+        ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
     
     return(GD)
 
@@ -419,9 +418,9 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         Lh = 1/(params[0]*60*E*1e6) # en m/s/Pa
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params[0] 
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'V0'] = params[1] 
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Veq'] = params[2]   
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'V0-Veq'] = params[1]-params[2]        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params[1] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params[2]   
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0-Aeq'] = params[1]-params[2]        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = E             
         GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Ecomp'] = 1/E       
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Comp'] = Lh 
@@ -460,9 +459,9 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
             LhRel = 1/(paramsRel[0]*60*Erel*1e6) # en m/s/Pa
 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFluxRel'] = paramsRel[0] 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'V0Rel'] = paramsRel[2] 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'VeqRel'] = paramsRel[1]   
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'V0Rel-VeqRel'] = paramsRel[2]-paramsRel[1]        
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel'] = paramsRel[2] 
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'AeqRel'] = paramsRel[1]   
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel-AeqRel'] = paramsRel[2]-paramsRel[1]        
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Erel'] = Erel            
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Erel'] = 1/Erel     
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Rel'] = LhRel 

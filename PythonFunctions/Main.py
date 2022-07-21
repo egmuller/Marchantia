@@ -85,11 +85,14 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
     else:
         raise NameError('ToDo variable is wrong')
     
-    print('\n\n\n' + stringName + '\n\n')
+    print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
+    print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ')
+    print('\n\nAnalyzing experiment : ' + stringName + '\n')
     
     # Binarization of stacks
     if DoBin:
         BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList)
+        print('\n\n')
     
     if DoCont:
                 
@@ -99,25 +102,31 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         # Saving all contours
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
         CD.to_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_label = 'Ind')
+        print('\n\n')
 
     if DoFit:
         
         GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
+        print('\n\n')
         
         # Retrieve data on PPG position in chip        
         posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
         Rows = posinchip.loc[StackList].values[:,0]
+        print('\n\n')
         
         # Fitting area growth
         GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
+        print('\n\n')
 
         # Sorting based on fit quality
         GD, CD, R2s, goodList = selectR2s(GD,CD,R2Threshold,stringName, showHist = DebugPlots)
+        print('\n\n')
         
         # Saving sorted contour and fit data
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
         CD.to_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv',index_label = 'Ind')
+        print('\n\n')
     
     return
 
