@@ -239,6 +239,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     stats = 'ranksum'
     groupcat = None
     diffcat = None
+    NimgMax = '24h'
     
     for key, value in kwargs.items(): 
         if key == 'showcurve':
@@ -260,6 +261,12 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             groupcat = np.array(value)
         elif key == 'diffcat' :
             diffcat = np.array(value)
+        elif key == 'NimgMax' :
+            if (value == '24h') | (value == 'max'):
+                NimgMax = value 
+            else:
+                raise ValueError('Wrong value for NimgMax ! Allowed : ''24h'' or ''max'' ')
+                
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -270,7 +277,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     # check existence of figure folder, if absent, create it
     if not os.path.exists(P + '\\AreaGrowth'):
             os.mkdir(P + '\\AreaGrowth') # create folder
-            
             
     ## Data grouping if ANOVA : 
     if stats == 'ANOVA':
@@ -310,15 +316,19 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
         
         StackList = np.unique(GD.index)
+           
+        if NimgMax == 'max':
+            nimgmax = GD['Img'].max() # number of images (duration) to plot for growth curve
+        else:
+            nimgmax = 49 # 24h
         
         if IndividualPlots:
-            imgs = range(49)
             fig1,ax1 = plt.subplots(dpi = 250,facecolor='black')
             fig1.suptitle(lab + ' - Area vs. time')
             plt.xlabel('Time (min)')
             plt.ylabel('Area (mm²)')
             for s in StackList:
-                ax1.plot(np.multiply(imgs,30),GD.loc[(GD.index == s) & (GD['Img'].values<49),'Area'],label=s)
+                ax1.plot(GD.loc[s,'Img']*30,GD.loc[s,'Area'],label=s)
             plt.legend(prop={'size': 5})
 
         # number of ppgs and label
@@ -326,11 +336,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         lab = lab + ' - n = ' + str(nPPG)
         
         # Computing mean area over all gemmae for each image
-        MeanA = np.empty(49)
-        MeanTime = np.empty(49)
-        StdA = np.empty(49)
+        MeanA = np.empty(nimgmax)
+        MeanTime = np.empty(nimgmax)
+        StdA = np.empty(nimgmax)
 
-        for im in range(49):
+        for im in range(nimgmax):
 
             MeanA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().mean()
             MeanTime[im] = im*30
@@ -343,7 +353,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         """# Computing mean of area with alignement in time based on fit
         
-        AlAreas = np.empty((49,len(StackList)))
+        AlAreas = np.empty((nimgmax,len(StackList)))
         AlAreas[:] = np.nan
         
         maxshift = 0
@@ -352,7 +362,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ImgShift = GD.loc[(GD.index == s) & (GD['Img'].values == 0), 'tdebShift'].values   
             maxshift = int(np.max([maxshift,ImgShift]))
             
-            for im in range(49):
+            for im in range(nimgmax):
                 
                 if (im+ImgShift)<np.max(GD['Img']+1):
 
