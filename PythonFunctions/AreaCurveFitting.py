@@ -23,7 +23,7 @@ import VallapFunc as vf
 
 import matplotlib.pyplot as plt
 
-
+Hello natalia
 
 #%% Fit functions
 
