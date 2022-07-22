@@ -415,10 +415,9 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
         print('Processing ' + s + ' :')   
         
-        # Loading video
-        RGBstack = io.imread(P + '\\' + s + '.tif') # get the tiff stack
-        
-        n = len(RGBstack)
+        ProcessedPath = P + '\\Processed\\' + s + '_Binarized\\'
+
+        n = len([entry for entry in os.listdir(ProcessedPath) if os.path.isfile(os.path.join(ProcessedPath, entry))]) # number of images
 
         jet_colorcycle = [plt.get_cmap('jet')(1. * i/n) for i in range(n)]
         mpl.rcParams['axes.prop_cycle'] = cycler(color=jet_colorcycle)        
@@ -426,10 +425,10 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
         for i in range(n):
             
-            print('Measuring contour for image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(10), flush=True, end = '\r')
+            print('Measuring contour for image ' + str(i+1) + '/' + str(n).ljust(10), flush=True, end = '\r')
                         
             # Loading binary image
-            BinImg = io.imread(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif')
+            BinImg = io.imread(ProcessedPath + '\\' + str(i) + '.tif')
 
             # Computing propagule edge and area from binary image
             SortedX,SortedY,center,Area,Xlength,Ylength = getEdgeAndArea(BinImg,Scale) 
