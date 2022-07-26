@@ -680,9 +680,9 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         Es[i] = GD.loc[GD['Img'] == 0, 'E']
         Ls[i] = GD.loc[GD['Img'] == 0, 'L/H'] 
         Ecomps[i] = GD.loc[GD['Img'] == 0, 'Ecomp']
-        Lcomps[i] = GD.loc[GD['Img'] == 0, 'L/H_Comp'] 
+        Lcomps[i] = GD.loc[GD['Img'] == 0, 'TauFlux'] 
         Erels[i] = GD.loc[GD['Img'] == 0, 'Erel']
-        Lrels[i] = GD.loc[GD['Img'] == 0, 'L/H_Rel']  
+        Lrels[i] = GD.loc[GD['Img'] == 0, 'TauFluxRel']  
         
         fig0,ax0,cap,med = vf.boxswarmplot(Title + '\n\nElastic bulk modulus comparison for ' + lab,'E (MPa)',
                                            [Ecomps[i],Erels[i]],[colors[i],colors[i]],['Ecomp','Erel'])
@@ -692,13 +692,13 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         fig0.tight_layout() 
         fig0.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel.png')
         
-        fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nHydrolic conductivity comparison for ' + lab,'H/L (s-1.Pa-1)',
-                                           [Lcomps[i],Lrels[i]],[colors[i],colors[i]],['H/L_comp','H/L_rel'])
+        fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nTauFlux comparison for ' + lab,'Tau (s-1)',
+                                           [Lcomps[i],Lrels[i]],[colors[i],colors[i]],['TauFlux_comp','TauFlux_rel'])
 
         plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,Lcomps[i],Lrels[i],0,1)
         
         fig01.tight_layout()
-        fig0.savefig(P + '\\Hydromechanics\\' + lab + '_LComp-Rel.png')
+        fig0.savefig(P + '\\Hydromechanics\\' + lab + '_Tflux-Rel.png')
         
         
         if showhist:
@@ -714,17 +714,17 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             ax001.hist(np.divide(Lrels[i],Lcomps[i]), facecolor=colors[i]) # ,density = True
             fig001.suptitle('Median : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).median()*100)/100) + 
                            ' - Mean : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).mean()*100)/100))
-            ax001.set_xlabel('Lrel/Lcomp')
+            ax001.set_xlabel('TfluxRel/Tflux')
             ax001.set_ylabel('Count')
-            fig001.savefig(P + '\\Hydromechanics\\' + lab + '_LComp-Rel_Dist.png')
+            fig001.savefig(P + '\\Hydromechanics\\' + lab + '_TauFluxComp-Rel_Dist.png')
         
     ### plot
     fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
     fig10,ax10,capErel,medErel = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (relaxation)','Erel (MPa)',Erels,colors,Labels[:])
     fig11,ax11,capE,medE = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (mean)','E (MPa)',Es,colors,Labels[:])
-    fig2,ax2,capLcomp,medLcomp = vf.boxswarmplot(Title + '\n\nHydrolic conductivity (compression)','L/H_Comp (s-1.Pa-1)',Lcomps,colors,Labels[:])
-    fig20,ax20,capLrel,medLrel = vf.boxswarmplot(Title + '\n\nHydrolic conductivity (relaxation)','L/H_Rel (s-1.Pa-1)',Lrels,colors,Labels[:])     
-    fig21,ax21,capL,medL = vf.boxswarmplot(Title + '\n\nHydrolic conductivity (mean)','L/H_Rel (s-1.Pa-1)',Ls,colors,Labels[:])     
+    fig2,ax2,capLcomp,medLcomp = vf.boxswarmplot(Title + '\n\nTauFlux (compression)','Tau_Comp (s-1)',Lcomps,colors,Labels[:])
+    fig20,ax20,capLrel,medLrel = vf.boxswarmplot(Title + '\n\nTauFlux (relaxation)','Tau_Rel (s-1)',Lrels,colors,Labels[:])     
+    fig21,ax21,capL,medL = vf.boxswarmplot(Title + '\n\nTauFlux (mean)','Tau (s-1)',Ls,colors,Labels[:])     
 
 
     ### stats
@@ -818,11 +818,11 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
 
     if stats=='ranksum':
         fig1.savefig(P + '\\Hydromechanics\\' + Title + '_Ecomp.png')
-        fig2.savefig(P + '\\Hydromechanics\\'+ Title +  '_LComp.png')
+        fig2.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFluxComp.png')
         fig10.savefig(P + '\\Hydromechanics\\' + Title + '_Erel.png')
-        fig20.savefig(P + '\\Hydromechanics\\'+ Title +  '_Lrel.png')
+        fig20.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFluxrel.png')
         fig11.savefig(P + '\\Hydromechanics\\' + Title + '_E.png')
-        fig21.savefig(P + '\\Hydromechanics\\'+ Title +  '_L.png')
+        fig21.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFlux.png')
         if not showbox:
             plt.close(fig2)
             plt.close(fig1)
