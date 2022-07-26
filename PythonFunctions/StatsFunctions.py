@@ -113,6 +113,9 @@ def Corr(GDs,labels, **kwargs):
                                       fontsize='xx-large')
                     g.fig.tight_layout() 
             
+    
+#%% Compute decorrelation rate
+
      
 #%% Compute Two-way ANOVA
 

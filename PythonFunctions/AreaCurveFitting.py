@@ -223,7 +223,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     
         GR, GR_S, intTime = vf.GrowthRate(AreaC,Time)
         
-        GR_2h = np.mean(GR_S[-4:])
+        GD.loc[s,'GR_Full'] = np.concatenate((GR_S,[np.nan]))
+        
+        GR_end = np.mean(GR_S[-4:])
         
         ### Computing growth start regime from growth rate
         
@@ -333,7 +335,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         # print('W0 = ' + str(W0) + ' µm')  
         # print('H0 = ' + str(W0*0.47 -138.3) + ' µm')
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthRate'] = GR_2h       
+
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = intTime[Len-1] + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'CaracT_GR'] = 1/np.sqrt(Slope)
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
@@ -419,7 +422,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         fig.suptitle(s + ' - R2 : ' + str(R2))
         
         # Physical parameters
-        DeltaPiOut = 8.314*293*100/1e6 # en MPa, R (gaz parfait) * Temp (K, 20°) * 0.1 (100mM = 100 mol/m3 de choc)
+        DeltaPiOut = 8.314*298*100/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 0.1 (100mM = 100 mol/m3 de choc)
         
         E = params[1]/(params[1]-params[2])*DeltaPiOut # en MPa
         Lh = 1/(params[0]*60*E*1e6) # en m/s/Pa
@@ -438,6 +441,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params[3])) # img shift for alignemen
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = 'Osmotic choc fit'
         
         ax.plot(TimeFitComp,AreaCFitComp,'*c',ms=2,label='FittedData')
         ax.plot(DenseTimeComp,fitFuncOsmChoc(DenseTimeComp,params[0],params[1],params[2],params[3]),'--b',lw=1,label='SoftL1')
