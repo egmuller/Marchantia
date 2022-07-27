@@ -771,7 +771,10 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
 
         DataFit = GD_OC.loc[(GD_OC['Img']==0),['Img']+ParamOC].loc[CommonList]
         DataGrowth = GD_Growth.loc[(GD_Growth['Img']==0),ParamGrowth].loc[CommonList]
-        Data = DataFit.join(DataGrowth)      
+        Data = DataFit.join(DataGrowth) 
+        
+        Data['GrowthSlope_FromExp'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']/GD_Growth.loc[(GD_Growth['Img']==0),'Tau']
+        Data['GrowthSlope_FromGR'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']*GD_Growth.loc[(GD_Growth['Img']==0),'GR_end']
         
         fullData = fullData.append(Data, ignore_index=True)
         

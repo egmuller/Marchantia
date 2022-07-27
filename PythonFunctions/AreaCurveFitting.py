@@ -482,6 +482,9 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Rel'] = 1/LhRel
             # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TdebRel'] = paramsRel[3]
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope'] = paramsRel[4]
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope_FromExp'] = np.nan                 
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope_FromGR'] = np.nan
                  
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/E'] = 2/(Erel+E)
