@@ -108,10 +108,10 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     
     if DebugPlots:        
        
-        DilBWonImg = np.multiply(Img,np.repeat(DilBWimg[:, :, np.newaxis], 3, axis=2))
+        DilBWonImg = np.multiply(Img,np.repeat(FilledBWimg[:, :, np.newaxis], 3, axis=2))
         FinalOnImg = np.multiply(Img,np.repeat(FinalImg[:, :, np.newaxis], 3, axis=2))
         BWonImgInv =np.multiply(Img,np.repeat(np.invert(BWimg[:, :, np.newaxis]), 3, axis=2))
-        DilBWonImgInv = np.multiply(Img,np.repeat(np.invert(DilBWimg[:, :, np.newaxis]), 3, axis=2))
+        DilBWonImgInv = np.multiply(Img,np.repeat(np.invert(FilledBWimg[:, :, np.newaxis]), 3, axis=2))
         FinalOnImgInv = np.multiply(Img,np.repeat(np.invert(FinalImg[:, :, np.newaxis]), 3, axis=2))
         
         fig, [[ax0, ax1, ax2], [ax3, ax4, ax5]] = plt.subplots(nrows = 2, ncols=3,dpi = 500)    

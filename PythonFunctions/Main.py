@@ -337,7 +337,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.xlabel('Time (min)')
             plt.ylabel('Area (mm²)')
             for s in StackList:
-                ax1.plot(GD.loc[s,'Img']*30,GD.loc[s,'Area'],label=s)
+                ax1.plot(GD.loc[s,'Img']*30,GD.loc[s,'Area'],label=s,lw=1)
             plt.legend(prop={'size': 5})
 
         # number of ppgs and label
@@ -360,32 +360,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax3.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         
-        """# Computing mean of area with alignement in time based on fit
-        
-        AlAreas = np.empty((nimgmax,len(StackList)))
-        AlAreas[:] = np.nan
-        
-        maxshift = 0
-        
-        for ii,s in zip(range(len(StackList)),StackList):
-            ImgShift = GD.loc[(GD.index == s) & (GD['Img'].values == 0), 'tdebShift'].values   
-            maxshift = int(np.max([maxshift,ImgShift]))
-            
-            for im in range(nimgmax):
-                
-                if (im+ImgShift)<np.max(GD['Img']+1):
-
-                    AlAreas[im,ii] = GD.loc[(GD.index == s) & (GD['Img'].values == im+ImgShift), 'Area'].values
-        
-        print(np.max(GD['Img']+1)-maxshift)
-        AlMeanA = np.nanmean(AlAreas[range(np.max(GD['Img']+1)-maxshift)], axis=1)
-        AlStdA = np.nanstd(AlAreas[range(np.max(GD['Img']+1)-maxshift)], axis = 1)
-
-        
-        ax10.errorbar(MeanTime[range(np.max(GD['Img']+1)-maxshift)],AlMeanA,yerr=AlStdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax11.errorbar(MeanTime[range(np.max(GD['Img']+1)-maxshift)],AlMeanA/AlMeanA[0],yerr=AlStdA/AlMeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-      """
-   
     plt.figure(fig2.number)
     plt.legend(prop={'size': 8})
     fig2.savefig(P + '\\AreaGrowth\\' + Title + '_AreaCurve.png')
@@ -398,17 +372,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     if not showcurve:
         plt.close(fig3)
 
-    """plt.figure(fig10.number)
-    plt.legend(prop={'size': 8})
-    fig10.savefig(P + '\\AliAreaTime_' + Title + '.png')
-    if not showcurve:
-        plt.close(fig1)
-
-    plt.figure(fig11.number)
-    plt.legend(prop={'size': 8})
-    fig11.savefig(P + '\\AliNormAreaTime_' + Title + '.png')
-    if not showcurve:
-        plt.close(fig1)"""
 
     ######### Parameters of fit ###########
     
@@ -482,6 +445,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
         AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
         
+        
         # swarmplots
         grouping = np.append(grouping,np.ones(len(tdebs[i]))*i)
 
@@ -505,7 +469,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
         captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
         capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0] 
-        capAreaStart[i] = bp6['caps'][1].get_ydata(orig=True)[0]
+        capAreaStart[i] = bp26['caps'][1].get_ydata(orig=True)[0]
         medtdeb[i] = bp4['medians'][0].get_ydata(orig=True)[0]
         medtau[i] = bp5['medians'][0].get_ydata(orig=True)[0]
         medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
@@ -549,11 +513,14 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
     if not showhist:
         plt.close(fig7)
+        plt.close(fig8)
+        plt.close(fig9)
+        plt.close(fig10)
     
     steptdeb = np.max(captdeb)*0.125
     steptau = np.max(captau)*0.125
-    stepAreaStart = np.max(capAreaStart)*0.125
     stepArea0 = np.max(capArea0)*0.125 
+    stepAreaStart = np.max(capAreaStart)*0.125
     
     fullsteptdeb = 0
     fullsteptau = 0
@@ -577,6 +544,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
                     fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
                     fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
+                    
         else:
             for i,j in sigpairs:
 
@@ -615,7 +583,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ax.plot([0.3, 0.7],[np.mean(med), np.mean(med)],'-w')
             ax.text(0.5,np.mean(med)*1.1,'p = ' + str(round(pGC*1000)/1000), ha='center',fontsize='small')
             
-            ax.set_ylim([np.max([0, 0.7*np.min(dat)]), 1.5*np.percentile(dat,90)])
+            ax.set_ylim([np.min(dat)-np.abs(0.3*np.min(dat)), 1.5*np.percentile(dat,90)])
             
             
     
@@ -668,7 +636,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         
     ### Regroup data
     Es= [None]*len(GDs)
-    Ls= [None]*len(GDs)
     Ecomps= [None]*len(GDs)
     Lcomps= [None]*len(GDs)
     Erels= [None]*len(GDs)
@@ -678,7 +645,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         
         # Retrieve data
         Es[i] = GD.loc[GD['Img'] == 0, 'E']
-        Ls[i] = GD.loc[GD['Img'] == 0, 'L/H'] 
         Ecomps[i] = GD.loc[GD['Img'] == 0, 'Ecomp']
         Lcomps[i] = GD.loc[GD['Img'] == 0, 'TauFlux'] 
         Erels[i] = GD.loc[GD['Img'] == 0, 'Erel']
@@ -692,7 +658,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         fig0.tight_layout() 
         fig0.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel.png')
         
-        fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nTauFlux comparison for ' + lab,'Tau (s-1)',
+        fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nTauFlux comparison for ' + lab,'Tau (min-1)',
                                            [Lcomps[i],Lrels[i]],[colors[i],colors[i]],['TauFlux_comp','TauFlux_rel'])
 
         plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,Lcomps[i],Lrels[i],0,1)
@@ -722,14 +688,12 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
     fig10,ax10,capErel,medErel = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (relaxation)','Erel (MPa)',Erels,colors,Labels[:])
     fig11,ax11,capE,medE = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (mean)','E (MPa)',Es,colors,Labels[:])
-    fig2,ax2,capLcomp,medLcomp = vf.boxswarmplot(Title + '\n\nTauFlux (compression)','Tau_Comp (s-1)',Lcomps,colors,Labels[:])
-    fig20,ax20,capLrel,medLrel = vf.boxswarmplot(Title + '\n\nTauFlux (relaxation)','Tau_Rel (s-1)',Lrels,colors,Labels[:])     
-    fig21,ax21,capL,medL = vf.boxswarmplot(Title + '\n\nTauFlux (mean)','Tau (s-1)',Ls,colors,Labels[:])     
+    fig2,ax2,capLcomp,medLcomp = vf.boxswarmplot(Title + '\n\nTauFlux (compression)','Tau_Comp (min-1)',Lcomps,colors,Labels[:])
+    fig20,ax20,capLrel,medLrel = vf.boxswarmplot(Title + '\n\nTauFlux (relaxation)','Tau_Rel (min-1)',Lrels,colors,Labels[:])       
 
 
     ### stats
     fullstepE = 0
-    fullstepL = 0
     fullstepEcomp = 0
     fullstepLcomp = 0
     fullstepErel = 0
@@ -743,7 +707,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
                     fullstepE = plotSig(ax11,np.max(capE),np.max(capE)*0.125,fullstepE,Es[i],Es[j],i,j)
                     fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
-                    fullstepL = plotSig(ax21,np.max(capL),np.max(capL)*0.125,fullstepL,Ls[i],Ls[j],i,j)
                     fullstepLcomp = plotSig(ax2,np.max(capLcomp),np.max(capLcomp)*0.125,fullstepLcomp,Lcomps[i],Lcomps[j],i,j)
                     fullstepLrel = plotSig(ax20,np.max(capLrel),np.max(capLrel)*0.125,fullstepLrel,Lrels[i],Lrels[j],i,j)
 
@@ -753,7 +716,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
                     fullstepE = plotSig(ax11,np.max(capE),np.max(capE)*0.125,fullstepE,Es[i],Es[j],i,j)
                     fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
-                    fullstepL = plotSig(ax21,np.max(capL),np.max(capL)*0.125,fullstepL,Ls[i],Ls[j],i,j)
                     fullstepLcomp = plotSig(ax2,np.max(capLcomp),np.max(capLcomp)*0.125,fullstepLcomp,Lcomps[i],Lcomps[j],i,j)
                     fullstepLrel = plotSig(ax20,np.max(capLrel),np.max(capLrel)*0.125,fullstepLrel,Lrels[i],Lrels[j],i,j)
 
@@ -762,59 +724,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     fig10.tight_layout()
     fig20.tight_layout()
     fig11.tight_layout()
-    fig21.tight_layout()
     
-    
-    
-#     if len(GDs) == 2:
-#         # Histogram for distribution comparison
-#         fig3,ax3 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
-#         fig3.suptitle(Title + ' Hydrolic conductivity')
-#         plt.xlabel('L/H (s-1.Pa-1)')
-#         plt.ylabel('PDF')
-
-#         fig4,ax4 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
-#         fig4.suptitle(Title + ' - Elastic bulk modulus')
-#         plt.xlabel('E (MPa)')
-#         plt.ylabel('PDF')
-
-#         fig5,ax5 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
-#         fig5.suptitle(Title + ' - Hydrolic conductivity')
-#         plt.xlabel('L/H (s-1.Pa-1) - median aligned')
-#         plt.ylabel('PDF')
-
-#         fig6,ax6 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
-#         fig6.suptitle(Title + ' - Elastic bulk modulus')
-#         plt.xlabel('E (MPa) - median aligned')
-#         plt.ylabel('PDF')
-
-#         ax3.hist(Ls[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
-#         ax4.hist(Es[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
-#         ax5.hist(Ls[i]-np.median(Ls[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
-#         ax6.hist(Es[i]-np.median(Es[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
-            
-#         # Distribution comparison with two-sample kolmogorov smirnov test
-#         statsL, pL =  ks_2samp(Ls[0],Ls[1])
-#         ax3.set_title('ES test - p = ' + str(round(pL*1000)/1000))
-#         fig3.tight_layout()
-
-#         statsE, pE =  ks_2samp(Es[0],Es[1])
-#         ax4.set_title('ES test - p = ' + str(round(pE*1000)/1000))
-#         fig4.tight_layout()
-
-#         statsL, pL =  ks_2samp(Ls[0]-np.median(Ls[0]),Ls[1]-np.median(Ls[1]))
-#         ax5.set_title('ES test - p = ' + str(round(pL*1000)/1000))
-#         fig5.tight_layout()
-
-#         statsE, pE =  ks_2samp(Es[0]-np.median(Es[0]),Es[1]-np.median(Es[1]))
-#         ax6.set_title('ES test - p = ' + str(round(pE*1000)/1000))
-#         fig6.tight_layout()
-
-#         if not showhist:
-#             plt.close(fig3)
-#             plt.close(fig4)
-#             plt.close(fig5)
-#             plt.close(fig6)
 
     if stats=='ranksum':
         fig1.savefig(P + '\\Hydromechanics\\' + Title + '_Ecomp.png')
@@ -822,7 +732,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         fig10.savefig(P + '\\Hydromechanics\\' + Title + '_Erel.png')
         fig20.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFluxrel.png')
         fig11.savefig(P + '\\Hydromechanics\\' + Title + '_E.png')
-        fig21.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFlux.png')
         if not showbox:
             plt.close(fig2)
             plt.close(fig1)
@@ -831,7 +740,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         if not showbox:
             plt.close(fig2)
             plt.close(fig1)
-            return(fig1,ax1,medE,fig2,ax2,medL)
+            return
         else:
             return
 

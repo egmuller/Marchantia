@@ -395,7 +395,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         print('Fitting curve for : ' + s.ljust(5), end='\n')           
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
-        AreaC = savgol_filter(GD.loc[s,'Area'].values, 5, 3)
+        AreaC = GD.loc[s,'Area'].values
         
         
         # data for compression fit
@@ -403,7 +403,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         TimeOffset = TimeFitComp[0]
         Time = Time - TimeOffset
         TimeFitComp = TimeFitComp - TimeOffset
-        AreaCFitComp = GD.loc[s,'Area'].values[ImgStartComp:ImgEqComp]
+        AreaCFitComp = AreaC[ImgStartComp:ImgEqComp]
                
         fig,ax = plt.subplots(dpi=300)
         ax.plot(Time,AreaC,'*y',ms=3,label='FullData')
@@ -450,14 +450,14 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
         if np.isin(s,StackListRel):
             TimeFitRel = GD.loc[s,'Img'].values.astype(float)[ImgStartRel:ImgEqRel]/FPH*60 # in minutes
             TimeFitRel = TimeFitRel - TimeOffset
-            AreaCFitRel = GD.loc[s,'Area'].values[ImgStartRel:ImgEqRel]
+            AreaCFitRel = AreaC[ImgStartRel:ImgEqRel]
 
             DenseTimeRel = np.linspace(TimeFitRel[0],TimeFitRel[-1],100)
 
             ax.plot(TimeFitRel,AreaCFitRel,'*m',ms=2,label='FittedDataRel')
         
             paramsRel, covRel = curve_fit(f=fitFuncOsmChoc2, xdata=TimeFitRel, ydata=AreaCFitRel,
-                                          p0=[params[0] , params[2],params[1],TimeFitRel[3],0.0005],
+                                          p0=[params[0] , params[2],params[1],TimeFitRel[9],0.0005],
                                           bounds = (0, np.inf), method='trf',loss='soft_l1')
 
             
@@ -483,9 +483,8 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
             # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TdebRel'] = paramsRel[3]
                  
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2          
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H'] = (Lh+LhRel)/2      
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L'] = 2/(Lh+LhRel) 
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/E'] = 2/(Erel+E)
 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2rel'] = R2rel
 

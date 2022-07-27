@@ -112,9 +112,7 @@ def Corr(GDs,labels, **kwargs):
                                        f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
                                       fontsize='xx-large')
                     g.fig.tight_layout() 
-            
     
-#%% Compute decorrelation rate
 
      
 #%% Compute Two-way ANOVA
