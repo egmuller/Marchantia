@@ -95,10 +95,9 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     
     selem = create_circular_mask(size,size) # create circular element for opening
 
-    DilBWimg = binary_closing(BWimg,selem) # image opening
+    DilBWimg = binary_closing(BWimg,selem) # image closing
     
-    
-    FilledBWimg = remove_small_holes(DilBWimg, area_threshold=1e3) # fills dark regions
+    FilledBWimg = remove_small_holes(DilBWimg, area_threshold=5*1e3) # fills dark regions
     
     Size = np.round(30*Scale) # 30µm in pixels
     

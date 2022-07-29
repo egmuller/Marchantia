@@ -83,6 +83,15 @@ Delay220531 = 30 # Delay between imbibition and experiment start
 
 Scale220531_Osmo = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
 FPH220531_Osmo = 120 # Frames per hour
+FPH220405_Osmo = 120 # Frames per hour
+
+Scale220722 = 1.94 # Spatial scale (µm/px) for 16X 22-07-2022
+FPH220722 = 2 # Frames per hour
+Delay220722 = 30 # Delay between imbibition and experiment start
+
+Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 22-07-2022
+FPH220727 = 2 # Frames per hour
+Delay220727 = 60 # Delay between imbibition and experiment start
 
 
 # Paths to data
@@ -128,6 +137,12 @@ P220531_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+
 P220531_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\TimeEvolution\Ctrl2'
 P220531_Ct1_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\OC\Ctrl1'
 P220531_Ct2_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\OC\Ctrl2'
+P220722_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220722_DV7_Ctrl+ABA3.5uM_Natalia\Ctrl'
+P220722_ABA = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220722_DV7_Ctrl+ABA3.5uM_Natalia\ABA'
+P220727_Hyper = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls+OC_hyperhypo\TimeEvolution\Hyper'
+P220727_Hypo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls+OC_hyperhypo\TimeEvolution\Hypo'
+P220727_Hyper_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls+OC_hyperhypo\OC\Hyper'
+P220727_Hypo_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls+OC_hyperhypo\OC\Hypo'
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
@@ -376,5 +391,39 @@ StackList220531_Ct1_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PP
 StackList220531_Ct2_Osmo = ['PPG5','PPG6','PPG7','PPG8','PPG10','PPG11','PPG12','PPG13','PPG14','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22',
                             'PPG23','PPG24','PPG25','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG35','PPG36','PPG37','PPG38','PPG39',
                             'PPG40','PPG42','PPG45','PPG46','PPG48','PPG49','PPG50','PPG51','PPGA','PPGB']
+
+
+StackList220722_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14',
+                            'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29',
+                            'PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                            'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55']
+
+StackList220722_ABA = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14',
+                            'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29',
+                            'PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                            'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52']
+
+
+StackList220727_Hyper = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14',
+                            'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29',
+                            'PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                            'PPG47','PPG48','PPG49']
+
+
+StackList220727_Hypo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14',
+                            'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29',
+                            'PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                            'PPG47','PPG48','PPG49','PPG50','PPG51']
+
+
+StackList220727_Hyper_Osmo = ['PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG11','PPG12','PPG14',
+                            'PPG15','PPG16','PPG17','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29',
+                            'PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG39']
+
+
+StackList220727_Hypo_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG14',
+                            'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG29',
+                            'PPG30','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                            'PPG47','PPG48','PPG49','PPG50','PPG51','PPGA','PPGB']
     
 print('Data choice made.')
