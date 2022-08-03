@@ -368,29 +368,29 @@ StackList220405_Ct1_Osmo = ['PPG1','PPG5','PPG6','PPG7','PPG13','PPG15','PPG16',
  #                           'PPG23','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37',
   #                          'PPG38','PPG39','PPG40','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50','PPG51','PPG52',
    #                         'PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61','PPG62']
+   
+
+StackList220531_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52']
+    
+
+StackList220531_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG9','PPG10','PPG12','PPG13','PPG14','PPG15','PPG16',
+                       'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                       'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41']
 
     
-StackList220531_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
-                       'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
-                       'PPG32','PPG33','PPG34','PPG35','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
-                       'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61',
-                       'PPG62','PPG63']
-    
-StackList220531_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
-                       'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
-                       'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
-                       'PPG47','PPG48','PPG49','PPG50','PPG51']
+StackList220531_Ct1_Osmo =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG31',
+                        'PPG32','PPG33','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPGA','PPGB','PPGC','PPGD']
 
-    
-StackList220531_Ct1_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14',
-                            'PPG15','PPG16','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG29',
-                            'PPG30','PPG31','PPG32','PPG33','PPG34','PPG35','PPG38','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
-                            'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG61',
-                            'PPG63','PPGA','PPGB','PPGC','PPGD','PPGE','PPGF']
-    
-StackList220531_Ct2_Osmo = ['PPG5','PPG6','PPG7','PPG8','PPG10','PPG11','PPG12','PPG13','PPG14','PPG17','PPG18','PPG19','PPG20','PPG21','PPG22',
-                            'PPG23','PPG24','PPG25','PPG28','PPG29','PPG30','PPG31','PPG32','PPG33','PPG35','PPG36','PPG37','PPG38','PPG39',
-                            'PPG40','PPG42','PPG45','PPG46','PPG48','PPG49','PPG50','PPG51','PPGA','PPGB']
+
+StackList220531_Ct2_Osmo = ['PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG9','PPG10','PPG12','PPG13','PPG14','PPG15','PPG16',
+                       'PPG17','PPG18','PPG19','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                       'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG40','PPG41','PPGA']
+
 
 
 StackList220722_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14',
