@@ -83,19 +83,20 @@ Delay220531 = 30 # Delay between imbibition and experiment start
 
 Scale220531_Osmo = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
 FPH220531_Osmo = 120 # Frames per hour
-FPH220405_Osmo = 120 # Frames per hour
 
 Scale220722 = 1.94 # Spatial scale (µm/px) for 16X 22-07-2022
 FPH220722 = 2 # Frames per hour
 Delay220722 = 30 # Delay between imbibition and experiment start
 
-Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 22-07-2022
-FPH220727 = 2 # Frames per hour
-Delay220727 = 60 # Delay between imbibition and experiment start
+Scale220727_Osmo = 1.94 # Spatial scale (µm/px) for 16X 22-07-2022
+FPH220727_Osmo = 120 # Frames per hour
 
 Scale220801 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH220801 = 2 # Frames per hour
 Delay220801 = 45 # Delay between imbibition and experiment start
+
+Scale220801_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH220801_Osmo = 120 # Frames per hour
 
 
 # Paths to data
@@ -436,19 +437,27 @@ StackList220727_Hypo_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG6','PPG7','PPG8','P
     
 StackList220801_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
-                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
-                        'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52']
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG49','PPG50','PPG51','PPG52']
 
     
+StackList220801_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                                                'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40']
+
+StackList220801_Ct2_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG26','PPG27','PPG28','PPG29','PPG30',
+                                                'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG40']
+
 # StackList220801_Ct2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
 #                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
 #                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
 #                         'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52']
     
-# StackList220801_Ct1_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
-#                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
-#                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
-#                         'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52']
+StackList220801_Ct1_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG39','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG49','PPG50','PPG51','PPG52','PPGA','PPGB']
 
     
 # StackList220801_Ct2_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',

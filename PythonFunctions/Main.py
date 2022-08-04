@@ -150,8 +150,11 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,ToDo, *
     DebugPlots = False
     HSVrange = [(25, 25, 70),(60, 120,220)]
     ImgList = [0, 20, 40]
-    FitIntervalComp = [2,25]
-    FitIntervalRel = [29,55]
+    FitIntervalComp = [0,25]
+    FitIntervalRel = [25,55]
+    TstartComp = 3
+    TstartRel = 9
+    RelValidation = True
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -166,6 +169,12 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,ToDo, *
             FitIntervalComp = value
         elif key == 'FitIntervalRel':
             FitIntervalRel = value
+        elif key == 'TstartComp':
+            TstartComp = value
+        elif key == 'TstartRel':
+            TstartRel = value
+        elif key == 'RelValidation':
+            RelValidation = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -210,11 +219,12 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,ToDo, *
         GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
-        GD = fitOsmoChoc(StackList,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],FitIntervalRel[0],FitIntervalRel[1],debug = DebugPlots)
+        GD = fitOsmoChoc(StackList,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
         
         # Selecting only good R2s for both compand rel, could be changed in the future for more general plots
         GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
-        GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist,key = 'fitR2rel')
+        if RelValidation:
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist,key = 'fitR2rel')
         
         # Saving sorted contour and fit data
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')

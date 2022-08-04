@@ -377,7 +377,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
 
 # Kwargs : 'debug' (True/False) for generating debug plots
 
-def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel, **kwargs):
+def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
     
     DebugPlots = False
     
@@ -415,7 +415,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
 
         # fit of compression
         params, cov = curve_fit(f=fitFuncOsmChoc, xdata=TimeFitComp, ydata=AreaCFitComp, 
-                                p0=[1, AreaCFitComp[0],AreaCFitComp[0],TimeFitComp[3]],
+                                p0=[1, AreaCFitComp[0:TstartComp].mean(),AreaCFitComp[0:TstartComp].mean()*0.98,TimeFitComp[TstartComp]],
                                 bounds = (0, np.inf), method='trf',loss='soft_l1')
 
         R2 = np.round(vf.computeR2(AreaCFitComp,fitFuncOsmChoc(TimeFitComp,params[0],params[1],params[2],params[3]))*1000)/1000
@@ -458,7 +458,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartRel,ImgEqRel,
             ax.plot(TimeFitRel,AreaCFitRel,'*m',ms=2,label='FittedDataRel')
         
             paramsRel, covRel = curve_fit(f=fitFuncOsmChoc2, xdata=TimeFitRel, ydata=AreaCFitRel,
-                                          p0=[params[0] , params[2],params[1],TimeFitRel[9],0.0005],
+                                          p0=[params[0] , params[2],params[1],TimeFitRel[TstartRel],0.0005],
                                           bounds = (0, np.inf), method='trf',loss='soft_l1')
 
             
