@@ -285,7 +285,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax01.plot(Time,FitResPlot.values,'*r',ms=3)
             ax01.plot(Time,FitResPlot.fC(),'--b')
             ax01.set_xlabel('Time (min)')
-            ax01.set_ylabel('Area')
+            ax01.set_ylabel('Area (mm²)')
             # ax01.set_xscale('log')
             # ax01.set_yscale('log')
     
@@ -296,7 +296,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*g',ms=3)
             ax02.plot(Time,FitResPlot.fC(),'--b',lw=1)
             ax02.set_xlabel('Time (min)')
-            ax02.set_ylabel('Area')
+            ax02.set_ylabel('Area (mm²)')
             # ax02.set_xscale('log')
             # ax02.set_yscale('log')
     
@@ -304,10 +304,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             
             fig,[ax0,ax1] = plt.subplots( nrows = 2, dpi = 300)
             
-            ax0.plot(intTime,GR,'-*b',lw=2,ms=3)
-            ax0.plot(intTime,GR_S,'-c',lw=1)
-            ax0.plot(intTime_linfit[0:-2],Intercept + intTime_linfit[0:-2]*Slope,'--r',lw=2)
-            ax0.set_title('Growth rate local + linear fit')
+            ax0.plot(intTime,GR*10000,'-*b',lw=1,ms=2)
+            ax0.plot(intTime,GR_S*10000,'-c',lw=2)
+            # ax0.plot(intTime_linfit[0:-2],Intercept + intTime_linfit[0:-2]*Slope,'--r',lw=2)
+            ax0.set_title('Growth rate in time')
+            ax0.set_xlabel('Time (min)')
+            ax0.set_ylabel('Growth rate (A.U.)')
             
             ax1.plot(intTime,GR_S,'-c',lw=1,ms=2)
             ax1.plot(intTime_flat,GR_flat,'--ro',lw=1,ms=2)

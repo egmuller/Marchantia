@@ -686,6 +686,26 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             ax00.set_ylabel('Count')
             fig00.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel_Dist.png')
             
+            
+            fig00, ax00 = plt.subplots(dpi=300)
+            ax00.hist(Es[i], facecolor=colors[i],bins=20) # ,density = True
+            fig00.suptitle('Bulk elastic moduli of WT gemmae')
+            ax00.set_xlabel('E (MPa)')
+            ax00.set_ylabel('Count')
+            # ax00.set_xlim(right=1.5)
+            fig00.savefig(P + '\\Hydromechanics\\' + lab + '_E_Dist.png')
+            
+
+            linreg = linregress(Ecomps[i],Erels[i])
+
+            g = sns.jointplot(x=Ecomps[i],y=Erels[i],kind='reg',color = colors[i],height = 12)
+            g.ax_joint.set_xlabel('E compression (MPa)',fontsize = 25)
+            g.ax_joint.set_ylabel('E relaxation (MPa)',fontsize = 25)
+            g.ax_joint.tick_params(axis='both', labelsize=20)
+            g.ax_joint.legend([f"S = {linreg.slope:.2f}",
+                               f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
+                              fontsize='xx-large')
+            
             fig001, ax001 = plt.subplots(dpi=300)
             ax001.hist(np.divide(Lrels[i],Lcomps[i]), facecolor=colors[i]) # ,density = True
             fig001.suptitle('Median : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).median()*100)/100) + 
