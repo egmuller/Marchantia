@@ -464,3 +464,48 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
 
 
+#%% Finding chip position for every gemmae
+
+def FindChipPos(StackList,Path):
+    
+    FullChip = io.imread(Path + '\\FullChip.tif')
+    
+    large_image = FullChip[:,:,2]  
+    
+    L,W = large_image.shape
+    
+    fig,ax = plt.subplots(dpi=300)
+    ax.imshow(FullChip)
+    
+    Data = pd.DataFrame(data=None, columns = ['Name','Row'])
+    
+    for s,i in zip(StackList,range(len(StackList))):
+        
+        small_image = io.imread(Path + '\\' + s + '.tif')[4,:,:,2]
+        
+        l,w = small_image.shape
+        
+        method = cv.TM_SQDIFF_NORMED
+
+        result = cv.matchTemplate(small_image, large_image, method)
+
+        _,_,mnLoc,_ = cv.minMaxLoc(result)
+    
+        MPx,MPy = mnLoc
+        
+        pos = int(np.ceil((MPx+w/2)/W*101))
+        
+        dic = {'Name': [s], 'Row':[pos]}
+        data = pd.DataFrame(dic)
+        
+        Data = Data.append(data)
+
+        ax.text(MPx+w/2, MPy+l/2, s[3:], color = 'r', fontsize = 10)
+        
+    ax.set_xticks([])
+    ax.set_yticks([])
+
+    Data.to_excel(Path + '\\ChipPosition.xlsx',index=False)
+    fig.savefig(Path + '\\FullChipTagged.png')
+    plt.close()
+    
