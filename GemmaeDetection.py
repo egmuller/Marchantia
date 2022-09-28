@@ -466,7 +466,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
 #%% Finding chip position for every gemmae
 
-def FindChipPos(StackList,Path):
+def FindChipPos(StackList,Path,Orientation):
     
     FullChip = io.imread(Path + '\\FullChip.tif')
     
@@ -493,19 +493,27 @@ def FindChipPos(StackList,Path):
     
         MPx,MPy = mnLoc
         
-        pos = int(np.ceil((MPx+w/2)/W*101))
+        if Orientation == 'H>':
+            pos = int(np.ceil((MPx+w/2)/W*101))
+        elif Orientation == 'H<':
+            pos = 100-int(np.ceil((MPx+w/2)/W*101))
+        elif Orientation == 'Vv':
+            pos = int(np.ceil((MPy+l/2)/L*101))
+        elif Orientation == 'V^':
+            pos = 100-int(np.ceil((MPy+l/2)/L*101))
+            
         
         dic = {'Name': [s], 'Row':[pos]}
         data = pd.DataFrame(dic)
         
         Data = Data.append(data)
 
-        ax.text(MPx+w/2, MPy+l/2, s[3:], color = 'r', fontsize = 10)
+        ax.text(MPx+w/2, MPy+l/2, s[3:], color = 'r', fontsize = 8)
         
     ax.set_xticks([])
     ax.set_yticks([])
 
     Data.to_excel(Path + '\\ChipPosition.xlsx',index=False)
-    fig.savefig(Path + '\\FullChipTagged.png')
+    fig.savefig(Path + '\\FullChipTagged.tif')
     plt.close()
     
