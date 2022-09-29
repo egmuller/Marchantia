@@ -43,7 +43,7 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # binarization min and max threshold values for the three channels of HSV image 
 # 'fitwindow' (time in hours) to choose the window after dormancy exit on which to fit 
 
-def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToDo,Ori, **kwargs):
+def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori,ToDo, **kwargs):
     
       
     DebugAll = False
@@ -111,7 +111,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         print('\n\n')
         
         # Retrieve data on PPG position in chip 
-        if os.exist(Path + '\ChipPositions.xlsx'):
+        if os.path.exists(Path + '\ChipPositions.xlsx'):
             posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
             Rows = posinchip.loc[StackList].values[:,0]
         else:
