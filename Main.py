@@ -115,7 +115,9 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
             posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
             Rows = posinchip.loc[StackList].values[:,0]
         else:
+            print('Finding PPGs position in chip...',end='')
             Rows = FindChipPos(StackList,Path,Ori)
+            print('Done\n')
         print('\n\n')
         
         # Fitting area growth
