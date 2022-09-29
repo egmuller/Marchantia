@@ -477,7 +477,9 @@ def FindChipPos(StackList,Path,Orientation):
     fig,ax = plt.subplots(dpi=300)
     ax.imshow(FullChip)
     
-    Data = pd.DataFrame(data=None, columns = ['Name','Row'])
+    positions = np.empty(len(StackList))
+    
+
     
     for s,i in zip(StackList,range(len(StackList))):
         
@@ -502,18 +504,19 @@ def FindChipPos(StackList,Path,Orientation):
         elif Orientation == 'V^':
             pos = 100-int(np.ceil((MPy+l/2)/L*101))
             
-        
-        dic = {'Name': [s], 'Row':[pos]}
-        data = pd.DataFrame(dic)
-        
-        Data = Data.append(data)
+        positions[i] = pos
 
         ax.text(MPx+w/2, MPy+l/2, s[3:], color = 'r', fontsize = 8)
         
     ax.set_xticks([])
     ax.set_yticks([])
 
-    Data.to_excel(Path + '\\ChipPosition.xlsx',index=False)
+    Datadict = {'Name': StackList, 'Row': positions}
+    Data = pd.DataFrame(Datadict)
+    Data.to_excel(Path + '\\ChipPositions.xlsx',index=False)
+    
     fig.savefig(Path + '\\FullChipTagged.tif')
     plt.close()
+    
+    return(positions)
     
