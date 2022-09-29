@@ -6,7 +6,7 @@ Created on Tue Jun 21 16:42:37 2022
 """
 
 # Imports 
-from GemmaeDetection import BinarizeStack, GetContours
+from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
 from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
 from StatsFunctions import plotSig, Corr,TwowayANOVA
 
@@ -43,7 +43,7 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # binarization min and max threshold values for the three channels of HSV image 
 # 'fitwindow' (time in hours) to choose the window after dormancy exit on which to fit 
 
-def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToDo, **kwargs):
+def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToDo,Ori, **kwargs):
     
       
     DebugAll = False
@@ -110,9 +110,12 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,ToD
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         print('\n\n')
         
-        # Retrieve data on PPG position in chip        
-        posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
-        Rows = posinchip.loc[StackList].values[:,0]
+        # Retrieve data on PPG position in chip 
+        if os.exist(Path + '\ChipPositions.xlsx'):
+            posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
+            Rows = posinchip.loc[StackList].values[:,0]
+        else:
+            Rows = FindChipPos(StackList,Path,Ori)
         print('\n\n')
         
         # Fitting area growth
