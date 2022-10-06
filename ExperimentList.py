@@ -112,6 +112,9 @@ Delay220928 = 54 # Delay between imbibition and experiment start
 Scale220928_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH220928_Osmo = 120 # Frames per hour
 
+Scale221004_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH221004_Osmo = 120 # Frames per hour
+
 
 # Paths to data
 P210903_1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\210903_V5_TestFlux\1mlh'
@@ -174,6 +177,8 @@ P220928_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220928_DV7_100mM+O
 P220928_100mM = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220928_DV7_100mM+OC\TimeEvolution\100mM'
 P220928_Ct_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220928_DV7_100mM+OC\OC\Ctrl'
 P220928_100mM_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220928_DV7_100mM+OC\OC\100mM'
+P221004_Ct_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221004_DV7_OC_Pectinase10U\Ctrl'
+P221004_Pase10U_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221004_DV7_OC_Pectinase10U\Pase10U'
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
@@ -500,14 +505,6 @@ StackList220808_100mM_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','
                         'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG53']
 
     
-
-
-
-
-
-
-
-
 StackList220928_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
@@ -529,5 +526,14 @@ StackList220928_100mM_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','
                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
                         'PPG32','PPG33','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPGA','PPGB',
                         'PPGC']
+
+
+StackList221004_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45']
+
+StackList221004_Pase10U = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                    'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                    'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44']
 
 print('Data choice made.')
