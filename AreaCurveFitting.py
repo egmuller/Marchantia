@@ -364,6 +364,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         
         ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
+        
+        plt.show()
     
     return(GD)
 
