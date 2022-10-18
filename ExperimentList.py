@@ -85,7 +85,7 @@ FPH220722 = 2 # Frames per hour
 Delay220722 = 30 # Delay between imbibition and experiment start
 
 Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
-FPH220727 = 120 # Frames per hour
+FPH220727 = 2 # Frames per hour
 Delay220727 = 60 # Delay between imbibition and experiment start
 
 Scale220727_Osmo = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022

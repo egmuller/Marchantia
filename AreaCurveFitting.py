@@ -127,7 +127,7 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     # initial fit on all data -> first tdeb guess
     
     FitObj.set_init_fit(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
-        
+    
     tdebVar = 1
     cnt = 0
     
@@ -139,6 +139,7 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
         
         FitObj.set_params(curve_fit(f=FitObj.f, xdata=t[FitObj.FI], ydata=y[FitObj.FI], p0=FitObj.P,                                  
                                   bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
+        
         
         
         tdebVar = np.abs((tdeb_old-FitObj.tdeb())/tdeb_old)
@@ -243,7 +244,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         while r2>0.99:
             
             Slope = linreg.slope
-            Intercept = linreg.intercept
             
             Len += 1
                                     
@@ -258,8 +258,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
         
-        ### Iterative fits for a convergence of Tdeb with different fits
-                
+        ### Iterative fits for a convergence of Tdeb with different fits      
+        
         FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.001, 10, Debug, ax1)
         
         FitResPlot =copy.deepcopy(FitRes_flat)
