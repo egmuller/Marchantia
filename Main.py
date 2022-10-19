@@ -8,7 +8,7 @@ Created on Tue Jun 21 16:42:37 2022
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
 from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
-from StatsFunctions import plotSig, Corr,TwowayANOVA
+from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -538,11 +538,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         ax10.set_title('KS test - p = ' + str(round(pTdeb*1000)/1000))
         fig10.tight_layout()
         
-    if not showhist:
-        plt.close(fig7)
-        plt.close(fig8)
-        plt.close(fig9)
-        plt.close(fig10)
+        if not showhist:
+            plt.close(fig7)
+            plt.close(fig8)
+            plt.close(fig9)
+            plt.close(fig10)
     
     steptdeb = np.max(captdeb)*0.125
     steptau = np.max(captau)*0.125
@@ -583,7 +583,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
 
                 fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
 
-                
+    elif stats == 'kruskal':
+        
+        StatsKruskal(ax4,tdebs)
+        StatsKruskal(ax5,taus)
+        StatsKruskal(ax6,Area0)
+        StatsKruskal(ax16,AreaStart)
+               
  
  
     if stats=='ranksum':
@@ -830,7 +836,7 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     fullData = pd.DataFrame(data=None, columns=ParamOC+ParamGrowth)
     GDs = []
     
-    for (GD_Growth,GD_OC) in zip(GD_Growths,GD_OCs) :
+    for (GD_Growth,GD_OC,lab) in zip(GD_Growths,GD_OCs,Titles) :
         
         ListGrowth = np.unique(GD_Growth.index)
         ListChoc = np.unique(GD_OC.index)
@@ -844,6 +850,7 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
         
         Data['GrowthSlope_FromExp'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']/GD_Growth.loc[(GD_Growth['Img']==0),'Tau']
         Data['GrowthSlope_FromGR'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']*GD_Growth.loc[(GD_Growth['Img']==0),'GR_end']
+        Data['Expe'] = lab
         
         fullData = fullData.append(Data, ignore_index=True)
         

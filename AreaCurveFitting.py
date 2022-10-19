@@ -338,7 +338,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         # print('H0 = ' + str(W0*0.47 -138.3) + ' µm')
         
 
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = intTime[Len-1] + Delay
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'CaracT_GR'] = 1/np.sqrt(Slope)
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
@@ -351,6 +351,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
         
+        print('Tau/GR_end :')
+        print(FitResPlot.tau()/GR_end)
         
     if Debug:
             
@@ -490,7 +492,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
             # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TdebRel'] = paramsRel[3]
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope'] = paramsRel[4]
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_AfterOC'] = paramsRel[4]/paramsRel[1]
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_AfterOC'] = paramsRel[4]/paramsRel[1]*60*24 # in day-1
                  
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/E'] = 2/(Erel+E)
