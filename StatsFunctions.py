@@ -87,12 +87,17 @@ def Corr(GDs,labels, **kwargs):
         corrMat = GDtoCorr.corr(method=corrmethod)
         
         plt.figure(dpi=250)
-        plt.title('Correlation heatmap for ' + lab)
+        plt.title(corrmethod + ' correlation for \n' + lab)
         mask = np.zeros_like(corrMat)
         mask[np.tril_indices_from(mask,k=-1)] = True
         sns.heatmap(corrMat,mask = mask,square=True,vmin=-1,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8}) #,cmap = 'YlGnBu'
         
         if PlotFits:
+            
+            if corrmethod=='pearson':
+                plotkind = 'reg'
+            else:
+                plotkind = 'scatter'
         
             for i in range(0,len(dfcols)-1):
                 for j in range(i+1,len(dfcols)):
@@ -103,14 +108,15 @@ def Corr(GDs,labels, **kwargs):
                     
                     linreg = linregress(x[mask],y[mask])
 
-                    g = sns.jointplot(x=x[mask],y=y[mask],kind='reg',color = colo,height = 12)
+                    g = sns.jointplot(x=x[mask],y=y[mask],kind=plotkind,color = colo,height = 12)
                     g.fig.suptitle('Correlation between ' + dfcols[i] + ' and ' + dfcols[j] +
                                    '.\n Experiment : ' + lab + ' - n = ' + str(len(x[mask])),fontsize=30)
 
                     g.ax_joint.set_xlabel(colslab[i],fontsize = 25)
                     g.ax_joint.set_ylabel(colslab[j],fontsize = 25)
                     g.ax_joint.tick_params(axis='both', labelsize=20)
-                    g.ax_joint.legend([f"S = {linreg.slope:.2f}",
+                    if corrmethod=='pearson':
+                        g.ax_joint.legend([f"S = {linreg.slope:.2f}",
                                        f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
                                       fontsize='xx-large')
                     g.fig.tight_layout() 

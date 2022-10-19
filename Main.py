@@ -817,10 +817,13 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
 def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,colors, **kwargs):
     
     PlotFits = False
+    CorrType = 'pearson'
     
     for key,value in kwargs.items():
         if key == 'PlotFits':
             PlotFits= value
+        elif key == 'CorrType':
+            CorrType = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -850,6 +853,6 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     
     columns = ParamGrowth+ParamOC
     
-    Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors)
+    Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors, corrmethod =CorrType)
    
 
