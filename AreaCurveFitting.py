@@ -351,8 +351,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
         
-        print('Tau/GR_end :')
-        print(FitResPlot.tau()/GR_end)
         
     if Debug:
             

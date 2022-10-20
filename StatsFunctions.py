@@ -83,7 +83,7 @@ def Corr(GDs,labels, **kwargs):
         
     for GD,lab,colo in zip(GDs,labels,colors) :
         
-        if lab == 'Pooled':
+        if lab[0:6] == 'Pooled':
             GDtoCorr = GD.loc[GD['Img'] == 0, [*dfcols,'Expe']]
         else:
             GDtoCorr = GD.loc[GD['Img'] == 0, dfcols]
@@ -111,8 +111,8 @@ def Corr(GDs,labels, **kwargs):
                     
                     linreg = linregress(x[mask],y[mask])
                     
-                    
-                    if lab == 'Pooled':
+
+                    if lab[0:6] == 'Pooled':
                         
                         g = sns.jointplot(data=GDtoCorr,x=dfcols[i],y=dfcols[j],kind='scatter',hue = 'Expe',height = 12, palette = colors[1:])
                         

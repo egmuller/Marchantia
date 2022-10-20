@@ -123,6 +123,9 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         
         # Fitting area growth
         GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
+        
+        GD.loc[:,'Expe'] = stringName
+        
         print('\n\n')
 
         # Sorting based on fit quality
@@ -237,6 +240,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
         GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
+        
+        GD.loc[:,'Expe'] = stringName
         
         # Selecting only good R2s for both compand rel, could be changed in the future for more general plots
         GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
@@ -848,8 +853,6 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
         DataGrowth = GD_Growth.loc[(GD_Growth['Img']==0),ParamGrowth].loc[CommonList]
         Data = DataFit.join(DataGrowth) 
         
-        Data['GrowthSlope_FromExp'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']/GD_Growth.loc[(GD_Growth['Img']==0),'Tau']
-        Data['GrowthSlope_FromGR'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']*GD_Growth.loc[(GD_Growth['Img']==0),'GR_end']
         Data['Expe'] = lab
         
         fullData = fullData.append(Data, ignore_index=True)
