@@ -350,7 +350,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitResPlot.tau()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = 'ChocOsmo'
+        
         
     if Debug:
             

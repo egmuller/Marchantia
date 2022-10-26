@@ -35,6 +35,7 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 # stringName : name of experiment, StackList : list of videos to analyze, Path : path to data,
 # Scale : in µm/px, FPH : frames per hour, Delay : delay between imbibtion and experiments start
 # R2Threshold : threshold for data validation based on R2 of fit, 
+# Ori : Orientation of the chip Horizontal chip : H + direction of traps ('H>', 'H<', 'V^', 'Vv')
 # ToDo : indicator of which sub-code to run 'BCF' -> Binarization, Contours & Fits
 # 'B' -> Binarization only, 'CF' -> contours & fits only, 'F' -> Fits only
 
@@ -139,6 +140,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
 
 # stringName : name of experiment, StackList : list of videos to analyze, Path : path to data,
 # Scale : in µm/px, FPH : frames per hour, R2Threshold : threshold for data validation based on R2 of fit, 
+# Ori : Orientation of the chip Horizontal chip : H + direction of traps ('H>', 'H<', 'V^', 'Vv')
 # ToDo : indicator of which sub-code to run 'BCF' -> Binarization, Contours & Fits
 # 'B' -> Binarization only, 'CF' -> contours & fits only, 'F' -> Fits only
 
