@@ -19,7 +19,7 @@ from cycler import cycler
 import numpy as np
 import pandas as pd
 
-from scipy.stats import ks_2samp
+from scipy.stats import ks_2samp, linregress
 
 import os
 
