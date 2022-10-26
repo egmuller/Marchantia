@@ -148,7 +148,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
 # 'FitIntervalComp/Rel (list of two ints) Images corresponding to times between 
 # which to fit compression/relaxation
 
-def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,ToDo, **kwargs):
+def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToDo, **kwargs):
     
     
     showHist = False
@@ -221,10 +221,20 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,ToDo, *
 
     if DoFit:
         
+        # Retrieve data on PPG position in chip 
+        if os.path.exists(Path + '\ChipPositions.xlsx'):
+            posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
+            Rows = posinchip.loc[StackList].values[:,0]
+        else:
+            print('Finding PPGs position in chip...',end='')
+            Rows = FindChipPos(StackList,Path,Ori)
+            print('Done\n')
+        print('\n\n')
+        
         GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
-        GD = fitOsmoChoc(StackList,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
+        GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
         
         # Selecting only good R2s for both compand rel, could be changed in the future for more general plots
         GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)

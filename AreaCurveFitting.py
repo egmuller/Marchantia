@@ -379,7 +379,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
 
 # Kwargs : 'debug' (True/False) for generating debug plots
 
-def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
+def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
     
     DebugPlots = False
     
@@ -393,7 +393,7 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRe
     CD,GD,StackList = sortChocs(CD,GD,StackList,ImgStartComp,ImgEqComp,DebugPlots)    
     CDrel,GDrel,StackListRel = sortChocs(CD,GD,StackList,ImgStartRel,ImgEqRel,DebugPlots)        
     
-    for s in StackList:
+    for s,row in zip(StackList,Rows):
 
         print('Fitting curve for : ' + s.ljust(5), end='\n')           
         
@@ -445,6 +445,8 @@ def fitOsmoChoc(StackList,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRe
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = 'Osmotic choc fit'
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
         ax.plot(TimeFitComp,AreaCFitComp,'*c',ms=2,label='FittedData')
         ax.plot(DenseTimeComp,fitFuncOsmChoc(DenseTimeComp,params[0],params[1],params[2],params[3]),'--b',lw=1,label='SoftL1')
