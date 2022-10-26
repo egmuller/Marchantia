@@ -8,7 +8,8 @@ Created on Tue Jun 21 16:42:37 2022
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
 from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
-from StatsFunctions import plotSig, Corr,TwowayANOVA
+from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
+from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -123,6 +124,9 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         
         # Fitting area growth
         GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
+        
+        GD.loc[:,'Expe'] = stringName
+        
         print('\n\n')
 
         # Sorting based on fit quality
@@ -237,6 +241,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
         GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
+        
+        GD.loc[:,'Expe'] = stringName
         
         # Selecting only good R2s for both compand rel, could be changed in the future for more general plots
         GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
@@ -538,11 +544,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         ax10.set_title('KS test - p = ' + str(round(pTdeb*1000)/1000))
         fig10.tight_layout()
         
-    if not showhist:
-        plt.close(fig7)
-        plt.close(fig8)
-        plt.close(fig9)
-        plt.close(fig10)
+        if not showhist:
+            plt.close(fig7)
+            plt.close(fig8)
+            plt.close(fig9)
+            plt.close(fig10)
     
     steptdeb = np.max(captdeb)*0.125
     steptau = np.max(captau)*0.125
@@ -583,7 +589,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
 
                 fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
 
-                
+    elif stats == 'kruskal':
+        
+        StatsKruskal(ax4,tdebs)
+        StatsKruskal(ax5,taus)
+        StatsKruskal(ax6,Area0)
+        StatsKruskal(ax16,AreaStart)
+               
  
  
     if stats=='ranksum':
@@ -817,17 +829,20 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
 def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,colors, **kwargs):
     
     PlotFits = False
+    CorrType = 'pearson'
     
     for key,value in kwargs.items():
         if key == 'PlotFits':
             PlotFits= value
+        elif key == 'CorrType':
+            CorrType = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
     fullData = pd.DataFrame(data=None, columns=ParamOC+ParamGrowth)
     GDs = []
     
-    for (GD_Growth,GD_OC) in zip(GD_Growths,GD_OCs) :
+    for (GD_Growth,GD_OC,lab) in zip(GD_Growths,GD_OCs,Titles) :
         
         ListGrowth = np.unique(GD_Growth.index)
         ListChoc = np.unique(GD_OC.index)
@@ -839,8 +854,7 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
         DataGrowth = GD_Growth.loc[(GD_Growth['Img']==0),ParamGrowth].loc[CommonList]
         Data = DataFit.join(DataGrowth) 
         
-        Data['GrowthSlope_FromExp'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']/GD_Growth.loc[(GD_Growth['Img']==0),'Tau']
-        Data['GrowthSlope_FromGR'] = GD_OC.loc[(GD_OC['Img']==0),'A0Rel']*GD_Growth.loc[(GD_Growth['Img']==0),'GR_end']
+        Data['Expe'] = lab
         
         fullData = fullData.append(Data, ignore_index=True)
         
@@ -850,6 +864,119 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     
     columns = ParamGrowth+ParamOC
     
-    Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors)
+    Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors, corrmethod =CorrType)
    
+
+#%% Wrapper functions for analysis of contours
+
+
+def ParametriseContour(stringName,Path,dateCond,Scale,Todo, **kwargs):
+    
+    doL   = False
+    doLPR = False
+    doPR  = False
+    doR   = False
+    
+    if Todo == 'LPR':        
+        doLPR = True
+    elif Todo == 'PR':
+        doPR  = True
+    elif Todo == 'R':
+        doR   = True
+    elif Todo == 'L':
+        doL   = True
+        
+    DebugPlots = False  
+    LdmkPlots = True
+    Dmax = 20   
+    Dmax2 = 20   
+    AUTO = False
+    OverwriteData = False
+    FirstSlice = False
+    
+    for key, value in kwargs.items(): 
+        if key == 'debug':
+            DebugPlots = value
+        elif key == 'ldmkplots':
+            LdmkPlots = value
+        elif key == 'Dmax':
+            Dmax = value
+        elif key == 'Dmax2':
+            Dmax2 = value
+        elif key == 'AutoLdmks':
+            AUTO = value
+        elif key == 'Overwrite':
+            OverwriteData = value
+        elif key == 'FirstSlice':
+            FirstSlice = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    print('\033[1m' + '\033[4m' + '\nAnalyzing ' + dateCond + ':\n' + '\033[0m')
+    
+    if doLPR|doL:
+        ### Loading area and contour data
+        if not os.path.exists(Path + '\\GlobalData' + stringName + '_Landmarks.csv'):
+            if not os.path.exists(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv'):
+                ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+                GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+                print('\n Loaded AreaFit file.')
+            else:            
+                ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
+                GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
+                print('\n Loaded Landmarks_tmp file.')
+        else:            
+            ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv', index_col = 'Ind')
+            GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv', index_col = 'Ind')
+            print('\n Loaded Landmarks file.')
+            
+        StackList = np.unique(GlobalData.index)
+
+        print('\n\n\nGetting landmarks for : ' + dateCond + '\n\n')
+        ContourData_LM, GlobalData_LM = getLandmarks(ContourData,GlobalData,StackList,Scale,Path,stringName, 
+                                                     debug = DebugPlots, saveplots = LdmkPlots,
+                                                     Dmax = Dmax, Dmax2 = Dmax2, Auto = AUTO, Overwrite = OverwriteData,
+                                                     FirstSlice = FirstSlice)
+        
+        if doLPR:
+            # deleting tmp files
+            os.remove(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv')
+            os.remove(Path + '\\ContourData' + stringName + '_Landmarks_tmp.csv')
+            GlobalData_LM.to_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv',index_label = 'Ind')
+            ContourData_LM.to_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv',index_label = 'Ind')
+            print('\nLandmarks saved.\n\n')
+
+    elif doPR|doR:
+        ### Loading landmarks
+        GlobalData_LM = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv',index_col = 'Ind')
+        ContourData_LM = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv',index_col = 'Ind')
+        StackList = np.unique(GlobalData_LM.index)
+
+    if doLPR|doPR:
+        print('\n\n\nComputing parametric contours for : ' + dateCond + '\n\n')
+        ContourData_Param,GlobalData_Param = curvAbsci(ContourData_LM,GlobalData_LM,StackList,Path, debug = DebugPlots)
+        ContourData_Param.to_csv(Path + '\\ContourData' + stringName + '_Param.csv',index_label = 'Ind')
+        GlobalData_Param.to_csv(Path + '\\GlobalData' + stringName + '_Param.csv',index_label = 'Ind')
+        print('\nParametric contours saved.\n\n')
+
+    elif doR:
+        ### loading non parametric contours
+        GlobalData_Param = pd.read_csv(Path + '\\GlobalData' + stringName + '_Param.csv',index_col = 'Ind')
+        ContourData_Param = pd.read_csv(Path + '\\ContourData' + stringName + '_Param.csv',index_col = 'Ind')
+
+    if doLPR|doPR|doR:       
+        print('\n\n\nAligning contours for : ' + dateCond + '\n\n')
+        ContourData_RC,GlobalData_RC = rotateAndCenterShape(ContourData_Param,GlobalData_Param,StackList,Path,Scale, debug = DebugPlots)
+        GlobalData_RC.to_csv(Path + '\\GlobalData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
+        ContourData_RC.to_csv(Path + '\\ContourData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
+        print('\nAligned parametric contours saved.\n\n')
+        
+    elif doL:
+        print('Landmarks tmp round done for : ' + dateCond)
+    else:
+        print('No analysis done for : ' + dateCond)
+        
+    return
+
+
 

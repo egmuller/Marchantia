@@ -178,10 +178,6 @@ Scale220124 = 1.94 # Spatial scale (µm/px) for 16X 24-01-2022
 FPH220124 = 2 # Frames per hour
 Delay220124 = 40 # Delay between imbibition and experiment start
 
-ScaleTest = 1.94 # Spatial scale (µm/px) for 16X 24-01-2022
-FPHTest = 2 # Frames per hour
-DelayTest = 40 # Delay between imbibition and experiment start
-
 Scale220203 = 1.94 # Spatial scale (µm/px) for 16X 03-02-2022
 FPH220203 = 2 # Frames per hour
 Delay220203 = 30 # Delay between imbibition and experiment start
@@ -209,7 +205,7 @@ FPH220405_Osmo = 120 # Frames per hour
 
 Scale220531 = 1.94 # Spatial scale (µm/px) for 16X 14-02-2022
 FPH220531 = 2 # Frames per hour
-Delay220531 = 30 # Delay between imbibition and experiment start
+Delay220531 = 45 # Delay between imbibition and experiment start
 
 Scale220531_Osmo = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
 FPH220531_Osmo = 120 # Frames per hour
@@ -219,8 +215,8 @@ FPH220722 = 2 # Frames per hour
 Delay220722 = 30 # Delay between imbibition and experiment start
 
 Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
-FPH220727 = 120 # Frames per hour
-Delay220727 = 30 # Delay between imbibition and experiment start
+FPH220727 = 2 # Frames per hour
+Delay220727 = 60 # Delay between imbibition and experiment start
 
 Scale220727_Osmo = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
 FPH220727_Osmo = 120 # Frames per hour
@@ -239,7 +235,15 @@ Delay220808 = 45 # Delay between imbibition and experiment start
 Scale220808_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH220808_Osmo = 120 # Frames per hour
 
+Scale220928 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH220928 = 2 # Frames per hour
+Delay220928 = 54 # Delay between imbibition and experiment start
 
+Scale220928_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH220928_Osmo = 120 # Frames per hour
+
+Scale221004_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH221004_Osmo = 120 # Frames per hour
 
 
 # Paths to data
@@ -627,6 +631,11 @@ StackList220808_100mM_Osmo = ['PPG1','PPG2','PPG4','PPG5','PPG6','PPG7','PPG8','
     
 <<<<<<< HEAD
 
+    
+StackList220928_100mM = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46']
+    
 
 =======
 StackList220928_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
