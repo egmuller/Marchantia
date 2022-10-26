@@ -302,7 +302,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
     
             fig0.tight_layout()
             
-            fig,[ax0,ax1] = plt.subplots( nrows = 2, dpi = 300)
+            fig,[ax0,ax1] = plt.subplots(nrows = 2, dpi = 300)
             
             ax0.plot(intTime,GR*10000,'-*b',lw=1,ms=2)
             ax0.plot(intTime,GR_S*10000,'-c',lw=2)
@@ -488,8 +488,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
             # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TdebRel'] = paramsRel[3]
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope'] = paramsRel[4]
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope_FromExp'] = np.nan                 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope_FromGR'] = np.nan
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_AfterOC'] = paramsRel[4]/paramsRel[1]
                  
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/E'] = 2/(Erel+E)
