@@ -870,7 +870,7 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
 #%% Wrapper functions for analysis of contours
 
 
-def ParametriseContour(stringName,Path,dateCond,Scale,Todo, **kwargs):
+def ParametriseContour(stringName,Path,ExcludeList,dateCond,Scale,Todo, **kwargs):
     
     doL   = False
     doLPR = False
@@ -930,7 +930,8 @@ def ParametriseContour(stringName,Path,dateCond,Scale,Todo, **kwargs):
             GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv', index_col = 'Ind')
             print('\n Loaded Landmarks file.')
             
-        StackList = np.unique(GlobalData.index)
+        StackList = [X for X in np.unique(GlobalData.index) if X not in ExcludeList]
+
 
         print('\n\n\nGetting landmarks for : ' + dateCond + '\n\n')
         ContourData_LM, GlobalData_LM = getLandmarks(ContourData,GlobalData,StackList,Scale,Path,stringName, 
