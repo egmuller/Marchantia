@@ -129,6 +129,7 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
     FitObj.set_init_fit(curve_fit(f=FitObj.f, xdata=t, ydata=y, p0=params0, bounds=(0, np.inf), method='trf', loss='soft_l1')[0])
     
     tdebVar = 1
+    tdebVars = [1]
     cnt = 0
     
     while (tdebVar>Th) & (cnt<maxIter):
@@ -143,6 +144,7 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
         
         
         tdebVar = np.abs((tdeb_old-FitObj.tdeb())/tdeb_old)
+        tdebVars.append(tdebVar)
         
         if debug:
             if tdebVar<Th:
@@ -158,9 +160,13 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
         cnt += 1       
     print('\nModel for fit : ' + FitObj.name)
     print('Number of iterations : ' + str(cnt))
+    print('Final tdeb variations :' + str(tdebVars[-3:]) )
     
     if cnt == maxIter:
-        FitObj.set_fitinterval([])
+        if not all(np.array(tdebVars[-4:])<2*Th):
+            print('Thresohold : ' + str(Th) + 'tdebVars :')
+            print(tdebVars)
+            FitObj.set_fitinterval([])
      
     return(FitObj)
     
@@ -260,7 +266,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         
         ### Iterative fits for a convergence of Tdeb with different fits      
         
-        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.001, 10, Debug, ax1)
+        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.05, 10, Debug, ax1)
         
         FitResPlot =copy.deepcopy(FitRes_flat)
         
