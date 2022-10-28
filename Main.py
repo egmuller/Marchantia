@@ -53,12 +53,15 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     HSVrange = [(25, 25, 70),(60, 120,220)]
     ImgList = [0, 20, 40]
     fitwindow=15
+    saveWB= False
     
     for key, value in kwargs.items(): 
         if key == 'debugAll':
             DebugAll = value
         elif key == 'debug':
             DebugPlots = value
+        elif key == 'saveWB':
+            saveWB = value
         elif key == 'debuglist':
             ImgList = value 
         elif key == 'HSVrange':
@@ -93,7 +96,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     
     # Binarization of stacks
     if DoBin:
-        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList)
+        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList, saveWB = saveWB)
         print('\n\n')
     
     if DoCont:

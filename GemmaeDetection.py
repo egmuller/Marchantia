@@ -159,12 +159,15 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
     HSVmin = (30, 20, 70)
     HSVmax = (60, 120,220)
     ImgList = [0, 20, 40]
+    saveWB = False
     
     for key, value in kwargs.items(): 
         if key == 'debug':
             DebugPlots = value 
         elif key == 'debuglist':
             ImgList = value 
+        elif key == 'saveWB':
+            saveWB = value 
         elif key == 'HSVrange':
             HSVmin = value[0]
             HSVmax = value[1]
@@ -173,8 +176,9 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
      
 
     # Savefolders for WB and Binary stacks
-    if not os.path.exists(P + '\\WhiteBalanced'):
-        os.mkdir(P + '\\WhiteBalanced') # create global folder 
+    if saveWB:
+        if not os.path.exists(P + '\\WhiteBalanced'):
+            os.mkdir(P + '\\WhiteBalanced') # create global folder 
 
     if not os.path.exists(P + '\\Processed'):
         os.mkdir(P + '\\Processed') # create global folder 
@@ -287,8 +291,8 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
         RGBstack[:,:,:,1] = RGBstack[:,:,:,1] * lum / whiteG
         RGBstack[:,:,:,2] = RGBstack[:,:,:,2] * lum / whiteB
 
-        
-        tifff.imsave(P + '\\WhiteBalanced\\' + s + '.tif', RGBstack)
+        if saveWB:        
+            tifff.imsave(P + '\\WhiteBalanced\\' + s + '.tif', RGBstack)
             
 
 
