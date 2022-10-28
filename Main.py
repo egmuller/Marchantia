@@ -320,6 +320,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     mpl.rcParams['axes.prop_cycle'] = cycler(color=colorcycle)
          
     # check existence of figure folder, if absent, create it
+    if not os.path.exists(P):
+            os.mkdir(P) # create folder
+            
+    # check existence of figure folder, if absent, create it
     if not os.path.exists(P + '\\AreaGrowth'):
             os.mkdir(P + '\\AreaGrowth') # create folder
             
