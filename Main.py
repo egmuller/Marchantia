@@ -50,6 +50,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
       
     DebugAll = False
     DebugPlots = False
+    ValidPlots = False
     HSVrange = [(25, 25, 70),(60, 120,220)]
     ImgList = [0, 20, 40]
     fitwindow=15
@@ -60,6 +61,8 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
             DebugAll = value
         elif key == 'debug':
             DebugPlots = value
+        elif key == 'plotValid':
+            ValidPlots = value
         elif key == 'saveWB':
             saveWB = value
         elif key == 'debuglist':
@@ -126,7 +129,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         print('\n\n')
         
         # Fitting area growth
-        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
+        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay,R2Threshold,ValidPlots= ValidPlots, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
         
         GD.loc[:,'Expe'] = stringName
         
