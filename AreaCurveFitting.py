@@ -609,7 +609,7 @@ def selectR2s(GD, CD, Th, label, **kwargs):
         
         
         fig, ax = plt.subplots(dpi=300)
-        ax.set_title(label + ' - ' + name + '\n' + str(frac) + '% of data validated based on R2>' + str(Th))
+        ax.set_title(label + ' - ' + name + '\n'  + str(sum(goodR2s)) + '/' + str(len(goodR2s)) + '(' + str(frac) + '%) of data validated based on R2>' + str(Th))
         n, bins, patches = ax.hist(R2s, bins = np.arange(np.floor(min(R2s)*10)/10, 1.025, 0.025), color = 'r', rwidth = 0.95)
         xl = ax.get_xlim()
         yl = ax.get_ylim()
