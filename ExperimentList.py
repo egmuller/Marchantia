@@ -568,10 +568,10 @@ StackList221025_100mM = ['PPG1','PPG2','PPG3','PPG5','PPG7','PPG8','PPG9','PPG10
                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG29','PPG30','PPG31','PPG32',
                         'PPG33','PPG34','PPG35','PPG37','PPG38','PPG39','PPG40','PPG42','PPG43','PPG44','PPG45','PPG46']
 
-StackList221025_100mM_Osmo = ['PPG2','PPG3','PPG5','PPG7','PPG8','PPG9','PPG10','PPG12','PPG15','PPG16',
-                            'PPG19','PPG20','PPG21','PPG22','PPG23','PPG25','PPG27','PPG28','PPG29','PPG31','PPG32','PPG33','PPG34','PPG35',
+StackList221025_100mM_Osmo = ['PPG2','PPG5','PPG7','PPG8','PPG10','PPG12','PPG15','PPG16',
+                            'PPG19','PPG20','PPG21','PPG22','PPG23','PPG25','PPG27','PPG28','PPG29','PPG31','PPG32','PPG33','PPG35',
                             'PPG38','PPG39','PPG42','PPG43','PPG45','PPG46',
-                            'PPGA','PPGB','PPGC','PPGD','PPGE','PPGF','PPGH','PPGI','PPGJ']
+                            'PPGB','PPGD','PPGE','PPGF','PPGH','PPGI','PPGJ']
 
 StackList221025_100mM_Osmo2 = ['PPG2','PPG3','PPG5','PPG7','PPG8','PPG9','PPG12','PPG14','PPG15','PPG16',
                             'PPG19','PPG20','PPG21','PPG22','PPG23','PPG25','PPG27','PPG28','PPG29','PPG31','PPG32','PPG33','PPG35',
