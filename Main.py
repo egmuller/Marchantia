@@ -735,7 +735,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             fig00, ax00 = plt.subplots(dpi=300)
             fig00.patch.set_facecolor('white')
             ax00.hist(Es[i], facecolor=colors[i],bins=20) # ,density = True
-            fig00.suptitle('Bulk elastic moduli of WT gemmae')
+            fig00.suptitle('Bulk elastic moduli')
             ax00.set_xlabel('E (MPa)')
             ax00.set_ylabel('Count')
             # ax00.set_xlim(right=1.5)
@@ -819,13 +819,35 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         if not showbox:
             plt.close(fig2)
             plt.close(fig1)
+            plt.close(fig20)
+            plt.close(fig10)
+            plt.close(fig11)
+        else:
+            if not showE:
+                plt.close(fig1)
+                plt.close(fig10)
+                plt.close(fig11)
+            if not showTau:
+                plt.close(fig2)
+                plt.close(fig20)
+            
         return    
     else:
         if not showbox:
             plt.close(fig2)
             plt.close(fig1)
+            plt.close(fig20)
+            plt.close(fig10)
+            plt.close(fig11)
             return
         else:
+            if not showE:
+                plt.close(fig1)
+                plt.close(fig10)
+                plt.close(fig11)
+            if not showTau:
+                plt.close(fig2)
+                plt.close(fig20)
             return
 
 
