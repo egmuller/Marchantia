@@ -165,6 +165,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     TstartComp = 3
     TstartRel = 9
     RelValidation = True
+    saveWB = False
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -173,6 +174,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             DebugPlots = value
         elif key == 'debuglist':
             ImgList = value 
+        elif key == 'saveWB':
+            saveWB = value
         elif key == 'HSVrange':
             HSVrange = value
         elif key == 'FitIntervalComp':
@@ -211,7 +214,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     
     # Binarization of stacks
     if DoBin:
-        BinarizeStack(StackList, Path, Scale,debug = DebugPlots, HSVrange = HSVrange, debuglist = ImgList)
+        BinarizeStack(StackList, Path, Scale,debug = DebugPlots, HSVrange = HSVrange, debuglist = ImgList,saveWB = saveWB)
     
     if DoCont:
                 
