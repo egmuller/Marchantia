@@ -108,14 +108,14 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll)
 
         # Saving all contours
-        GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
-        CD.to_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_label = 'Ind')
+        GD.to_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
+        CD.to_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_label = 'Ind')
         print('\n\n')
 
     if DoFit:
         
-        GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
-        CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
+        GD = pd.read_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
+        CD = pd.read_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         print('\n\n')
         
         # Retrieve data on PPG position in chip 
@@ -140,8 +140,8 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         print('\n\n')
         
         # Saving sorted contour and fit data
-        GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
-        CD.to_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv',index_label = 'Ind')
+        GD.to_csv(Path + '/GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
+        CD.to_csv(Path + '/ContourData' + stringName + '_AreaFit.csv',index_label = 'Ind')
         print('\n\n')
     
     return
@@ -226,8 +226,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugPlots)
         
         # Saving all contours
-        GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
-        CD.to_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_label = 'Ind')
+        GD.to_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
+        CD.to_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_label = 'Ind')
         
         print('Contour saved')
 
@@ -243,8 +243,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             print('Done\n')
         print('\n\n')
         
-        GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
-        CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
+        GD = pd.read_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
+        CD = pd.read_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
         GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
         
@@ -256,8 +256,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist,key = 'fitR2rel')
         
         # Saving sorted contour and fit data
-        GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
-        CD.to_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv',index_label = 'Ind')
+        GD.to_csv(Path + '/GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
+        CD.to_csv(Path + '/ContourData' + stringName + '_AreaFit.csv',index_label = 'Ind')
     
     return
 
@@ -327,8 +327,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             os.mkdir(P) # create folder
             
     # check existence of figure folder, if absent, create it
-    if not os.path.exists(P + '\\AreaGrowth'):
-            os.mkdir(P + '\\AreaGrowth') # create folder
+    if not os.path.exists(P + '/AreaGrowth'):
+            os.mkdir(P + '/AreaGrowth') # create folder
             
     ## Data grouping if ANOVA : 
     if stats == 'ANOVA':
@@ -405,13 +405,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
     plt.figure(fig2.number)
     plt.legend(prop={'size': 8})
-    fig2.savefig(P + '\\AreaGrowth\\' + Title + '_AreaCurve.png')
+    fig2.savefig(P + '/AreaGrowth/' + Title + '_AreaCurve.png')
     if not showcurve:
         plt.close(fig2)
 
     plt.figure(fig3.number)
     plt.legend(prop={'size': 8})
-    fig3.savefig(P + '\\AreaGrowth\\' + Title + '_NormAreaCurve.png')
+    fig3.savefig(P + '/AreaGrowth/' + Title + '_NormAreaCurve.png')
     if not showcurve:
         plt.close(fig3)
 
@@ -609,10 +609,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
  
  
     if stats=='ranksum':
-        fig4.savefig(P + '\\AreaGrowth\\' + Title + '_Tstart.png')
-        fig5.savefig(P + '\\AreaGrowth\\'+ Title +  '_TauGrowth.png')
-        fig6.savefig(P + '\\AreaGrowth\\'+ Title +  '_StartingArea.png') 
-        fig16.savefig(P + '\\AreaGrowth\\'+ Title +  '_InitialGrowth.png')
+        fig4.savefig(P + '/AreaGrowth/' + Title + '_Tstart.png')
+        fig5.savefig(P + '/AreaGrowth/'+ Title +  '_TauGrowth.png')
+        fig6.savefig(P + '/AreaGrowth/'+ Title +  '_StartingArea.png') 
+        fig16.savefig(P + '/AreaGrowth/'+ Title +  '_InitialGrowth.png')
         if not showbox:
             plt.close(fig5)
             plt.close(fig4)
@@ -685,8 +685,8 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             print('Unknown key : ' + key + '. Ewarg ignored.')
          
     # check existence of figure folder, if absent, create it
-    if not os.path.exists(P + '\\Hydromechanics'):
-            os.mkdir(P + '\\Hydromechanics') # create folder
+    if not os.path.exists(P + '/Hydromechanics'):
+            os.mkdir(P + '/Hydromechanics') # create folder
     
         
     ### Regroup data
@@ -712,7 +712,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         plotSig(ax0,np.max(cap),np.max(cap)*0.125,0,Ecomps[i],Erels[i],0,1)
         
         fig0.tight_layout() 
-        fig0.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel.png')
+        fig0.savefig(P + '/Hydromechanics/' + lab + '_EComp-Rel.png')
         if not showE:
             plt.close(fig0)
         
@@ -722,7 +722,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,Lcomps[i],Lrels[i],0,1)
         
         fig01.tight_layout()
-        fig01.savefig(P + '\\Hydromechanics\\' + lab + '_Tflux-Rel.png')
+        fig01.savefig(P + '/Hydromechanics/' + lab + '_Tflux-Rel.png')
         if not showTau:
             plt.close(fig01)
         
@@ -734,7 +734,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                            ' - Mean : ' + str(np.round(np.divide(Erels[i],Ecomps[i]).mean()*100)/100))
             ax00.set_xlabel('Erel/Ecomp')
             ax00.set_ylabel('Count')
-            fig00.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel_Dist.png')
+            fig00.savefig(P + '/Hydromechanics/' + lab + '_EComp-Rel_Dist.png')
             if not showE:
                 plt.close(fig00)
             
@@ -745,7 +745,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             ax00.set_xlabel('E (MPa)')
             ax00.set_ylabel('Count')
             # ax00.set_xlim(right=1.5)
-            fig00.savefig(P + '\\Hydromechanics\\' + lab + '_E_Dist.png')
+            fig00.savefig(P + '/Hydromechanics/' + lab + '_E_Dist.png')
             if not showE:
                 plt.close(fig00)
             
@@ -768,7 +768,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                            ' - Mean : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).mean()*100)/100))
             ax001.set_xlabel('TfluxRel/Tflux')
             ax001.set_ylabel('Count')
-            fig001.savefig(P + '\\Hydromechanics\\' + lab + '_TauFluxComp-Rel_Dist.png')
+            fig001.savefig(P + '/Hydromechanics/' + lab + '_TauFluxComp-Rel_Dist.png')
             if not showTau:
                 plt.close(fig001)
         
@@ -815,11 +815,11 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     
 
     if stats=='ranksum':
-        fig1.savefig(P + '\\Hydromechanics\\' + Title + '_Ecomp.png')
-        fig2.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFluxComp.png')
-        fig10.savefig(P + '\\Hydromechanics\\' + Title + '_Erel.png')
-        fig20.savefig(P + '\\Hydromechanics\\'+ Title +  '_TauFluxrel.png')
-        fig11.savefig(P + '\\Hydromechanics\\' + Title + '_E.png')
+        fig1.savefig(P + '/Hydromechanics/' + Title + '_Ecomp.png')
+        fig2.savefig(P + '/Hydromechanics/'+ Title +  '_TauFluxComp.png')
+        fig10.savefig(P + '/Hydromechanics/' + Title + '_Erel.png')
+        fig20.savefig(P + '/Hydromechanics/'+ Title +  '_TauFluxrel.png')
+        fig11.savefig(P + '/Hydromechanics/' + Title + '_E.png')
         if not showbox:
             plt.close(fig2)
             plt.close(fig1)
@@ -948,18 +948,18 @@ def ParametriseContour(stringName,Path,dateCond,Scale,Todo, **kwargs):
     
     if doLPR|doL:
         ### Loading area and contour data
-        if not os.path.exists(Path + '\\GlobalData' + stringName + '_Landmarks.csv'):
-            if not os.path.exists(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv'):
-                ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv', index_col = 'Ind')
-                GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+        if not os.path.exists(Path + '/GlobalData' + stringName + '_Landmarks.csv'):
+            if not os.path.exists(Path + '/GlobalData' + stringName + '_Landmarks_tmp.csv'):
+                ContourData = pd.read_csv(Path + '/ContourData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+                GlobalData = pd.read_csv(Path + '/GlobalData' + stringName + '_AreaFit.csv', index_col = 'Ind')
                 print('\n Loaded AreaFit file.')
             else:            
-                ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
-                GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
+                ContourData = pd.read_csv(Path + '/ContourData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
+                GlobalData = pd.read_csv(Path + '/GlobalData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
                 print('\n Loaded Landmarks_tmp file.')
         else:            
-            ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv', index_col = 'Ind')
-            GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv', index_col = 'Ind')
+            ContourData = pd.read_csv(Path + '/ContourData' + stringName + '_Landmarks.csv', index_col = 'Ind')
+            GlobalData = pd.read_csv(Path + '/GlobalData' + stringName + '_Landmarks.csv', index_col = 'Ind')
             print('\n Loaded Landmarks file.')
             
         StackList = np.unique(GlobalData.index)
@@ -972,35 +972,35 @@ def ParametriseContour(stringName,Path,dateCond,Scale,Todo, **kwargs):
         
         if doLPR:
             # deleting tmp files
-            os.remove(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv')
-            os.remove(Path + '\\ContourData' + stringName + '_Landmarks_tmp.csv')
-            GlobalData_LM.to_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv',index_label = 'Ind')
-            ContourData_LM.to_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv',index_label = 'Ind')
+            os.remove(Path + '/GlobalData' + stringName + '_Landmarks_tmp.csv')
+            os.remove(Path + '/ContourData' + stringName + '_Landmarks_tmp.csv')
+            GlobalData_LM.to_csv(Path + '/GlobalData' + stringName + '_Landmarks.csv',index_label = 'Ind')
+            ContourData_LM.to_csv(Path + '/ContourData' + stringName + '_Landmarks.csv',index_label = 'Ind')
             print('\nLandmarks saved.\n\n')
 
     elif doPR|doR:
         ### Loading landmarks
-        GlobalData_LM = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv',index_col = 'Ind')
-        ContourData_LM = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv',index_col = 'Ind')
+        GlobalData_LM = pd.read_csv(Path + '/GlobalData' + stringName + '_Landmarks.csv',index_col = 'Ind')
+        ContourData_LM = pd.read_csv(Path + '/ContourData' + stringName + '_Landmarks.csv',index_col = 'Ind')
         StackList = np.unique(GlobalData_LM.index)
 
     if doLPR|doPR:
         print('\n\n\nComputing parametric contours for : ' + dateCond + '\n\n')
         ContourData_Param,GlobalData_Param = curvAbsci(ContourData_LM,GlobalData_LM,StackList,Path, debug = DebugPlots)
-        ContourData_Param.to_csv(Path + '\\ContourData' + stringName + '_Param.csv',index_label = 'Ind')
-        GlobalData_Param.to_csv(Path + '\\GlobalData' + stringName + '_Param.csv',index_label = 'Ind')
+        ContourData_Param.to_csv(Path + '/ContourData' + stringName + '_Param.csv',index_label = 'Ind')
+        GlobalData_Param.to_csv(Path + '/GlobalData' + stringName + '_Param.csv',index_label = 'Ind')
         print('\nParametric contours saved.\n\n')
 
     elif doR:
         ### loading non parametric contours
-        GlobalData_Param = pd.read_csv(Path + '\\GlobalData' + stringName + '_Param.csv',index_col = 'Ind')
-        ContourData_Param = pd.read_csv(Path + '\\ContourData' + stringName + '_Param.csv',index_col = 'Ind')
+        GlobalData_Param = pd.read_csv(Path + '/GlobalData' + stringName + '_Param.csv',index_col = 'Ind')
+        ContourData_Param = pd.read_csv(Path + '/ContourData' + stringName + '_Param.csv',index_col = 'Ind')
 
     if doLPR|doPR|doR:       
         print('\n\n\nAligning contours for : ' + dateCond + '\n\n')
         ContourData_RC,GlobalData_RC = rotateAndCenterShape(ContourData_Param,GlobalData_Param,StackList,Path,Scale, debug = DebugPlots)
-        GlobalData_RC.to_csv(Path + '\\GlobalData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
-        ContourData_RC.to_csv(Path + '\\ContourData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
+        GlobalData_RC.to_csv(Path + '/GlobalData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
+        ContourData_RC.to_csv(Path + '/ContourData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
         print('\nAligned parametric contours saved.\n\n')
         
     elif doL:

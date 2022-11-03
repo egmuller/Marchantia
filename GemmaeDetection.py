@@ -177,15 +177,15 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
 
     # Savefolders for WB and Binary stacks
     if saveWB:
-        if not os.path.exists(P + '\\WhiteBalanced'):
-            os.mkdir(P + '\\WhiteBalanced') # create global folder 
+        if not os.path.exists(P + '/WhiteBalanced'):
+            os.mkdir(P + '/WhiteBalanced') # create global folder 
 
-    if not os.path.exists(P + '\\Processed'):
-        os.mkdir(P + '\\Processed') # create global folder 
+    if not os.path.exists(P + '/Processed'):
+        os.mkdir(P + '/Processed') # create global folder 
             
             
-    if os.path.exists(P + '\\WhiteBalanceData.csv'):
-        WBsaving = pd.read_csv(P + '\\WhiteBalanceData.csv', index_col = 'Ind')
+    if os.path.exists(P + '/WhiteBalanceData.csv'):
+        WBsaving = pd.read_csv(P + '/WhiteBalanceData.csv', index_col = 'Ind')
     else:                
         WBsaving = pd.DataFrame(data=None,columns=['lum','whiteR','whiteG','whiteB']) 
         
@@ -194,17 +194,17 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
     
     for s in StackList:
         
-        if not os.path.exists(P + '\\Processed\\' + s + '_Binarized'):
-            # shutil.rmtree(P + '\\' + s + '_Binarized') # remove folder and contents
-            os.mkdir(P + '\\Processed\\' + s + '_Binarized') # create binarize image folder
+        if not os.path.exists(P + '/Processed/' + s + '_Binarized'):
+            # shutil.rmtree(P + '/' + s + '_Binarized') # remove folder and contents
+            os.mkdir(P + '/Processed/' + s + '_Binarized') # create binarize image folder
             isBin = False
         else:
             isBin = True
             
         print('Processing ' + s + ' :')    
 
-        RGBstack = io.imread(P + '\\' + s + '.tif') # get the tiff stack
-        Bckp_RGBstack = io.imread(P + '\\' + s + '.tif') # get the tiff stack for comparison
+        RGBstack = io.imread(P + '/' + s + '.tif') # get the tiff stack
+        Bckp_RGBstack = io.imread(P + '/' + s + '.tif') # get the tiff stack for comparison
         
         if DebugPlots:            
             imglist = ImgList
@@ -276,7 +276,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             
             WBsaving = WBsaving.append(pd.DataFrame(data=data,index = [s]))
 
-            WBsaving.to_csv(P + '\\WhiteBalanceData.csv',index_label = 'Ind')
+            WBsaving.to_csv(P + '/WhiteBalanceData.csv',index_label = 'Ind')
             
         else:
             whiteR = WBsaving.loc[s,'whiteR']
@@ -292,7 +292,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
         RGBstack[:,:,:,2] = RGBstack[:,:,:,2] * lum / whiteB
 
         if saveWB:        
-            tifff.imsave(P + '\\WhiteBalanced\\' + s + '.tif', RGBstack)
+            tifff.imsave(P + '/WhiteBalanced/' + s + '.tif', RGBstack)
             
 
 
@@ -317,16 +317,16 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
                 
                 BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots)
                 
-                io.imsave(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
+                io.imsave(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
             
             else:
-                if os.path.exists(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif'):
-                    BinImg = io.imread(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif') 
+                if os.path.exists(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif'):
+                    BinImg = io.imread(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif') 
                 else:
                     print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
                     
                     BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots)
-                    io.imsave(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
+                    io.imsave(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
             
 
 
@@ -418,7 +418,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
         print('Processing ' + s + ' :')   
         
-        ProcessedPath = P + '\\Processed\\' + s + '_Binarized\\'
+        ProcessedPath = P + '/Processed/' + s + '_Binarized/'
 
         n = len([entry for entry in os.listdir(ProcessedPath) if os.path.isfile(os.path.join(ProcessedPath, entry))]) # number of images
 
@@ -431,7 +431,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
             print('Measuring contour for image ' + str(i+1) + '/' + str(n).ljust(10), flush=True, end = '\r')
                         
             # Loading binary image
-            BinImg = io.imread(ProcessedPath + '\\' + str(i) + '.tif')
+            BinImg = io.imread(ProcessedPath + '/' + str(i) + '.tif')
 
             # Computing propagule edge and area from binary image
             SortedX,SortedY,center,Area,Xlength,Ylength = getEdgeAndArea(BinImg,Scale) 
@@ -454,7 +454,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
             GD = GD.append(pd.DataFrame(data=data2,index = [s])) 
             
             if ((i == 0)|(i == 1)|(i == 2)) & DebugPlots: #((i == 1)|(i == 21)|(i == 41)) &
-                RGBimg = io.imread(P + '\\' + s + '.tif', key = i)
+                RGBimg = io.imread(P + '/' + s + '.tif', key = i)
 
                 plt.figure(dpi=250,facecolor='white')
                 plt.title(s)
@@ -472,7 +472,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
 def FindChipPos(StackList,Path,Orientation):
     
-    FullChip = io.imread(Path + '\\FullChip.tif')
+    FullChip = io.imread(Path + '/FullChip.tif')
     
     large_image = FullChip[:,:,2]  
     
@@ -487,7 +487,7 @@ def FindChipPos(StackList,Path,Orientation):
     
     for s,i in zip(StackList,range(len(StackList))):
         
-        small_image = io.imread(Path + '\\' + s + '.tif')[4,:,:,2]
+        small_image = io.imread(Path + '/' + s + '.tif')[4,:,:,2]
         
         l,w = small_image.shape
         
@@ -517,9 +517,9 @@ def FindChipPos(StackList,Path,Orientation):
 
     Datadict = {'Name': StackList, 'Row': positions}
     Data = pd.DataFrame(Datadict)
-    Data.to_excel(Path + '\\ChipPositions.xlsx',index=False)
+    Data.to_excel(Path + '/ChipPositions.xlsx',index=False)
     
-    fig.savefig(Path + '\\FullChipTagged.tif')
+    fig.savefig(Path + '/FullChipTagged.tif')
     plt.close()
     
     return(positions)

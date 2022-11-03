@@ -35,8 +35,8 @@ get_ipython().run_line_magic('matplotlib', 'inline')
 
 def rotateAndCenterShape(CD,GD,StackList,P,Scale, **kwargs):
     
-    if not os.path.exists(P + '\\Figures\\Rotation\\'):
-        os.mkdir(P + '\\Figures\\Rotation\\') # create folder
+    if not os.path.exists(P + '/Figures/Rotation/'):
+        os.mkdir(P + '/Figures/Rotation/') # create folder
     
     DebugPlots = False
     SavedPlots = False
@@ -61,8 +61,8 @@ def rotateAndCenterShape(CD,GD,StackList,P,Scale, **kwargs):
         
         print('Aligning first image on notches for ' + s, end='\r')
             
-        if not os.path.exists(P + '\\Figures\\Rotation\\'+ s + '\\'):
-            os.mkdir(P + '\\Figures\\Rotation\\'+ s + '\\') # create folder
+        if not os.path.exists(P + '/Figures/Rotation/'+ s + '/'):
+            os.mkdir(P + '/Figures/Rotation/'+ s + '/') # create folder
 
         i = 0 #  for first image
 
@@ -259,7 +259,7 @@ def rotateAndCenterShape(CD,GD,StackList,P,Scale, **kwargs):
                 plt.legend()
 
                 fig.tight_layout()
-                fig.savefig(P + '\\Figures\\Rotation\\'+ s + '\\' + str(i) +'.png') 
+                fig.savefig(P + '/Figures/Rotation/'+ s + '/' + str(i) +'.png') 
                 if DebugPlots:
                     plt.show()
                 else:
@@ -462,8 +462,8 @@ def RotTransAlignement(X,Y,Xref,Yref,RotRange,Xrange,Yrange,debug):
 
 def curvAbsci(CD,GD,StackList,P, **kwargs):
 
-    if not os.path.exists(P + '\\Figures\\Parametrisation\\'):
-        os.mkdir(P + '\\Figures\\Parametrisation\\') # create folder
+    if not os.path.exists(P + '/Figures/Parametrisation/'):
+        os.mkdir(P + '/Figures/Parametrisation/') # create folder
     
     DebugPlots = False
     SavedPlots = False
@@ -483,8 +483,8 @@ def curvAbsci(CD,GD,StackList,P, **kwargs):
         
         print('Processing ' + s + '...',end=' ')
         
-        if not os.path.exists(P + '\\Figures\\Parametrisation\\'+ s + '\\'):
-            os.mkdir(P + '\\Figures\\Parametrisation\\'+ s + '\\') # create folder
+        if not os.path.exists(P + '/Figures/Parametrisation/'+ s + '/'):
+            os.mkdir(P + '/Figures/Parametrisation/'+ s + '/') # create folder
             
         n = int(1 + np.max(CD.loc[s, 'Img']))
         
@@ -593,7 +593,7 @@ def curvAbsci(CD,GD,StackList,P, **kwargs):
                 ax1.plot(Xparam_lo[0:len(Xparam_lo)-1:10]-Xc,Yparam_lo[0:len(Xparam_lo)-1:10]-Yc,'ro',ms = 3, label='Lower section')
                 ax1.set_aspect('equal', adjustable='box')
                 plt.legend(fontsize = 'xx-small')
-                fig1.savefig(P + '\\Figures\\Parametrisation\\'+ s + '\\' + 'Reg_' + str(i) +'.png') 
+                fig1.savefig(P + '/Figures/Parametrisation/'+ s + '/' + 'Reg_' + str(i) +'.png') 
                 if DebugPlots & ((i == 0)|(i == 20)|(i == 30)|(i == 10)):
                     plt.show()
                 else:
@@ -627,11 +627,11 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
         return np.floor(f) // 2 * 2 + 1    
     
     # Folder definition
-    if not os.path.exists(P + '\\Figures\\'):
-        os.mkdir(P + '\\Figures\\') # create folder
+    if not os.path.exists(P + '/Figures/'):
+        os.mkdir(P + '/Figures/') # create folder
         
-    if not os.path.exists(P + '\\Figures\\Landmarks\\'):
-        os.mkdir(P + '\\Figures\\Landmarks\\') # create folder
+    if not os.path.exists(P + '/Figures/Landmarks/'):
+        os.mkdir(P + '/Figures/Landmarks/') # create folder
         
     # Kwargs
     DebugPlots = False
@@ -663,8 +663,8 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
     Dmax2 = Dmax2/Scale
     
     # Load or create file for landmark points 
-    if os.path.exists(P + '\\clickedpoints.csv'):
-        RefPts = pd.read_csv(P + '\\clickedpoints.csv', index_col = 'Ind')
+    if os.path.exists(P + '/clickedpoints.csv'):
+        RefPts = pd.read_csv(P + '/clickedpoints.csv', index_col = 'Ind')
     else:                
         RefPts = pd.DataFrame(data=None,columns=['Img','Xnotch1','Ynotch1','Xnotch2','Ynotch2','Xattach','Yattach']) 
     
@@ -672,8 +672,8 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
     
     for s in StackList:
         
-        if not os.path.exists(P + '\\Figures\\Landmarks\\'+ s + '\\'):
-            os.mkdir(P + '\\Figures\\Landmarks\\'+ s + '\\') # create folder
+        if not os.path.exists(P + '/Figures/Landmarks/'+ s + '/'):
+            os.mkdir(P + '/Figures/Landmarks/'+ s + '/') # create folder
             
         print('First image landmarks for : ' + s.ljust(10), flush=True, end = '\r')
         
@@ -752,7 +752,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
                 RefPts = RefPts.append(pd.DataFrame(data=data,index = [s]))
 
-                RefPts.to_csv(P + '\\clickedpoints.csv',index_label = 'Ind')
+                RefPts.to_csv(P + '/clickedpoints.csv',index_label = 'Ind')
 
             else: # Load clicked points from the file
                     NotchesRef = [[RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xnotch1'].values,
@@ -799,7 +799,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
             # Plotting 
             if SavedPlots:
-                RGBimg = io.imread(P + '\\' + s + '.tif', key = i)
+                RGBimg = io.imread(P + '/' + s + '.tif', key = i)
 
                 fig0, [ax0, ax1] = plt.subplots(ncols = 2, dpi = 250,facecolor='black')
                 fig0.suptitle(s)
@@ -825,12 +825,12 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                 fig0.colorbar(sc, ax = ax1, label = 'Curvature',shrink = 0.6)
                 fig0.tight_layout()
 
-                fig0.savefig(P + '\\Figures\\Landmarks\\'+ s + '\\' + str(i) +'.png') 
+                fig0.savefig(P + '/Figures/Landmarks/'+ s + '/' + str(i) +'.png') 
                 plt.close()
 
     # Save tmp file with already analyzed stacks        
-    GD.to_csv(P + '\\GlobalData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
-    CD.to_csv(P + '\\ContourData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
+    GD.to_csv(P + '/GlobalData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
+    CD.to_csv(P + '/ContourData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
     
     print('\n')
     
@@ -1029,7 +1029,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
                         RefPts = RefPts.append(pd.DataFrame(data=data,index = [s]))
 
-                        RefPts.to_csv(P + '\\clickedpoints.csv',index_label = 'Ind')
+                        RefPts.to_csv(P + '/clickedpoints.csv',index_label = 'Ind')
                         
                     else:
                         NotchesRef = [[RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xnotch1'].values,
@@ -1100,7 +1100,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
                     # plotting
                     if SavedPlots:
-                        RGBimg = io.imread(P + '\\' + s + '.tif', key = i)
+                        RGBimg = io.imread(P + '/' + s + '.tif', key = i)
 
                         fig0, [ax0, ax1] = plt.subplots(ncols = 2, dpi = 250,facecolor='black')
                         fig0.suptitle(s)
@@ -1126,12 +1126,12 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                         fig0.colorbar(sc, ax = ax1, label = 'Curvature',shrink = 0.6)
                         fig0.tight_layout()
 
-                        fig0.savefig(P + '\\Figures\\Landmarks\\'+ s + '\\' + str(i) +'.png') 
+                        fig0.savefig(P + '/Figures/Landmarks/'+ s + '/' + str(i) +'.png') 
                         plt.close()
 
                 # Save tmp file with already analyzed stacks        
-                GD.to_csv(P + '\\GlobalData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
-                CD.to_csv(P + '\\ContourData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
+                GD.to_csv(P + '/GlobalData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
+                CD.to_csv(P + '/ContourData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
 
             print('\n')
 
@@ -1193,7 +1193,7 @@ def fitCircle(X,Y):
 
 def getContourPointsCoordinates(P,s,npts,nimg,X,Y,Xc,Yc,Xold,Yold,Xcold,Ycold,Title):            
         
-    RGBimg = io.imread(P + '\\' + s + '.tif', key = nimg) # get the  image from tiff stack
+    RGBimg = io.imread(P + '/' + s + '.tif', key = nimg) # get the  image from tiff stack
 
     # ask user to click
     get_ipython().run_line_magic('matplotlib', 'qt')
