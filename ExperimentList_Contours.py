@@ -99,10 +99,10 @@ ExcludeList220531_Ct1_Osmo =  []
 ExcludeList220531_Ct2_Osmo = []
 
 
-ExcludeList220727_Hyper = ['PPG45']
+ExcludeList220727_Hyper = ['PPG45','PPG43','PPG48','PPG49','PPG18','PPG22','PPG29']
 
 
-ExcludeList220727_Hypo = []
+ExcludeList220727_Hypo = ['PPG7','PPG17','PPG23','PPG31','PPG34']
 
 
 # ExcludeList220801_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
