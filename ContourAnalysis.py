@@ -662,11 +662,17 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
     Dmax = Dmax/Scale
     Dmax2 = Dmax2/Scale
     
-    # Load or create file for landmark points 
-    if os.path.exists(P + '\\clickedpoints.csv'):
-        RefPts = pd.read_csv(P + '\\clickedpoints.csv', index_col = 'Ind')
+    # Load or create file for first image landmark points 
+    if os.path.exists(P + '\\validpoints_First.csv'):
+        ClickPts_First = pd.read_csv(P + '\\validpoints_First.csv', index_col = 'Ind')
     else:                
-        RefPts = pd.DataFrame(data=None,columns=['Img','Xnotch1','Ynotch1','Xnotch2','Ynotch2','Xattach','Yattach']) 
+        ClickPts_First = pd.DataFrame(data=None,columns=['Img','Xnotch1','Ynotch1','Xnotch2','Ynotch2','Xattach','Yattach']) 
+        
+    # Load or create file for landmark points 
+    if os.path.exists(P + '\\validpoints.csv'):
+        ClickPts = pd.read_csv(P + '\\validpoints.csv', index_col = 'Ind')
+    else:                
+        ClickPts = pd.DataFrame(data=None,columns=['Img','Xnotch1','Ynotch1','Xnotch2','Ynotch2','Xattach','Yattach']) 
     
     # 1. For each video in StackList identify landmarks on first image
     
@@ -735,7 +741,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
             ### Identifying landmarks
             # if clicked points not already in the file, ask user and then save in the file
-            if RefPts.loc[(RefPts.index == s)&(RefPts['Img']==i)].empty:
+            if ClickPts_First.loc[(ClickPts_First.index == s)&(ClickPts_First['Img']==i)].empty:
 
                 # identifying notches manually on fist image
                 NotchesRef = getContourPointsCoordinates(P,s,2,i,Xsmooth,Ysmooth,Xsmooth[loc],Ysmooth[loc],Xsmooth,Ysmooth,Xsmooth[loc],Ysmooth[loc],'Select the two notches')
@@ -750,17 +756,17 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                         'Xattach':AttachRef[0][0],
                         'Yattach':AttachRef[0][1]}            
 
-                RefPts = RefPts.append(pd.DataFrame(data=data,index = [s]))
+                ClickPts_First = ClickPts_First.append(pd.DataFrame(data=data,index = [s]))
 
-                RefPts.to_csv(P + '\\clickedpoints.csv',index_label = 'Ind')
+                ClickPts_First.to_csv(P + '\\validpoints_First.csv',index_label = 'Ind')
 
             else: # Load clicked points from the file
-                    NotchesRef = [[RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xnotch1'].values,
-                                       RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Ynotch1'].values],
-                                     [RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xnotch2'].values,
-                                       RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Ynotch2'].values]]
-                    AttachRef = [[RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xattach'].values, 
-                                 RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Yattach'].values]]
+                    NotchesRef = [[ClickPts_First.loc[(ClickPts_First.index == s) & (ClickPts_First['Img'] == i) ,'Xnotch1'].values,
+                                       ClickPts_First.loc[(ClickPts_First.index == s) & (ClickPts_First['Img'] == i) ,'Ynotch1'].values],
+                                     [ClickPts_First.loc[(ClickPts_First.index == s) & (ClickPts_First['Img'] == i) ,'Xnotch2'].values,
+                                       ClickPts_First.loc[(ClickPts_First.index == s) & (ClickPts_First['Img'] == i) ,'Ynotch2'].values]]
+                    AttachRef = [[ClickPts_First.loc[(ClickPts_First.index == s) & (ClickPts_First['Img'] == i) ,'Xattach'].values, 
+                                 ClickPts_First.loc[(ClickPts_First.index == s) & (ClickPts_First['Img'] == i) ,'Yattach'].values]]
 
 
             # Find landmarks in contour from clicked points and Curvature computation   
@@ -952,7 +958,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
                     ### Identifying landmarks
                     # if there is no reference point in the file
-                    if RefPts.loc[(RefPts.index == s)&(RefPts['Img']==i)].empty:
+                    if ClickPts.loc[(ClickPts.index == s)&(ClickPts['Img']==i)].empty:
                         
                         ### if high curvature points are too far from old 
                         ### aligned contour landmarks, ask again the user
@@ -991,7 +997,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
 
                         if (DN > Dmax):
                             if AUTO:
-                                # aligned old landlark points (= new reference points)
+                                # aligned old landmark points (= new reference points)
                                 NotchesRef = [[xN1OldAl,yN1OldAl],
                                              [xN2OldAl,yN2OldAl]]
                             else:
@@ -999,7 +1005,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                                                                          Ysmooth[loc],XalOld,YalOld,[xN1OldAl,xN2OldAl],[yN1OldAl,yN2OldAl], 'Select the two notches')
 
                         else:
-                            # aligned old landlark points (= new reference points)
+                            # aligned old landmark points (= new reference points)
                             NotchesRef = [[xN1OldAl,yN1OldAl],
                                          [xN2OldAl,yN2OldAl]]
 
@@ -1017,27 +1023,27 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                             AttachRef = [[xAOldAl,yAOldAl]]
 
 
-
-                        # Save the reference points
-                        data = {'Img': i,
-                                'Xnotch1':NotchesRef[0][0],
-                                'Ynotch1':NotchesRef[0][1],
-                                'Xnotch2':NotchesRef[1][0],
-                                'Ynotch2':NotchesRef[1][1],
-                                'Xattach':AttachRef[0][0],
-                                'Yattach':AttachRef[0][1]}            
-
-                        RefPts = RefPts.append(pd.DataFrame(data=data,index = [s]))
-
-                        RefPts.to_csv(P + '\\clickedpoints.csv',index_label = 'Ind')
+                        if not AUTO:
+                            # Save the reference points
+                            data = {'Img': i,
+                                    'Xnotch1':NotchesRef[0][0],
+                                    'Ynotch1':NotchesRef[0][1],
+                                    'Xnotch2':NotchesRef[1][0],
+                                    'Ynotch2':NotchesRef[1][1],
+                                    'Xattach':AttachRef[0][0],
+                                    'Yattach':AttachRef[0][1]}            
+    
+                            ClickPts = ClickPts.append(pd.DataFrame(data=data,index = [s]))
+    
+                            ClickPts.to_csv(P + '\\validpoints.csv',index_label = 'Ind')
                         
                     else:
-                        NotchesRef = [[RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xnotch1'].values,
-                                           RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Ynotch1'].values],
-                                         [RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xnotch2'].values,
-                                           RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Ynotch2'].values]]
-                        AttachRef = [[RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Xattach'].values, 
-                                     RefPts.loc[(RefPts.index == s) & (RefPts['Img'] == i) ,'Yattach'].values]]
+                        NotchesRef = [[ClickPts.loc[(ClickPts.index == s) & (ClickPts['Img'] == i) ,'Xnotch1'].values,
+                                           ClickPts.loc[(ClickPts.index == s) & (ClickPts['Img'] == i) ,'Ynotch1'].values],
+                                         [ClickPts.loc[(ClickPts.index == s) & (ClickPts['Img'] == i) ,'Xnotch2'].values,
+                                           ClickPts.loc[(ClickPts.index == s) & (ClickPts['Img'] == i) ,'Ynotch2'].values]]
+                        AttachRef = [[ClickPts.loc[(ClickPts.index == s) & (ClickPts['Img'] == i) ,'Xattach'].values, 
+                                     ClickPts.loc[(ClickPts.index == s) & (ClickPts['Img'] == i) ,'Yattach'].values]]
                         
                         DN1 = np.min(vf.dist(NotchesRef[0][0],NotchesRef[0][1],Xsmooth[loc],Ysmooth[loc]))
                         DN2 = np.min(vf.dist(NotchesRef[1][0],NotchesRef[1][1],Xsmooth[loc],Ysmooth[loc]))
