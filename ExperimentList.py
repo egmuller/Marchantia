@@ -32,6 +32,10 @@ Scale221021 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH221021 = 2 # Frames per hour
 Delay221021 = 43 # 33# Delay between imbibition and experiment start
 
+Scale221028 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH221028 = 2 # Frames per hour
+Delay221028 = 39 # Delay between imbibition and experiment start
+
 Scale221031 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH221031 = 2 # Frames per hour
 Delay221031 = 42 # 33# Delay between imbibition and experiment start
@@ -40,25 +44,28 @@ Scale221102 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH221102 = 2 # Frames per hour
 Delay221102 = 40 # 33# Delay between imbibition and experiment start
 
-P_Ct_Val =r'G:/Chip/Data_Ct_Valentin/'
+P_Ct_Val =r'/run/media/emuller/Elise_these/Chip/Data_Ct_Valentin'
 
 
-P221010_Ct = r'G:/Chip/221006_Pectinase_croissance/croissance_ctrl/PPGs'
-P221010_02UPase = r'G:/Chip/221006_Pectinase_croissance/croissance_0p2Pase/PPGs'
+P221010_Ct = r'/run/media/emuller/Elise_these/Chip/221006_Pectinase_croissance/croissance_ctrl/PPGs'
+P221010_02UPase = r'/run/media/emuller/Elise_these/Chip/221006_Pectinase_croissance/croissance_0p2Pase/PPGs'
 
-P221013_croissance_1xchoc = r'G:/Chip/221012_doublechoc/croissance/croissance_1choc/PPGs'
-P221013_croissance_2xchoc =  r'G:/Chip/221012_doublechoc/croissance/croissance_2chocs/PPGs'
-P221013_choc1_2xchoc = r'G:/Chip/221012_doublechoc/choc1_chambre2chocs/PPGs'
-P221013_choc2_2xchoc = r'G:/Chip/221012_doublechoc/choc2/choc2_chambre2chocs/PPGs'
-P221013_choc_1xchoc = r'G:/Chip/221012_doublechoc/choc2/choc2_chambre1choc/PPGs'
+P221013_croissance_1xchoc = r'/run/media/emuller/Elise_these/Chip/221012_doublechoc/croissance/croissance_1choc/PPGs'
+P221013_croissance_2xchoc =  r'/run/media/emuller/Elise_these/Chip/221012_doublechoc/croissance/croissance_2chocs/PPGs'
+P221013_choc1_2xchoc = r'/run/media/emuller/Elise_these/Chip/221012_doublechoc/choc1_chambre2chocs/PPGs'
+P221013_choc2_2xchoc = r'/run/media/emuller/Elise_these/Chip/221012_doublechoc/choc2/choc2_chambre2chocs/PPGs'
+P221013_choc_1xchoc = r'/run/media/emuller/Elise_these/Chip/221012_doublechoc/choc2/choc2_chambre1choc/PPGs'
 
-P221017_02UPase = r'G:/Chip/221017_croissance_pectinase/0p2UPectinase/PPGs'
-P221017_2UPase = r'G:/Chip/221017_croissance_pectinase/2Upectinase/PPGs'
-P221017_Ct = r'G:/Chip/221017_croissance_pectinase/ctrl/PPGs'
-P221017_Ct100deg = r'G:/Chip/221017_croissance_pectinase/ctrl_100deg/PPGs'
+P221017_02UPase = r'/run/media/emuller/Elise_these/Chip/221017_croissance_pectinase/0p2UPectinase/PPGs'
+P221017_2UPase = r'/run/media/emuller/Elise_these/Chip/221017_croissance_pectinase/2Upectinase/PPGs'
+P221017_Ct = r'/run/media/emuller/Elise_these/Chip/221017_croissance_pectinase/ctrl/PPGs'
+P221017_Ct100deg = r'/run/media/emuller/Elise_these/Chip/221017_croissance_pectinase/ctrl_100deg/PPGs'
 
-P221021_02UPase = r'G:/Chip/221021_croissance_pectinase/croissance_0p2UPase/PPGs'
-P221021_Ct = r'G:/Chip/221021_croissance_pectinase/Ctrl/PPGs'
+P221021_02UPase = r'/run/media/emuller/Elise_these/Chip/221021_croissance_pectinase/croissance_0p2UPase/PPGs'
+P221021_Ct = r'/run/media/emuller/Elise_these/Chip/221021_croissance_pectinase/Ctrl/PPGs'
+
+P221028_Ct = r'/run/media/emuller/Elise_these/Chip/221028_pectinase_croissance/Ctrl/PPGs'
+P221028_Pase = r'/run/media/emuller/Elise_these/Chip/221028_pectinase_croissance/pectinase/PPGs'
 
 P221031_Ct = r'/run/media/emuller/Elise_these/Chip/221031_EGTA_croissance/ctrl/PPGs'
 P221031_EGTA = r'/run/media/emuller/Elise_these/Chip/221031_EGTA_croissance/egta/PPGs'
@@ -66,7 +73,7 @@ P221031_EGTA = r'/run/media/emuller/Elise_these/Chip/221031_EGTA_croissance/egta
 P221102_Ct = r'/run/media/emuller/Elise_these/Chip/221102_CaCl2_croissance/Ctrl/PPGs'
 P221102_CaCl2 = r'/run/media/emuller/Elise_these/Chip/221102_CaCl2_croissance/CaCl2/PPGs'
 
-PFig = r'D:/Users/emuller/Documents/data/Chip_experiments/Figures'
+PFig = r'/home/emuller/Documents/data/Chip_experiments/Figures'
 
 
 StackList221010_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
@@ -145,6 +152,19 @@ StackList221021_02UPase =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PP
                              'PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60',
                              'PPG61','PPG62','PPG63','PPG64'] #'PPG23','PPG37',
 
+StackList221028_Ct =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50',
+                             'PPG51']  #'PPG21', 'PPG41',
+
+StackList221028_Pase =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46'] 
+
 StackList221031_Ct =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
                              'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
                              'PPG21','PPG22','PPG23', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
@@ -154,7 +174,7 @@ StackList221031_Ct =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','
 StackList221031_EGTA =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
                              'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
                              'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
-                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36']
+                             'PPG31','PPG32','PPG33','PPG35','PPG36'] #'PPG34',
 
 StackList221102_Ct =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
                              'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
