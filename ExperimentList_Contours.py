@@ -53,8 +53,11 @@ FPH221004_Osmo = 120 # Frames per hour
 
 P220214_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\TimeEvolution\Ctrl1'
 P220214_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\TimeEvolution\Ctrl2'
-P220214_Ct1_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\OsmoticChoc\Ctrl1'
-P220214_Ct2_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\OsmoticChoc\Ctrl2'
+
+P220301_Ct = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\TimeEvolution\Ctrl'
+P220301_M100 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\TimeEvolution\Manitol100mM'
+P220301_Ct_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\OsmoticChocs\Ctrl'
+P220301_M100_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\OsmoticChocs\Manitol100mM'
 
 P220531_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\TimeEvolution\Ctrl1'
 P220531_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\TimeEvolution\Ctrl2'
@@ -84,10 +87,15 @@ P220727_Hypo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls
 ExcludeList220214_Ct1 = []
                 
 ExcludeList220214_Ct2 = []
+  
 
-ExcludeList220214_Ct1_Osmo = []
-                
-ExcludeList220214_Ct2_Osmo = []
+ExcludeList220301_Ct = []    
+
+ExcludeList220301_M100 = []
+    
+ExcludeList220301_Ct_Osmo =  []
+
+ExcludeList220301_M100_Osmo = []
   
 
 ExcludeList220531_Ct1 = []    
