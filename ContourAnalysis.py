@@ -1023,7 +1023,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                             AttachRef = [[xAOldAl,yAOldAl]]
 
 
-                        if not AUTO:
+                        if (not AUTO) | (DN <= Dmax):
                             # Save the reference points
                             data = {'Img': i,
                                     'Xnotch1':NotchesRef[0][0],
