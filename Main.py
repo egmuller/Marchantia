@@ -479,7 +479,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # number of ppgs and label
         nPPG = len(GD.loc[GD['Img'] == 0])
-        lab = lab + 'n = ' + str(nPPG)
+        lab = lab + '\n n = ' + str(nPPG)
         labs = np.append(labs,lab)
         
         # Retrieve data
