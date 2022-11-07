@@ -6,7 +6,7 @@ Created on Thu Jun 23 15:43:06 2022
 """
 
 # Imports
-from scipy.stats import ranksums, linregress, kruskal
+from scipy.stats import ranksums, linregress, kruskal, pearsonr
 
 import numpy as np
 import numpy.matlib as mtl
@@ -88,12 +88,19 @@ def Corr(GDs,labels, **kwargs):
         else:
             GDtoCorr = GD.loc[GD['Img'] == 0, dfcols]
         corrMat = GDtoCorr.corr(method=corrmethod)
+        pvalMat = GDtoCorr.corr(method=lambda x, y: pearsonr(x, y)[1])
         
         plt.figure(dpi=250,facecolor = 'white')
         plt.title(corrmethod + ' correlation for \n' + lab)
         mask = np.zeros_like(corrMat)
         mask[np.tril_indices_from(mask,k=-1)] = True
         sns.heatmap(corrMat,mask = mask,square=True,vmin=-1,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8}) #,cmap = 'YlGnBu'
+        
+        plt.figure(dpi=250,facecolor = 'white')
+        plt.title(corrmethod + ' p-value for \n' + lab)
+        mask = np.zeros_like(corrMat)
+        mask[np.tril_indices_from(mask,k=-1)] = True
+        sns.heatmap(pvalMat,mask = mask,square=True,vmin=0,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8},cmap = 'YlGnBu')
         
         if PlotFits:
             
