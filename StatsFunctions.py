@@ -40,7 +40,7 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
         h = hmax
         fullstep += step
         ax.plot([pos1, pos2], [h+fullstep ,h+fullstep], 'k-',zorder=0)
-        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + str(round(p*1000)/1000), ha='center',fontsize='small')
+        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + str(round(p*1000)/1000) + ' & ES = ' + str(np.round(ES*10)/10), ha='center',fontsize='small')
         ax.set_ylim(top=h+fullstep+step)
 
     return(fullstep)
