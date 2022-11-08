@@ -180,10 +180,11 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
 # Kwargs : 'debug' (True/False) for generating debug plots, 'fitwindow' (time in hours) 
 # to choose the window after dormancy exit on which to fit 
 
-def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
+def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
     
     DebugPlots = False
     Debug = True
+    ValidPlots = False
     FitWindow = 15
     
     for key, value in kwargs.items(): 
@@ -192,6 +193,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         elif key == 'debugall':
             DebugPlots = value
             Debug = False
+        elif key == 'ValidPlots':
+            ValidPlots = value
         elif key == 'fitwindow':
             FitWindow = value
         else:
@@ -272,8 +275,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
         else:
             GR_flat,intTime_flat = [0,0]
 
+        if ValidPlots:
+            VPlt = FitResPlot.R2() > Th
+        else:
+            VPlt = True
         
-        if DebugPlots:
+        if DebugPlots & VPlt:
             
             fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
             
@@ -283,7 +290,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay, **kwargs):
             'T = ' + str(round(FitResPlot.P_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
                           + str(FitResPlot.R2_init))
             ax01.plot(Time,FitResPlot.values,'*r',ms=3)
-            ax01.plot(Time,FitResPlot.fC(),'--b')
+            ax01.plot(Time,FitResPlot.f(Time,*FitResPlot.P_init),'--b')
             ax01.set_xlabel('Time (min)')
             ax01.set_ylabel('Area (mm²)')
             # ax01.set_xscale('log')
