@@ -5,20 +5,6 @@ Created on Tue Oct 25 14:26:22 2022
 @author: laplaud
 """
 
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb 23 2022
-
-@author: Valentin Laplaud
-
-List of experiments
-
-"""
-
-Scale220214 = 1.94 # Spatial scale (µm/px) for 16X 14-02-2022
-
-Scale220214_Osmo = 1.94 # Spatial scale (µm/px) for 16X 14-02-2022
-
 Scale220531 = 1.94 # Spatial scale (µm/px) for 16X 14-02-2022
 
 Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
@@ -51,13 +37,8 @@ FPH221004_Osmo = 120 # Frames per hour
 
 # Paths to data
 
-P220214_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\TimeEvolution\Ctrl1'
-P220214_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220214_DV6_Ctrls+OC\TimeEvolution\Ctrl2'
-
 P220301_Ct = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\TimeEvolution\Ctrl'
 P220301_M100 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\TimeEvolution\Manitol100mM'
-P220301_Ct_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\OsmoticChocs\Ctrl'
-P220301_M100_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220301_DV6_Manitol100mM+OC\OsmoticChocs\Manitol100mM'
 
 P220531_Ct1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\TimeEvolution\Ctrl1'
 P220531_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\TimeEvolution\Ctrl2'
@@ -84,18 +65,10 @@ P220727_Hypo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls
 # PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
-ExcludeList220214_Ct1 = []
-                
-ExcludeList220214_Ct2 = []
-  
 
 ExcludeList220301_Ct = []    
 
 ExcludeList220301_M100 = []
-    
-ExcludeList220301_Ct_Osmo =  []
-
-ExcludeList220301_M100_Osmo = []
   
 
 ExcludeList220531_Ct1 = []    
@@ -110,7 +83,7 @@ ExcludeList220531_Ct2_Osmo = []
 ExcludeList220727_Hyper = ['PPG45','PPG43','PPG48','PPG49','PPG18','PPG22','PPG29']
 
 
-ExcludeList220727_Hypo = ['PPG7','PPG17','PPG23','PPG31','PPG34']
+ExcludeList220727_Hypo = ['PPG7','PPG17','PPG23','PPG31','PPG34','PPG36']
 
 
 # ExcludeList220801_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
