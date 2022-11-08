@@ -9,6 +9,7 @@ Created on Tue Jun 21 16:42:37 2022
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
 from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
+from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -894,4 +895,117 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     
     Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors, corrmethod =CorrType)
    
+
+#%% Wrapper functions for analysis of contours
+
+
+def ParametriseContour(stringName,Path,dateCond,Scale,Todo, **kwargs):
+    
+    doL   = False
+    doLPR = False
+    doPR  = False
+    doR   = False
+    
+    if Todo == 'LPR':        
+        doLPR = True
+    elif Todo == 'PR':
+        doPR  = True
+    elif Todo == 'R':
+        doR   = True
+    elif Todo == 'L':
+        doL   = True
+        
+    DebugPlots = False  
+    LdmkPlots = True
+    Dmax = 20   
+    Dmax2 = 20   
+    AUTO = False
+    OverwriteData = False
+    FirstSlice = False
+    
+    for key, value in kwargs.items(): 
+        if key == 'debug':
+            DebugPlots = value
+        elif key == 'ldmkplots':
+            LdmkPlots = value
+        elif key == 'Dmax':
+            Dmax = value
+        elif key == 'Dmax2':
+            Dmax2 = value
+        elif key == 'AutoLdmks':
+            AUTO = value
+        elif key == 'Overwrite':
+            OverwriteData = value
+        elif key == 'FirstSlice':
+            FirstSlice = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    print('\033[1m' + '\033[4m' + '\nAnalyzing ' + dateCond + ':\n' + '\033[0m')
+    
+    if doLPR|doL:
+        ### Loading area and contour data
+        if not os.path.exists(Path + '\\GlobalData' + stringName + '_Landmarks.csv'):
+            if not os.path.exists(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv'):
+                ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+                GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+                print('\n Loaded AreaFit file.')
+            else:            
+                ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
+                GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
+                print('\n Loaded Landmarks_tmp file.')
+        else:            
+            ContourData = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv', index_col = 'Ind')
+            GlobalData = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv', index_col = 'Ind')
+            print('\n Loaded Landmarks file.')
+            
+        StackList = np.unique(GlobalData.index)
+
+        print('\n\n\nGetting landmarks for : ' + dateCond + '\n\n')
+        ContourData_LM, GlobalData_LM = getLandmarks(ContourData,GlobalData,StackList,Scale,Path,stringName, 
+                                                     debug = DebugPlots, saveplots = LdmkPlots,
+                                                     Dmax = Dmax, Dmax2 = Dmax2, Auto = AUTO, Overwrite = OverwriteData,
+                                                     FirstSlice = FirstSlice)
+        
+        if doLPR:
+            # deleting tmp files
+            os.remove(Path + '\\GlobalData' + stringName + '_Landmarks_tmp.csv')
+            os.remove(Path + '\\ContourData' + stringName + '_Landmarks_tmp.csv')
+            GlobalData_LM.to_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv',index_label = 'Ind')
+            ContourData_LM.to_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv',index_label = 'Ind')
+            print('\nLandmarks saved.\n\n')
+
+    elif doPR|doR:
+        ### Loading landmarks
+        GlobalData_LM = pd.read_csv(Path + '\\GlobalData' + stringName + '_Landmarks.csv',index_col = 'Ind')
+        ContourData_LM = pd.read_csv(Path + '\\ContourData' + stringName + '_Landmarks.csv',index_col = 'Ind')
+        StackList = np.unique(GlobalData_LM.index)
+
+    if doLPR|doPR:
+        print('\n\n\nComputing parametric contours for : ' + dateCond + '\n\n')
+        ContourData_Param,GlobalData_Param = curvAbsci(ContourData_LM,GlobalData_LM,StackList,Path, debug = DebugPlots)
+        ContourData_Param.to_csv(Path + '\\ContourData' + stringName + '_Param.csv',index_label = 'Ind')
+        GlobalData_Param.to_csv(Path + '\\GlobalData' + stringName + '_Param.csv',index_label = 'Ind')
+        print('\nParametric contours saved.\n\n')
+
+    elif doR:
+        ### loading non parametric contours
+        GlobalData_Param = pd.read_csv(Path + '\\GlobalData' + stringName + '_Param.csv',index_col = 'Ind')
+        ContourData_Param = pd.read_csv(Path + '\\ContourData' + stringName + '_Param.csv',index_col = 'Ind')
+
+    if doLPR|doPR|doR:       
+        print('\n\n\nAligning contours for : ' + dateCond + '\n\n')
+        ContourData_RC,GlobalData_RC = rotateAndCenterShape(ContourData_Param,GlobalData_Param,StackList,Path,Scale, debug = DebugPlots)
+        GlobalData_RC.to_csv(Path + '\\GlobalData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
+        ContourData_RC.to_csv(Path + '\\ContourData' + stringName + '_ParamAligned.csv',index_label = 'Ind')
+        print('\nAligned parametric contours saved.\n\n')
+        
+    elif doL:
+        print('Landmarks tmp round done for : ' + dateCond)
+    else:
+        print('No analysis done for : ' + dateCond)
+        
+    return
+
+
 
