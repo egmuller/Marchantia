@@ -33,14 +33,14 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
     if pos2 == pos1+1: 
         h = np.median([np.median(data1),np.median(data2)])
         ax.plot([pos1+0.2, pos2-0.2], [h ,h], 'w-',zorder=0)
-        ax.text((pos1+pos2)/2,h+0.2*step,'p = ' + str(np.round(p*1000)/1000) + '\nES = ' + str(np.round(ES*10)/10), ha='center',fontsize='small')
+        ax.text((pos1+pos2)/2,h+0.2*step,'p = ' + '{0:.3f}'.format(np.round(p*1000)/1000) + '\nES = ' + str(np.round(ES*10)/10), ha='center',fontsize='small')
         ax.set_ylim(top=hmax+fullstep+step)
             
     else:       
         h = hmax
         fullstep += step
         ax.plot([pos1, pos2], [h+fullstep ,h+fullstep], 'w-',zorder=0)
-        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + str(round(p*1000)/1000), ha='center',fontsize='small')
+        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + '{0:.3f}'.format(np.round(p*1000)/1000), ha='center',fontsize='small')
         ax.set_ylim(top=h+fullstep+step)
 
     return(fullstep)
