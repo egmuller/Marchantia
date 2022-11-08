@@ -419,48 +419,44 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
       
     fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
     fig4.suptitle(Title + ' - Growth start time')
-    plt.ylabel('T start (hours)')
       
     fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
-    fig5.suptitle(Title + ' - Growth caracteristic time')
-    plt.ylabel('Tau growth (hours)')
+    fig5.suptitle(Title + ' - Growth rate')
     
     fig6,ax6 = plt.subplots(dpi = 250,facecolor='white') 
     fig6.suptitle(Title + ' - Starting area') 
-    plt.ylabel('Starting area from fit (mm²)') 
 
     fig16,ax16 = plt.subplots(dpi = 250,facecolor='white')
     fig16.suptitle(Title + ' - Initial growth increase')
-    plt.ylabel('Growth at Tstart (%)')
     
     if len(newGDs) == 2:
         # Histogram for distribution comparison
         fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig7.suptitle(Title + ' - Growth caracteristic times')
-        plt.xlabel('Tau growth (hours)')
+        plt.xlabel('Area doubling (hours)')
         plt.ylabel('PDF')
 
         fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig8.suptitle(Title + ' - Growth start time')
-        plt.xlabel('T start (min)')
+        plt.xlabel('Tstart (min)')
         plt.ylabel('PDF')
         
         fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig9.suptitle(Title + ' - Growth caracteristic times')
-        plt.xlabel('Tau growth (hours) - median aligned')
+        plt.xlabel('Area doubling (hours) - median aligned')
         plt.ylabel('PDF')
 
         fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig10.suptitle(Title + ' - Growth start time')
-        plt.xlabel('T start (min) - median aligned')
+        plt.xlabel('Tstart (min) - median aligned')
         plt.ylabel('PDF')
     
     tdebs= [None]*len(newGDs)
-    taus= [None]*len(newGDs)
+    AD= [None]*len(newGDs)
     captdeb= [None]*len(newGDs)
-    captau= [None]*len(newGDs)
+    capAD= [None]*len(newGDs)
     medtdeb= [None]*len(newGDs)
-    medtau= [None]*len(newGDs)    
+    medAD= [None]*len(newGDs)    
     
     Area0 = [None]*len(newGDs) 
     capArea0 = [None]*len(newGDs) 
@@ -482,7 +478,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
-        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
+        AD[i] = GD.loc[GD['Img'] == 0, 'Tau']/60*np.log(2)
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
         AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
         
@@ -498,7 +494,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         bp4 = ax4.boxplot(tdebs[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
                     showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
         
-        bp5 = ax5.boxplot(taus[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
+        bp5 = ax5.boxplot(AD[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
                     showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
         
         bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops, 
@@ -508,24 +504,24 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
                     showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
     
         captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
-        captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
+        capAD[i] = bp5['caps'][1].get_ydata(orig=True)[0]
         capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0] 
         capAreaStart[i] = bp26['caps'][1].get_ydata(orig=True)[0]
         medtdeb[i] = bp4['medians'][0].get_ydata(orig=True)[0]
-        medtau[i] = bp5['medians'][0].get_ydata(orig=True)[0]
+        medAD[i] = bp5['medians'][0].get_ydata(orig=True)[0]
         medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
         medAreaStart[i] = bp26['medians'][0].get_ydata(orig=True)[0]
         
         if len(newGDs) == 2:
         
-            ax7.hist(taus[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
+            ax7.hist(AD[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
             ax8.hist(tdebs[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
-            ax9.hist(taus[i]-np.median(taus[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
+            ax9.hist(AD[i]-np.median(AD[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
             ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
 
             
     sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'lightgray', size=2, ax = ax4)
-    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'lightgray', size=2, ax = ax5)
+    sns.swarmplot(x=grouping,y=pd.concat(AD),color = 'lightgray', size=2, ax = ax5)
     sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'lightgray', size=2, ax = ax6) 
     sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'lightgray', size=2, ax = ax16)
     
@@ -533,10 +529,20 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     ax5.set_xticklabels(labs)
     ax6.set_xticklabels(labs) 
     ax16.set_xticklabels(labs)
+    
+    ax4.set_ylabel('Tstart (hours)')
+      
+    ax5.set_ylabel('Area doubling (hours)')
+    ax5.set_ylim(bottom=10)
+    
+    ax6.set_ylabel('Starting area from fit (mm²)') 
+
+    ax16.set_ylabel('Growth at Tstart (%)')
+    
 
     if len(newGDs) == 2:
         # Distribution comparison with two-sample kolmogorov smirnov test
-        statsTau, pTau =  ks_2samp(taus[0],taus[1])
+        statsTau, pTau =  ks_2samp(AD[0],AD[1])
         ax7.set_title('KS test - p = ' + str(round(pTau*1000)/1000))
         fig7.tight_layout()
         
@@ -544,7 +550,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         ax8.set_title('KS test - p = ' + str(round(pTdeb*1000)/1000))
         fig8.tight_layout()
         
-        statsTau, pTau =  ks_2samp(taus[0]-np.median(taus[0]),taus[1]-np.median(taus[1]))
+        statsTau, pTau =  ks_2samp(AD[0]-np.median(AD[0]),AD[1]-np.median(AD[1]))
         ax9.set_title('KS test - p = ' + str(round(pTau*1000)/1000))
         fig9.tight_layout()
         
@@ -559,17 +565,17 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig10)
     
     steptdeb = np.max(captdeb)*0.125
-    steptau = np.max(captau)*0.125
+    stepAD = np.max(capAD)*0.125
     stepArea0 = np.max(capArea0)*0.125 
     stepAreaStart = np.max(capAreaStart)*0.125
     
     fullsteptdeb = 0
-    fullsteptau = 0
+    fullstepAD = 0
     fullstepArea0 = 0 
     fullstepAreaStart = 0
     
     hmaxtdeb = np.max(captdeb)
-    hmaxtau = np.max(captau)
+    hmaxAD = np.max(capAD)
     hmaxArea0 = np.max(capArea0) 
     hmaxAreaStart = np.max(capAreaStart)
     
@@ -580,7 +586,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
 
                     fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
 
-                    fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+                    fullstepAD = plotSig(ax5,hmaxAD,stepAD,fullstepAD,AD[i],AD[j],i,j)
                     
                     fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
@@ -591,7 +597,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
 
                 fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
 
-                fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+                fullstepAD = plotSig(ax5,hmaxAD,stepAD,fullstepAD,AD[i],AD[j],i,j)
  
                 fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
@@ -600,7 +606,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     elif stats == 'kruskal':
         
         StatsKruskal(ax4,tdebs)
-        StatsKruskal(ax5,taus)
+        StatsKruskal(ax5,AD)
         StatsKruskal(ax6,Area0)
         StatsKruskal(ax16,AreaStart)
                
@@ -618,8 +624,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig16)
         return  
     elif stats == 'ANOVA':
-        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit','GrowthAtStart_flat'],[medtdeb,medtau,medArea0,medAreaStart],[fig4,fig5,fig6,fig16],[ax4,ax5,ax6,ax16],
-                                    [pd.concat(tdebs),pd.concat(taus),pd.concat(Area0),pd.concat(AreaStart)]):
+        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit','GrowthAtStart_flat'],[medtdeb,medAD,medArea0,medAreaStart],[fig4,fig5,fig6,fig16],[ax4,ax5,ax6,ax16],
+                                    [pd.concat(tdebs),pd.concat(AD),pd.concat(Area0),pd.concat(AreaStart)]):
 
             res = TwowayANOVA(v,diffcat,groupcat,GDs);
 
