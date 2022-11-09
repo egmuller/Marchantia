@@ -906,6 +906,47 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     
     Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors, corrmethod =CorrType)
    
+    
+#%% Growth rate ratios after/ before OC
+
+def plotGRratio(GDs,GD_Osmos,labels):
+    AllRatios = np.empty(0)
+    
+    f0,ax0 = plt.subplots(dpi=200)
+    f0.patch.set_facecolor('white')
+    
+    for GD,GD_Osmo,label in zip(GDs,GD_Osmos,labels):
+        GRbefore = GD.loc[GD['Img']==0,'GR_end']
+        GRafter = GD_Osmo.loc[GD_Osmo['Img']==0,'GR_AfterOC']
+        GRs = pd.concat([GRbefore, GRafter],axis=1)
+        GRs = GRs.assign(GR_ratio = lambda x: (x['GR_AfterOC'] / x['GR_end']))
+        
+        Ratios = GRs['GR_ratio'].to_numpy()
+        Ratios = Ratios[~np.isnan(Ratios)]
+        Ratios_Valid = Ratios[(Ratios>0)&(Ratios<4)]
+
+        f,ax = plt.subplots(dpi=200)
+        ax.set_title(label + '. Valid : ' + str(round(len(Ratios_Valid)/len(Ratios)*100)) + 
+                     '% (' + str(len(Ratios_Valid)) + '/' + str(len(Ratios)) + ')\n Mean : ' 
+                     + '{0:.2f}'.format(Ratios_Valid.mean()))
+        f.patch.set_facecolor('white')
+        ax.hist(GRs['GR_ratio'], range = (0,4), bins = 8, density = True)
+        ax.set_ylabel('Density')
+        ax.set_xlabel('GR_after/GR_before')
+        sns.kdeplot(Ratios_Valid,ax=ax)
+        
+        sns.kdeplot(Ratios_Valid,ax=ax0)
+        
+        AllRatios = np.append(AllRatios,Ratios_Valid)
+        
+
+    ax0.hist(AllRatios, range = (0,4), bins = 8,color='r', density = True)
+    ax0.set_ylabel('Density')
+    ax0.set_xlabel('GR_after/GR_before')
+    ax0.set_xlim([-1,5])
+    ax0.set_title('Ratio of Growth Rate around OC for All\n Mean : ' + '{0:.2f}'.format(AllRatios.mean()))
+   
+    
 
 #%% Wrapper functions for analysis of contours
 
