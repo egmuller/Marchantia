@@ -5,7 +5,9 @@ Created on Tue Oct 25 14:26:22 2022
 @author: laplaud
 """
 
-Scale220531 = 1.94 # Spatial scale (µm/px) for 16X 14-02-2022
+Scale220301 = 1.94 # Spatial scale (µm/px) for 16X 01-03-2022
+
+Scale220531 = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
 
 Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
 
