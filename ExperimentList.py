@@ -44,6 +44,13 @@ Scale221102 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH221102 = 2 # Frames per hour
 Delay221102 = 40 # 33# Delay between imbibition and experiment start
 
+Scale221103 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH221103 = 2 # Frames per hour
+Delay221103 = 46 # Delay between imbibition and experiment start
+
+Scale221103_Osmo = 1.94 # Spatial scale (µm/px) for 16X 14-02-2022
+FPH221103_Osmo = 120 # Frames per hour
+
 P_Ct_Val =r'/run/media/emuller/Elise_these/Chip/Data_Ct_Valentin'
 
 
@@ -72,6 +79,13 @@ P221031_EGTA = r'/run/media/emuller/Elise_these/Chip/221031_EGTA_croissance/egta
 
 P221102_Ct = r'/run/media/emuller/Elise_these/Chip/221102_CaCl2_croissance/Ctrl/PPGs'
 P221102_CaCl2 = r'/run/media/emuller/Elise_these/Chip/221102_CaCl2_croissance/CaCl2/PPGs'
+
+
+P221103_croissance_1xchoc = r'/run/media/emuller/Elise_these/Chip/221103_doublechoc/croissance/1xchoc/PPGs'
+P221103_croissance_2xchoc =  r'/run/media/emuller/Elise_these/Chip/221103_doublechoc/croissance/2xchoc/PPGs'
+P221103_choc1_2xchoc = r'/run/media/emuller/Elise_these/Chip/221103_doublechoc/2xchoc_choct0/PPGs'
+P221103_choc2_2xchoc = r'/run/media/emuller/Elise_these/Chip/221103_doublechoc/choct30h/2xchoc/PPGs'
+P221103_choc_1xchoc = r'/run/media/emuller/Elise_these/Chip/221103_doublechoc/choct30h/1xchoc/PPGs'
 
 PFig = r'/home/emuller/Documents/data/Chip_experiments/Figures'
 
@@ -189,6 +203,29 @@ StackList221102_CaCl2 =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8
                              'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50',
                              'PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60',
                              'PPG61'] 
+
+StackList221103_croissance_2xchoc =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG7','PPG8','PPG9',
+                             'PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36'] #'PPG6', 'PPG10','PPG11','PPG22','PPG23',
+
+StackList221103_croissance_1xchoc =  ['PPG1','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33'] # 'PPG2','PPG15',
+
+StackList221103_choc1_2xchoc =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16'] 
+
+StackList221103_choc2_2xchoc =  ['PPG1','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9',
+                                 'PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34'] #'PPG2','PPG10','PPG11'
+
+StackList221103_choc_1xchoc =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32'] 
 
 
 
