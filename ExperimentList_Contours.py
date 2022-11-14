@@ -8,6 +8,7 @@ Created on Tue Oct 25 14:26:22 2022
 Scale220301 = 1.94 # Spatial scale (µm/px) for 16X 01-03-2022
 
 Scale220531 = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
+Scale220531_Osmo = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
 
 Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
 
@@ -70,10 +71,10 @@ P220727_Hypo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls
 
 ExcludeList220301_Ct = []    
 
-ExcludeList220301_M100 = []
+ExcludeList220301_M100 = ['PPG24']
   
 
-ExcludeList220531_Ct1 = []    
+ExcludeList220531_Ct1 = ['PPG19','PPG47','PPG50']    
 
 ExcludeList220531_Ct2 = []
     
