@@ -851,7 +851,6 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
             else:            
                 List = GD.loc[s,'LocNotch2'].values
                 idx = next((i for i in range(len(List)) if np.isnan(List[i])),nimg)
-    
 #             print('nimg : ' + str(nimg) + ' // idx : ' + str(idx))
 
             if idx == nimg:
@@ -1135,9 +1134,11 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                         fig0.savefig(P + '\\Figures\\Landmarks\\'+ s + '\\' + str(i) +'.png') 
                         plt.close()
 
-                # Save tmp file with already analyzed stacks        
+                # Save tmp file with already analyzed stacks 
+
                 GD.to_csv(P + '\\GlobalData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
-                CD.to_csv(P + '\\ContourData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')
+                CD.to_csv(P + '\\ContourData' + stringName + '_Landmarks_tmp.csv',index_label = 'Ind')   
+                
 
             print('\n')
 
