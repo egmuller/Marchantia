@@ -71,7 +71,7 @@ P220727_Hypo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls
 
 ExcludeList220301_Ct = []    
 
-ExcludeList220301_M100 = ['PPG24']
+ExcludeList220301_M100 = ['PPG24','PPG51']
   
 
 ExcludeList220531_Ct1 = ['PPG19','PPG47','PPG50']    
