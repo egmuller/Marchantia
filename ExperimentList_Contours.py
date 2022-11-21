@@ -74,7 +74,7 @@ ExcludeList220301_Ct = []
 ExcludeList220301_M100 = ['PPG24','PPG51']
   
 
-ExcludeList220531_Ct1 = ['PPG19','PPG47','PPG50']    
+ExcludeList220531_Ct1 = ['PPG14','PPG18','PPG19','PPG21','PPG47','PPG50']    
 
 ExcludeList220531_Ct2 = []
     
