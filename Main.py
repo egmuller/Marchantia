@@ -6,6 +6,7 @@ Created on Tue Jun 21 16:42:37 2022
 """
 
 # Imports 
+from tqdm import tqdm
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
 from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
@@ -909,13 +910,42 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     
 #%% Growth rate ratios after/ before OC
 
-def plotGRratio(GDs,GD_Osmos,labels):
+def plotGRratio(GDs,GD_Osmos,labels,colors):
     AllRatios = np.empty(0)
+    AllGRvar = np.empty(0)
+    AllGRvarMedians = np.empty(0)
     
-    f0,ax0 = plt.subplots(dpi=200)
+    n = len(GDs)
+    def mosaicList(n):
+        alphabet = 'abcdefghijklmn'
+        list1 = [*alphabet[0]*n]
+        list2 = [*alphabet[1:n+1]]
+        mosaic = [list1[:]]
+        for i in range(2):
+            mosaic.append(list1)
+        mosaic.append(list2)
+        return(mosaic,list2) 
+    
+    # Figure for GR ratios around OC pooled between experiments
+    f0,axes = plt.subplot_mosaic(mosaicList(n)[0], dpi=200, figsize=(5,5))
     f0.patch.set_facecolor('white')
+    axes['a'].set_title('Growth rates change\n caused by Osmotic choc')
     
-    for GD,GD_Osmo,label in zip(GDs,GD_Osmos,labels):
+    # Figure for GR ratios during growth pooled between experiments
+    f1,ax1 = plt.subplots(dpi=200)
+    f1.patch.set_facecolor('white')
+    f1.suptitle('All growth GR pooled')
+    
+    
+    # Figure for GR ratios of both cases
+    f01,ax01 = plt.subplots(dpi=200)
+    f01.patch.set_facecolor('white')
+    f01.suptitle('GR ratios comparison')
+    
+    
+    for GD,GD_Osmo,label,colo,nax in zip(GDs,GD_Osmos,labels,colors,mosaicList(n)[1]):
+        
+        # GR ratio before/after OC
         GRbefore = GD.loc[GD['Img']==0,'GR_end']
         GRafter = GD_Osmo.loc[GD_Osmo['Img']==0,'GR_AfterOC']
         GRs = pd.concat([GRbefore, GRafter],axis=1)
@@ -924,27 +954,66 @@ def plotGRratio(GDs,GD_Osmos,labels):
         Ratios = GRs['GR_ratio'].to_numpy()
         Ratios = Ratios[~np.isnan(Ratios)]
         Ratios_Valid = Ratios[(Ratios>0)&(Ratios<4)]
-
-        f,ax = plt.subplots(dpi=200)
-        ax.set_title(label + '. Valid : ' + str(round(len(Ratios_Valid)/len(Ratios)*100)) + 
-                     '% (' + str(len(Ratios_Valid)) + '/' + str(len(Ratios)) + ')\n Mean : ' 
-                     + '{0:.2f}'.format(Ratios_Valid.mean()))
-        f.patch.set_facecolor('white')
-        ax.hist(GRs['GR_ratio'], range = (0,4), bins = 8, density = True)
-        ax.set_ylabel('Density')
-        ax.set_xlabel('GR_after/GR_before')
-        sns.kdeplot(Ratios_Valid,ax=ax)
-        
-        sns.kdeplot(Ratios_Valid,ax=ax0)
         
         AllRatios = np.append(AllRatios,Ratios_Valid)
         
+        
+        # GR ratio during growth
+        GRvar_Exp = np.empty(0)
+        GRvarMedians = np.empty(0)    
+        
+        for s in np.unique(GD.index):
+            GR = GD.loc[s,'GR_Full'].to_numpy()
+        
+            GRvar = np.abs(np.divide(GR[1:-1],GR[0:-2]))
 
-    ax0.hist(AllRatios, range = (0,4), bins = 8,color='r', density = True)
-    ax0.set_ylabel('Density')
-    ax0.set_xlabel('GR_after/GR_before')
-    ax0.set_xlim([-1,5])
-    ax0.set_title('Ratio of Growth Rate around OC for All\n Mean : ' + '{0:.2f}'.format(AllRatios.mean()))
+            
+            GRvar_Exp = np.append(GRvar_Exp,GRvar)
+            GRvarMedians = np.append(GRvarMedians,np.median(GRvar))
+            
+            # GRvarInWindow = np.round(len(GRvar[(GRvar>0) & (GRvar<2)])/len(GRvar)*1000)/10
+            # f,ax = plt.subplots(dpi=200)
+            # f.patch.set_facecolor('white')
+            # f.suptitle(s + ' (' + str(GRvarInWindow) + '% in window) + median')
+            # ax.hist(GRvar, range = (0,2), bins = 21,color='r', density = True)
+            # lims = ax0.get_ylim()
+            # ax.plot([np.median(GRvar),np.median(GRvar)],lims,'--',color = 'lightgray')
+            # ax.set_ylim(lims)
+        
+        AllGRvar = np.append(AllGRvar,GRvar_Exp)
+        
+        # Plot        
+        # axes[nax].hist(GRvar_Exp, range = (0,2), bins = 15,color='gray', density = True, label = 'GR ratios during growth')
+        axes[nax].hist(GRs['GR_ratio'], range = (0,4), bins = 12, density = True, color = colo, alpha = 0.7)
+        
+        # axes[nax].set_xlabel('GR ratios')
+        axes[nax].set_xlim([-1,4])
+        
+        sns.kdeplot(Ratios_Valid,ax=axes[nax], color = 'k',lw=1)
+        
+        sns.kdeplot(Ratios_Valid,ax=axes['a'],color = colo, label= label)
+        axes[nax].set_ylabel('')
+
+
+    ax1.hist(GRvar_Exp, range = (0,2), bins = 15,color='b', density = True, label = 'GR ratios during growth')
+    ax1.set_ylabel('Density')
+    ax1.set_xlabel('GR ratios')
+
+    axes['a'].hist(AllRatios, range = (0,4), bins = 8,color='gray', density = True, label = 'Pooled data')
+    axes['a'].set_ylabel('Density')
+    axes['a'].set_xlabel('Growth Rate ratios after/before Osmotic choc')
+    axes['a'].set_xlim([-1,4.5])
+    # axes['a'].set_title('Mean : ' + '{0:.2f}'.format(AllRatios.mean()))
+    axes['a'].legend()
+    f0.tight_layout()
+    
+    ax01.hist(AllRatios, range = (0,4), bins = 8,color='gray', density = True, label = 'GR ratios around OC', alpha = 0.7)
+    ax01.hist(AllGRvar, range = (0,2), bins = 12,color='b', density = True, label = 'GR ratios during growth', alpha = 0.7)
+    ax01.set_ylabel('Density')
+    ax01.set_xlabel('GR ratios')
+    ax01.set_xlim([-1,4])
+    ax01.legend()
+    f01.tight_layout()
    
     
 
