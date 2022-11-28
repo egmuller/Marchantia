@@ -74,9 +74,9 @@ ExcludeList220301_Ct = []
 ExcludeList220301_M100 = ['PPG24','PPG51']
   
 
-ExcludeList220531_Ct1 = ['PPG14','PPG18','PPG19','PPG21','PPG47','PPG50']    
+ExcludeList220531_Ct1 = ['PPG14','PPG18','PPG19','PPG21','PPG29','PPG47','PPG50','PPG40']    
 
-ExcludeList220531_Ct2 = []
+ExcludeList220531_Ct2 = ['PPG13']
     
 ExcludeList220531_Ct1_Osmo =  []
 
@@ -86,7 +86,7 @@ ExcludeList220531_Ct2_Osmo = []
 ExcludeList220727_Hyper = ['PPG45','PPG43','PPG48','PPG49','PPG18','PPG22','PPG29']
 
 
-ExcludeList220727_Hypo = ['PPG7','PPG17','PPG23','PPG31','PPG34','PPG36']
+ExcludeList220727_Hypo = ['PPG7','PPG16','PPG17','PPG23','PPG31','PPG34','PPG36']
 
 
 # ExcludeList220801_Ct1 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
