@@ -112,16 +112,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig3.suptitle(Title + ' - Norm Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
-    
-    """  fig10,ax10 = plt.subplots(dpi = 250,facecolor='black')
-    fig10.suptitle(Title + ' - Area vs. aligned time')
-    plt.xlabel('Time (min)')
-    plt.ylabel('Area (mm²)')
-    
-    fig11,ax11 = plt.subplots(dpi = 250,facecolor='black')
-    fig11.suptitle(Title + ' - Norm Area vs. aligned time')
-    plt.xlabel('Time (min)')
-    plt.ylabel('Area (normalized)')"""
+
     
     for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
         
@@ -657,6 +648,103 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors, corrmethod =CorrType)
    
     
+#%% Variability in size 
+
+def sizeVar(GDs,labels,label,colors,**kwargs):
+        
+    showcurve = True
+    showbox = False
+    pooledGraph=True
+    
+    for key, value in kwargs.items(): 
+        if key == 'showcurve':
+            showcurve = value 
+        elif key == 'pooledGraph':
+            pooledGraph = value
+        elif key == 'showbox':
+            showbox = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    if showcurve:
+        if pooledGraph:
+            f0, ax0 = plt.subplots(ncols =2,dpi=300,figsize=(10,5))            
+            f0.suptitle(label)            
+            
+            f1, ax1 = plt.subplots(ncols =2,dpi=300,figsize=(10,5))            
+            f1.suptitle(label)
+            
+    
+    for GD,lab,col in zip(GDs,labels,colors):
+    
+        nimgmax = GD['Img'].max() # number of images (duration) to plot for growth curve
+    
+    
+        # number of ppgs and label
+        nPPG = len(GD.loc[GD['Img'] == 0])
+        lab = lab + ' - n = ' + str(nPPG)
+        
+        # Computing mean area over all gemmae for each image
+        MeanA = np.empty(nimgmax)
+        Time = np.empty(nimgmax)
+        AadA = np.empty(nimgmax)
+    
+        for im in range(nimgmax):
+    
+            MeanA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().mean()
+            Time[im] = im/2
+            AadA[im] = np.mean(np.abs(GD.loc[GD['Img'] == im,'Area'].to_numpy()-MeanA[im]))
+        
+        RAadA = np.divide(AadA,MeanA)*100
+        
+        if showcurve:
+            
+            if not pooledGraph:
+                f0, ax0 = plt.subplots(ncols =2,dpi=300,figsize=(10,5))                
+                f0.suptitle(label + ': ' + lab)        
+                
+                f1, ax1 = plt.subplots(ncols =2,dpi=300,figsize=(10,5))            
+                f1.suptitle(label)
+            
+            ax0[0].set_title('Varibility in size over time')
+            ax0[0].plot(Time,AadA, '-o', ms= 4, lw=1,color = col)
+            ax0[0].set_xlabel('Time (hours)')
+            ax0[0].set_ylabel('Variability in size (mm²)')
+            
+            ax0[1].set_title('Relative variability in size over time')
+            ax0[1].plot(Time,RAadA, 'd-', ms = 4, lw=1, color = col)
+            ax0[1].set_xlabel('Time (hours)')
+            ax0[1].set_ylabel('Relative variability in size (%)')
+            ax0[1].set_ylim(bottom=0,top=np.max([1.1*RAadA.max(),ax0[1].get_ylim()[1]]))
+            
+            
+            
+            ax1[0].set_title('Varibility in size vs mean size')
+            ax1[0].plot(MeanA,AadA, 'o', ms= 4, lw=1,color = col)
+            ax1[0].set_xlabel('Size (mm²)')
+            ax1[0].set_ylabel('Variability in size (mm²)')
+            
+            ax1[1].set_title('Relative variability in size vs mean size')
+            ax1[1].plot(MeanA,RAadA, 'd', ms = 4, lw=1, color = col)
+            ax1[1].set_xlabel('Size (mm²)')
+            ax1[1].set_ylabel('Relative variability in size (%)')
+            ax1[1].set_ylim(bottom=0,top=np.max([1.1*RAadA.max(),ax0[1].get_ylim()[1]]))
+            
+            if not pooledGraph:
+                f0.tight_layout
+                f1.tight_layout
+                
+    if showcurve:        
+        if pooledGraph:
+            ax0[0].legend(labels)
+            ax0[1].legend(labels)
+            f0.tight_layout
+            
+            ax1[0].legend(labels)
+            ax1[1].legend(labels)
+            f1.tight_layout
+            
+
+
 #%% Growth rate ratios after/ before OC
 
 def plotGRratio(GDs,GD_Osmos,labels,colors):
