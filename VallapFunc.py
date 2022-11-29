@@ -329,11 +329,11 @@ def dataSummary(GDs,Ns,labels,Mult,col,name,unit):
     
     for GD,n,lab in zip(GDs,Ns,labels):
         DataMedian =  np.round(GD.loc[GD['Img'] == 0,col].median()*Mult*100)/100
-        Var =  np.round(GD.loc[GD['Img'] == 0,col].std()*10000/DataMedian*Mult)/100
+        Var =  np.round(   np.mean(np.abs(GD.loc[GD['Img'] == 0,col]*Mult-DataMedian))*10000/DataMedian)/100
         DataPooled = np.append(DataPooled,GD.loc[GD['Img'] == 0,col].to_numpy())
         print(lab + ' -> ' + str(DataMedian) + ' ' + unit + ' ' + u"\u00B1" + ' ' + str(Var) + ' %' + ' % (n = ' + str(n) + ')')
     
     PooledMedian = np.round(np.median(DataPooled)*Mult*100)/100
-    PooledVar = np.round(np.std(DataPooled)*Mult*10000/PooledMedian)/100
+    PooledVar = np.round(np.mean(np.abs(DataPooled*Mult - PooledMedian))*10000/PooledMedian)/100
     print('Pooled -> ' + str(PooledMedian) + ' ' + unit + ' ' + u"\u00B1" + ' ' + str(PooledVar) + ' %' + ' % (n = ' + str(nPooled) + ')' )
     
