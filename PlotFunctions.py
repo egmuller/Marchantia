@@ -103,12 +103,12 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
     ######### Curves of evolution ##########
     
-    fig2,ax2 = plt.subplots(dpi = 250,facecolor='black')
+    fig2,ax2 = plt.subplots(dpi = 250,facecolor='white')
     fig2.suptitle(Title + ' - Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (mm²)')
     
-    fig3,ax3 = plt.subplots(dpi = 250,facecolor='black')
+    fig3,ax3 = plt.subplots(dpi = 250,facecolor='white')
     fig3.suptitle(Title + ' - Norm Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
@@ -124,7 +124,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             nimgmax = 49 # 24h
         
         if IndividualPlots:
-            fig1,ax1 = plt.subplots(dpi = 250,facecolor='black')
+            fig1,ax1 = plt.subplots(dpi = 250,facecolor='white')
             fig1.suptitle(lab + ' - Area vs. time')
             plt.xlabel('Time (min)')
             plt.ylabel('Area (mm²)')
@@ -168,40 +168,40 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     ######### Parameters of fit ###########
     
       
-    fig4,ax4 = plt.subplots(dpi = 250,facecolor='black')
+    fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
     fig4.suptitle(Title + ' - Growth start time')
     plt.ylabel('T start (hours)')
       
-    fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
+    fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
     fig5.suptitle(Title + ' - Growth caracteristic time')
     plt.ylabel('Tau growth (hours)')
     
-    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black') 
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='white') 
     fig6.suptitle(Title + ' - Starting area') 
     plt.ylabel('Starting area from fit (mm²)') 
 
-    fig16,ax16 = plt.subplots(dpi = 250,facecolor='black')
+    fig16,ax16 = plt.subplots(dpi = 250,facecolor='white')
     fig16.suptitle(Title + ' - Initial growth increase')
     plt.ylabel('Growth at Tstart (%)')
     
     if len(newGDs) == 2:
         # Histogram for distribution comparison
-        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig7.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours)')
         plt.ylabel('PDF')
 
-        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig8.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min)')
         plt.ylabel('PDF')
         
-        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig9.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours) - median aligned')
         plt.ylabel('PDF')
 
-        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig10.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min) - median aligned')
         plt.ylabel('PDF')
@@ -415,6 +415,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     showTau = False
     AllSigs = True
     stats = 'ranksum'
+    indiplots = True
     
     for key, value in kwargs.items(): 
         if key == 'showbox':
@@ -430,6 +431,8 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             AllSigs = False
         elif key == 'stats' :
             stats = value
+        elif key == 'indiplots' :
+            indiplots = value
         else:
             print('Unknown key : ' + key + '. Ewarg ignored.')
          
@@ -445,7 +448,18 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     Erels= [None]*len(GDs)
     Lrels= [None]*len(GDs)
     
-    for GD,lab,i in zip(GDs,Labels,range(len(GDs))):
+    AllRatios = np.empty(0)
+    
+    n = len(GDs)
+    
+    # Figure for E ratios 
+    f3,ax3 = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(7,5))
+    f3.patch.set_facecolor('white')
+    ax3['a'].set_title('Growth rates change\n caused by Osmotic choc')
+    
+    
+    
+    for GD,lab,i,nax in zip(GDs,Labels,range(len(GDs)),vf.mosaicList(n)[1]):
         
         # Retrieve data
         Es[i] = GD.loc[GD['Img'] == 0, 'E']
@@ -455,73 +469,95 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         Lrels[i] = GD.loc[GD['Img'] == 0, 'TauFluxRel']  
         
         
-        fig0,ax0,cap,med = vf.boxswarmplot(Title + '\n\nElastic bulk modulus comparison for ' + lab,'E (MPa)',
-                                           [Ecomps[i],Erels[i]],[colors[i],colors[i]],['Ecomp','Erel'])
-
-        plotSig(ax0,np.max(cap),np.max(cap)*0.125,0,Ecomps[i],Erels[i],0,1)
+        Eratios = np.divide(Erels[i],Ecomps[i])
+        AllRatios = np.append(AllRatios,Eratios)
         
-        fig0.tight_layout() 
-        fig0.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel.png')
-        if not showE:
-            plt.close(fig0)
-        
-        fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nTauFlux comparison for ' + lab,'Tau (min-1)',
-                                           [Lcomps[i],Lrels[i]],[colors[i],colors[i]],['TauFlux_comp','TauFlux_rel'])
-
-        plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,Lcomps[i],Lrels[i],0,1)
-        
-        fig01.tight_layout()
-        fig01.savefig(P + '\\Hydromechanics\\' + lab + '_Tflux-Rel.png')
-        if not showTau:
-            plt.close(fig01)
-        
-        
-        if showhist:
-            fig00, ax00 = plt.subplots(dpi=300)
-            ax00.hist(np.divide(Erels[i],Ecomps[i]), facecolor=colors[i]) # ,density = True
-            fig00.suptitle('Median : ' + str(np.round(np.divide(Erels[i],Ecomps[i]).median()*100)/100) + 
-                           ' - Mean : ' + str(np.round(np.divide(Erels[i],Ecomps[i]).mean()*100)/100))
-            ax00.set_xlabel('Erel/Ecomp')
-            ax00.set_ylabel('Count')
-            fig00.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel_Dist.png')
+        if indiplots:
+            fig0,ax0,cap,med = vf.boxswarmplot(Title + '\n\nElastic bulk modulus comparison for ' + lab,'E (MPa)',
+                                               [Ecomps[i],Erels[i]],[colors[i],colors[i]],['Ecomp','Erel'])
+    
+            plotSig(ax0,np.max(cap),np.max(cap)*0.125,0,Ecomps[i],Erels[i],0,1)
+            
+            fig0.tight_layout() 
+            fig0.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel.png')
             if not showE:
-                plt.close(fig00)
+                plt.close(fig0)
             
+            fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nTauFlux comparison for ' + lab,'Tau (min-1)',
+                                               [Lcomps[i],Lrels[i]],[colors[i],colors[i]],['TauFlux_comp','TauFlux_rel'])
+    
+            plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,Lcomps[i],Lrels[i],0,1)
             
-            fig00, ax00 = plt.subplots(dpi=300)
-            ax00.hist(Es[i], facecolor=colors[i],bins=20) # ,density = True
-            fig00.suptitle('Bulk elastic moduli')
-            ax00.set_xlabel('E (MPa)')
-            ax00.set_ylabel('Count')
-            # ax00.set_xlim(right=1.5)
-            fig00.savefig(P + '\\Hydromechanics\\' + lab + '_E_Dist.png')
-            if not showE:
-                plt.close(fig00)
-            
-
-            linreg = linregress(Ecomps[i],Erels[i])
-
-            g = sns.jointplot(x=Ecomps[i],y=Erels[i],kind='reg',color = colors[i],height = 12)
-            g.ax_joint.set_xlabel('E compression (MPa)',fontsize = 25)
-            g.ax_joint.set_ylabel('E relaxation (MPa)',fontsize = 25)
-            g.ax_joint.tick_params(axis='both', labelsize=20)
-            g.ax_joint.legend([f"S = {linreg.slope:.2f}",
-                               f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
-                              fontsize='xx-large')
-            if not showE:
-                plt.close(g)
-            
-            fig001, ax001 = plt.subplots(dpi=300)
-            ax001.hist(np.divide(Lrels[i],Lcomps[i]), facecolor=colors[i]) # ,density = True
-            fig001.suptitle('Median : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).median()*100)/100) + 
-                           ' - Mean : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).mean()*100)/100))
-            ax001.set_xlabel('TfluxRel/Tflux')
-            ax001.set_ylabel('Count')
-            fig001.savefig(P + '\\Hydromechanics\\' + lab + '_TauFluxComp-Rel_Dist.png')
+            fig01.tight_layout()
+            fig01.savefig(P + '\\Hydromechanics\\' + lab + '_Tflux-Rel.png')
             if not showTau:
-                plt.close(fig001)
-        
-    ### plot
+                plt.close(fig01)
+            
+            
+            if showhist:
+                fig00, ax00 = plt.subplots(dpi=300)
+                ax00.hist(Eratios, facecolor=colors[i]) # ,density = True
+                fig00.suptitle('Median : ' + str(np.round(Eratios.median()*100)/100) + 
+                               ' - Mean : ' + str(np.round(Eratios.mean()*100)/100))
+                ax00.set_xlabel('Erel/Ecomp')
+                ax00.set_ylabel('Count')
+                fig00.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel_Dist.png')
+                if not showE:
+                    plt.close(fig00)
+                
+                
+                fig00, ax00 = plt.subplots(dpi=300)
+                ax00.hist(Es[i], facecolor=colors[i],bins=20) # ,density = True
+                fig00.suptitle('Bulk elastic moduli')
+                ax00.set_xlabel('E (MPa)')
+                ax00.set_ylabel('Count')
+                # ax00.set_xlim(right=1.5)
+                fig00.savefig(P + '\\Hydromechanics\\' + lab + '_E_Dist.png')
+                if not showE:
+                    plt.close(fig00)
+                
+    
+                linreg = linregress(Ecomps[i],Erels[i])
+    
+                g = sns.jointplot(x=Ecomps[i],y=Erels[i],kind='reg',color = colors[i],height = 12)
+                g.ax_joint.set_xlabel('E compression (MPa)',fontsize = 25)
+                g.ax_joint.set_ylabel('E relaxation (MPa)',fontsize = 25)
+                g.ax_joint.tick_params(axis='both', labelsize=20)
+                g.ax_joint.legend([f"S = {linreg.slope:.2f}",
+                                   f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
+                                  fontsize='xx-large')
+                if not showE:
+                    plt.close(g)
+                
+                fig001, ax001 = plt.subplots(dpi=300)
+                ax001.hist(np.divide(Lrels[i],Lcomps[i]), facecolor=colors[i]) # ,density = True
+                fig001.suptitle('Median : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).median()*100)/100) + 
+                               ' - Mean : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).mean()*100)/100))
+                ax001.set_xlabel('TfluxRel/Tflux')
+                ax001.set_ylabel('Count')
+                fig001.savefig(P + '\\Hydromechanics\\' + lab + '_TauFluxComp-Rel_Dist.png')
+                if not showTau:
+                    plt.close(fig001)
+                
+        if showhist:   
+            ax3[nax].hist(Eratios, facecolor=colors[i], density = True)
+            sns.kdeplot(Eratios,ax=ax3[nax], color = 'k',lw=1)
+             
+            sns.kdeplot(Eratios,ax=ax3['a'],color = colors[i], label= lab)
+            ax3[nax].set_ylabel('')
+            ax3[nax].set_xlabel(lab)
+    
+    ### E ratios histograms
+    ax3['a'].hist(AllRatios,color='gray', density = True, label = 'Pooled data')
+    ax3['a'].set_ylabel('Density')
+    ax3['a'].set_xlabel('Erel/Ecomp')
+    ax3['a'].set_title('Mean : ' + '{0:.2f}'.format(AllRatios.mean()))
+    ax3['a'].legend()
+    f3.tight_layout()
+    
+    
+    
+    ### boxplots
     fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
     fig10,ax10,capErel,medErel = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (relaxation)','Erel (MPa)',Erels,colors,Labels[:])
     fig11,ax11,capE,medE = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (mean)','E (MPa)',Es,colors,Labels[:])
@@ -743,7 +779,6 @@ def sizeVar(GDs,labels,label,colors,**kwargs):
             ax1[1].legend(labels)
             f1.tight_layout
             
-
 
 #%% Growth rate ratios after/ before OC
 
