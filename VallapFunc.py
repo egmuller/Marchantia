@@ -318,3 +318,22 @@ def mosaicList(n):
         mosaic.append(list1)
     mosaic.append(list2)
     return(mosaic,list2) 
+
+# 11. Function generating a summary of data and their variability for a specific dataframe column
+
+def dataSummary(GDs,Ns,labels,Mult,col,name,unit):
+    DataPooled = np.empty(0)
+    nPooled = np.sum(Ns)
+    
+    print(name + ' : ')
+    
+    for GD,n,lab in zip(GDs,Ns,labels):
+        DataMedian =  np.round(GD.loc[GD['Img'] == 0,col].median()*Mult*100)/100
+        Var =  np.round(GD.loc[GD['Img'] == 0,col].std()*10000/DataMedian*Mult)/100
+        DataPooled = np.append(DataPooled,GD.loc[GD['Img'] == 0,col].to_numpy())
+        print(lab + ' -> ' + str(DataMedian) + ' ' + unit + ' ' + u"\u00B1" + ' ' + str(Var) + ' %' + ' % (n = ' + str(n) + ')')
+    
+    PooledMedian = np.round(np.median(DataPooled)*Mult*100)/100
+    PooledVar = np.round(np.std(DataPooled)*Mult*10000/PooledMedian)/100
+    print('Pooled -> ' + str(PooledMedian) + ' ' + unit + ' ' + u"\u00B1" + ' ' + str(PooledVar) + ' %' + ' % (n = ' + str(nPooled) + ')' )
+    
