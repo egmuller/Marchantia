@@ -307,4 +307,14 @@ def GrowthRate(A,Time):
     return(GR,GR_S,intTime)
         
 
-        
+# 10. Creation of a list to define a mosaic subplot figure
+
+def mosaicList(n):
+    alphabet = 'abcdefghijklmn'
+    list1 = [*alphabet[0]*n]
+    list2 = [*alphabet[1:n+1]]
+    mosaic = [list1[:]]
+    for i in range(2):
+        mosaic.append(list1)
+    mosaic.append(list2)
+    return(mosaic,list2) 

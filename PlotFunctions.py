@@ -753,18 +753,9 @@ def plotGRratio(GDs,GD_Osmos,labels,colors):
     AllGRvarMedians = np.empty(0)
     
     n = len(GDs)
-    def mosaicList(n):
-        alphabet = 'abcdefghijklmn'
-        list1 = [*alphabet[0]*n]
-        list2 = [*alphabet[1:n+1]]
-        mosaic = [list1[:]]
-        for i in range(2):
-            mosaic.append(list1)
-        mosaic.append(list2)
-        return(mosaic,list2) 
     
     # Figure for GR ratios around OC pooled between experiments
-    f0,axes = plt.subplot_mosaic(mosaicList(n)[0], dpi=200, figsize=(5,5))
+    f0,axes = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(5,5))
     f0.patch.set_facecolor('white')
     axes['a'].set_title('Growth rates change\n caused by Osmotic choc')
     
@@ -780,7 +771,7 @@ def plotGRratio(GDs,GD_Osmos,labels,colors):
     f01.suptitle('GR ratios comparison')
     
     
-    for GD,GD_Osmo,label,colo,nax in zip(GDs,GD_Osmos,labels,colors,mosaicList(n)[1]):
+    for GD,GD_Osmo,label,colo,nax in zip(GDs,GD_Osmos,labels,colors,vf.mosaicList(n)[1]):
         
         # GR ratio before/after OC
         GRbefore = GD.loc[GD['Img']==0,'GR_end']
