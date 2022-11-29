@@ -170,7 +170,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
       
     fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
     fig4.suptitle(Title + ' - Growth start time')
-    plt.ylabel('T start (hours)')
+    plt.ylabel('Tstart (hours)')
       
     fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
     fig5.suptitle(Title + ' - Growth caracteristic time')
@@ -193,7 +193,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
 
         fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig8.suptitle(Title + ' - Growth start time')
-        plt.xlabel('T start (min)')
+        plt.xlabel('Tstart (min)')
         plt.ylabel('PDF')
         
         fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
@@ -233,7 +233,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
-        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
+        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60 *np.log(2)         
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
         AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
         
@@ -242,8 +242,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         grouping = np.append(grouping,np.ones(len(tdebs[i]))*i)
 
 
-        plotprops = {'color':'white'}
-        boxprops = {'color':'white','facecolor':colors[i]}
+        plotprops = {'color':'black'}
+        boxprops = {'color':'black','facecolor':colors[i]}
         
          
         bp4 = ax4.boxplot(tdebs[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
@@ -275,10 +275,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
 
             
-    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'white', size=2, ax = ax4)
-    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'white', size=2, ax = ax5)
-    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'white', size=2, ax = ax6) 
-    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'white', size=2, ax = ax16)
+    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'gray', size=2, ax = ax4)
+    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'gray', size=2, ax = ax5)
+    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'gray', size=2, ax = ax6) 
+    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'gray', size=2, ax = ax16)
     
     ax4.set_xticklabels(labs)
     ax5.set_xticklabels(labs)
@@ -355,7 +355,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         StatsKruskal(ax6,Area0)
         StatsKruskal(ax16,AreaStart)
                
- 
+    ax4.set_ylabel('Tstart (hours)')
+      
+    ax5.set_ylabel('Area doubling (hours)')
+    
+    ax6.set_ylabel('Starting area from fit (mm²)') 
+
+    ax16.set_ylabel('Growth at Tstart (%)')   
  
     if stats=='ranksum':
         fig4.savefig(P + '\\AreaGrowth\\' + Title + '_Tstart.png')
