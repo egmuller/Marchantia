@@ -785,7 +785,6 @@ def sizeVar(GDs,labels,label,colors,**kwargs):
 def plotGRratio(GDs,GD_Osmos,labels,colors):
     AllRatios = np.empty(0)
     AllGRvar = np.empty(0)
-    AllGRvarMedians = np.empty(0)
     
     n = len(GDs)
     

@@ -434,6 +434,11 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         params, cov = curve_fit(f=fitFuncOsmChoc, xdata=TimeFitComp, ydata=AreaCFitComp, 
                                 p0=[1, AreaCFitComp[0:TstartComp].mean(),AreaCFitComp[0:TstartComp].mean()*0.98,TimeFitComp[TstartComp]],
                                 bounds = (0, np.inf), method='trf',loss='soft_l1')
+        
+        
+        params2, cov2 = curve_fit(f=fitFuncOsmChoc2, xdata=TimeFitComp, ydata=AreaCFitComp, 
+                                p0=[1, AreaCFitComp[0:TstartComp].mean(),AreaCFitComp[0:TstartComp].mean()*0.98,TimeFitComp[TstartComp],0],
+                                bounds = (0, np.inf), method='trf',loss='soft_l1')
 
         R2 = np.round(vf.computeR2(AreaCFitComp,fitFuncOsmChoc(TimeFitComp,params[0],params[1],params[2],params[3]))*1000)/1000
 
@@ -458,12 +463,16 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tdeb'] = params[3]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params[3])) # img shift for alignemen
         
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_InOC'] = params2[4]/params2[1]*60*24 # in day-1
+        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = 'Osmotic choc fit'
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
         
         ax.plot(TimeFitComp,AreaCFitComp,'*c',ms=2,label='FittedData')
+        ax.plot(DenseTimeComp,fitFuncOsmChoc2(DenseTimeComp,params2[0],params2[1],params2[2],params2[3],params2[4]),'--g',lw=1,label='SoftL1')
         ax.plot(DenseTimeComp,fitFuncOsmChoc(DenseTimeComp,params[0],params[1],params[2],params[3]),'--b',lw=1,label='SoftL1')
         
         # Relaxation fit if valid data
