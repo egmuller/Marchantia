@@ -115,12 +115,18 @@ FPH220928_Osmo = 120 # Frames per hour
 Scale221004_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH221004_Osmo = 120 # Frames per hour
 
-Scale221025 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+Scale221025 = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
 FPH221025 = 2 # Frames per hour
 Delay221025 = 55 # Delay between imbibition and experiment start
 
-Scale221025_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+Scale221025_Osmo = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
 FPH221025_Osmo = 120 # Frames per hour
+
+Scale221201_Osmo = 1.94 # Spatial scale (µm/px) for 16X 01-12-2022
+FPH221201_Osmo = 120 # Frames per hour
+
+Scale221201_Osmo2 = 1.94 # Spatial scale (µm/px) for 16X 01-12-2022
+FPH221201_Osmo2 = 120 # Frames per hour
 
 
 # Paths to data
@@ -192,6 +198,10 @@ P221025_Ct_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221025_DV7_10
 P221025_100mM_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221025_DV7_100mM+OC\OC1\100mM'
 P221025_Ct_Osmo2 = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221025_DV7_100mM+OC\OC2\Ctrl'
 P221025_100mM_Osmo2 = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221025_DV7_100mM+OC\OC2\100mM'
+P221201_Ct_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221201-DV7_OC_Calcium_100mM\Ctrl'
+P221201_Ct_Osmo2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221201-DV7_OC_Calcium_100mM\Ctrl2'
+P221201_Calcium_100mM_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221201-DV7_OC_Calcium_100mM\Calcium_100mM'
+P221201_Calcium_100mM_Osmo2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221201-DV7_OC_Calcium_100mM\Calcium_100mM_2'
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
@@ -578,4 +588,26 @@ StackList221025_100mM_Osmo2 = ['PPG2','PPG3','PPG5','PPG7','PPG8','PPG9','PPG12'
                             'PPG38','PPG39','PPG42','PPG45','PPG46',
                             'PPGA','PPGB','PPGC','PPGD','PPGE','PPGF','PPGH','PPGI','PPGJ','PPGK']
 
+    
+StackList221201_Ct_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61','PPG62']
+                            
+StackList221201_Ct_Osmo2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG60','PPG61','PPG62']
+    
+StackList221201_Calcium_100mM_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61','PPG62','PPG63',
+                        'PPG64','PPG65','PPG66','PPG67','PPG68','PPG69','PPG70','PPG71']
+
+StackList221201_Calcium_100mM_Osmo2 = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG39','PPG40','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61','PPG62','PPG63',
+                        'PPG64','PPG65','PPG66','PPG67','PPG68','PPG69','PPG70','PPG71']
 print('Data choice made.')
