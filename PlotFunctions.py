@@ -878,3 +878,27 @@ def plotGRratio(GDs,GD_Osmos,labels,colors):
     f01.tight_layout()
    
    
+#%% Comparison of successive OC on the same gemmae population
+
+def successiveOC(GD1,GD2):
+    
+    GD2.loc[:,'Ecomp2'] = GD2.loc[:,'Ecomp'] 
+    GD2.loc[:,'Erel2'] = GD2.loc[:,'Erel'] 
+    GD2 = GD2.drop(columns=['Ecomp','Erel'])
+    
+    GD = pd.merge(GD1.loc[GD1['Img']==0,:],GD2.loc[GD2['Img']==0,:], left_index=True, right_index=True)
+    
+    Eoc1 = GD.loc[:,'Ecomp'].to_numpy()
+    Eoc2 = GD.loc[:,'Ecomp2'].to_numpy()
+    
+    f, ax = plt.subplots(dpi=300)
+    f.suptitle('Ratio of E, second choc/first choc')
+    ax.hist(np.divide(Eoc2,Eoc1),density =True)
+    ax.set_ylabel('Density')
+    ax.set_xlabel('E2/E1')
+    
+    
+    
+    
+    
+    
