@@ -165,6 +165,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     TstartRel = 9
     RelValidation = True
     saveWB = False
+    IgnoredCompPoints = []
+    IgnoredRelPoints = []
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -187,6 +189,10 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             TstartRel = value
         elif key == 'RelValidation':
             RelValidation = value
+        elif key == 'ignoreCompTimePoints':
+            IgnoredCompPoints = value
+        elif key == 'ignoreRelTimePoints':
+            IgnoredRelPoints = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -241,7 +247,9 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
-        GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
+        GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],
+                         TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,
+                         ignoredCTP = IgnoredCompPoints, ignoredRTP = IgnoredRelPoints)
         
         GD.loc[:,'Expe'] = stringName
         
