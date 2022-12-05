@@ -391,10 +391,16 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
 def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
     
     DebugPlots = False
+    IgnoredCompPoints = []
+    IgnoredRelPoints = []
     
     for key, value in kwargs.items(): 
         if key == 'debug':
             DebugPlots = value
+        elif key == 'ignoredCTP':
+            IgnoredCompPoints = value
+        elif key == 'ignoredRTP':
+            IgnoredRelPoints = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -407,8 +413,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         print('Fitting curve for : ' + s.ljust(5), end='\n')           
         
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
-        AreaC = GD.loc[s,'Area'].values
-        
+        AreaC = GD.loc[s,'Area'].values        
         
         # data for compression fit
         TimeFitComp = GD.loc[s,'Img'].values.astype(float)[ImgStartComp:ImgEqComp]/FPH*60 # in minutes
@@ -416,6 +421,10 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         Time = Time - TimeOffset
         TimeFitComp = TimeFitComp - TimeOffset
         AreaCFitComp = AreaC[ImgStartComp:ImgEqComp]
+        
+        
+        TimeFitComp = np.delete(TimeFitComp,IgnoredCompPoints)
+        AreaCFitComp = np.delete(AreaCFitComp,IgnoredCompPoints)
                
         fig,ax = plt.subplots(dpi=300)
         ax.plot(Time,AreaC,'*y',ms=3,label='FullData')
@@ -473,7 +482,10 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         if np.isin(s,StackListRel):
             TimeFitRel = GD.loc[s,'Img'].values.astype(float)[ImgStartRel:ImgEqRel]/FPH*60 # in minutes
             TimeFitRel = TimeFitRel - TimeOffset
-            AreaCFitRel = AreaC[ImgStartRel:ImgEqRel]
+            AreaCFitRel = AreaC[ImgStartRel:ImgEqRel]            
+            
+            TimeFitRel = np.delete(TimeFitRel,IgnoredRelPoints)
+            AreaCFitRel = np.delete(AreaCFitRel,IgnoredRelPoints)
 
             DenseTimeRel = np.linspace(TimeFitRel[0],TimeFitRel[-1],100)
 
