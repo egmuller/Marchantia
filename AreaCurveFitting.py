@@ -312,12 +312,12 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             
             fig,[ax0,ax1] = plt.subplots(nrows = 2, dpi = 300, figsize = (4,4))
             
-            ax0.plot(intTime,GR*10000,'-*b',lw=1,ms=2)
-            ax0.plot(intTime,GR_S*10000,'-c',lw=2)
+            ax0.plot(intTime,GR*60*24,'-*b',lw=1,ms=2)
+            # ax0.plot(intTime,GR_S*60*24,'-c',lw=2)
             # ax0.plot(intTime_linfit[0:-2],Intercept + intTime_linfit[0:-2]*Slope,'--r',lw=2)
             ax0.set_title('Growth rate in time')
             ax0.set_xlabel('Time (min)')
-            ax0.set_ylabel('Growth rate (A.U.)')
+            ax0.set_ylabel('Growth rate (day-1)')
             
             ax1.plot(intTime,GR_S,'-c',lw=1,ms=2)
             ax1.plot(intTime_flat,GR_flat,'--ro',lw=1,ms=2)
