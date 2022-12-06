@@ -454,7 +454,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     
     # Figure for E ratios 
     f3,ax3 = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(7,5))
-    f3.patch.set_facecolor('white')
+    f3.patch.set_facecolor('black')
     ax3['a'].set_title('Growth rates change\n caused by Osmotic choc')
     
     
@@ -541,7 +541,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                 
         if showhist:   
             ax3[nax].hist(Eratios, facecolor=colors[i], density = True)
-            sns.kdeplot(Eratios,ax=ax3[nax], color = 'k',lw=1)
+            sns.kdeplot(Eratios,ax=ax3[nax], color = 'lightgray',lw=1)
              
             sns.kdeplot(Eratios,ax=ax3['a'],color = colors[i], label= lab)
             ax3[nax].set_ylabel('')
@@ -891,11 +891,15 @@ def successiveOC(GD1,GD2):
     Eoc1 = GD.loc[:,'Ecomp'].to_numpy()
     Eoc2 = GD.loc[:,'Ecomp2'].to_numpy()
     
+    ncommon = len(Eoc1)
+    ratio21 = np.divide(Eoc2,Eoc1)
+    
     f, ax = plt.subplots(dpi=300)
     f.suptitle('Ratio of E, second choc/first choc')
-    ax.hist(np.divide(Eoc2,Eoc1),density =True)
+    ax.hist(ratio21,density =True)
     ax.set_ylabel('Density')
     ax.set_xlabel('E2/E1')
+    ax.set_title('n = ' + str(ncommon) + '. Mean = ' + str(np.round(np.mean(ratio21)*100)/100))
     
     
     
