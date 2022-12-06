@@ -875,10 +875,10 @@ def plotGRratio(GDs,GD_Osmos,labels,colors):
     axes['a'].legend()
     f0.tight_layout()
     
-    ax01.hist(AllRatios, range = (0,4), bins = 8,color='gray', density = True, label = 'GR ratios around OC', alpha = 0.7)
+    ax01.hist(AllRatios, range = (0,4), bins = 8,color='gray', density = True, label = 'GR ratios around osmotic schocks', alpha = 0.7)
     ax01.hist(AllGRvar, range = (0,2), bins = 12,color='b', density = True, label = 'GR ratios during growth', alpha = 0.7)
     ax01.set_ylabel('Density')
-    ax01.set_xlabel('GR ratios')
+    ax01.set_xlabel('Growth rate ratios')
     ax01.set_xlim([-1,4])
     ax01.legend()
     f01.tight_layout()
@@ -901,7 +901,7 @@ def successiveOC(GD1,GD2):
     ncommon = len(Eoc1)
     ratio21 = np.divide(Eoc2,Eoc1)
     
-    f, ax = plt.subplots(dpi=300)
+    f, ax = plt.subplots(dpi=300, figsize = (3,5.5))
     f.suptitle('Ratio of E, second choc/first choc')
     ax.hist(ratio21,density =True)
     ax.set_ylabel('Density')

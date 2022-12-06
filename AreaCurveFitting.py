@@ -299,17 +299,18 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             ax02.set_title(s + ' - tdeb = ' + str(round(FitResPlot.tdeb()*10)/10) +  ' min.\n' +
             'T = ' + str(round(FitResPlot.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
                           + str(FitResPlot.R2()))
-            ax02.plot(Time,AreaC,'*r',ms=3)
-            ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*g',ms=3)
-            ax02.plot(Time,FitResPlot.fC(),'--b',lw=1)
+            ax02.plot(Time,AreaC,'*b',ms=3)
+            ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*c',ms=3)
+            ax02.plot(Time,FitResPlot.fC(),'--m',lw=1)
             ax02.set_xlabel('Time (min)')
             ax02.set_ylabel('Area (mm²)')
             # ax02.set_xscale('log')
             # ax02.set_yscale('log')
+            ax02.legend(['Gemmae area', 'Fitted data', 'Exponential fit'])
     
             fig0.tight_layout()
             
-            fig,[ax0,ax1] = plt.subplots(nrows = 2, dpi = 300)
+            fig,[ax0,ax1] = plt.subplots(nrows = 2, dpi = 300, figsize = (4,4))
             
             ax0.plot(intTime,GR*10000,'-*b',lw=1,ms=2)
             ax0.plot(intTime,GR_S*10000,'-c',lw=2)

@@ -57,7 +57,7 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
 # to use for each columns chosen by dfcols, 'PlotFits' (True/False), 'colors' (RGB 0-1 triplets)
 
 def Corr(GDs,labels, **kwargs):
-    
+        
     corrmethod = 'pearson'
     dfcols = ['A0fit','Area','Tau','tdeb']
     colslab = dfcols
@@ -131,15 +131,16 @@ def Corr(GDs,labels, **kwargs):
                         
                         if corrmethod=='pearson':
                             g.ax_joint.legend([f"S = {linreg.slope:.2f}",
-                                           f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
+                                            f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
                                           fontsize='xx-large')
                     
                     g.fig.suptitle('Correlation between ' + dfcols[i] + ' and ' + dfcols[j] +
-                               '.\n Experiment : ' + lab + ' - n = ' + str(len(x[mask])),fontsize=30)
+                                '.\n Experiment : ' + lab + ' - n = ' + str(len(x[mask])),fontsize=30)
                     g.fig.patch.set_facecolor('white')
                     g.ax_joint.set_xlabel(colslab[i],fontsize = 35)
                     g.ax_joint.set_ylabel(colslab[j],fontsize = 35)
                     g.ax_joint.tick_params(axis='both', labelsize=30)
+                    
                     
                     g.fig.tight_layout() 
     
@@ -182,3 +183,5 @@ def StatsKruskal(ax,data):
     h,p = kruskal(*data, nan_policy = 'omit')
     
     ax.set_title('Kruskal-wallis test : p = ' + str(np.round(p*1000)/1000))
+    
+    
