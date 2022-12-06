@@ -886,6 +886,7 @@ def successiveOC(GD1,GD2):
     GD2.loc[:,'Erel2'] = GD2.loc[:,'Erel'] 
     GD2 = GD2.drop(columns=['Ecomp','Erel'])
     
+    
     GD = pd.merge(GD1.loc[GD1['Img']==0,:],GD2.loc[GD2['Img']==0,:], left_index=True, right_index=True)
     
     Eoc1 = GD.loc[:,'Ecomp'].to_numpy()
