@@ -68,10 +68,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         elif key == 'diffcat' :
             diffcat = np.array(value)
         elif key == 'NimgMax' :
-            if (value == '24h') | (value == 'max'):
+            if (value == '24h') | (value == '30h')| (value == 'max'):
                 NimgMax = value 
             else:
-                raise ValueError('Wrong value for NimgMax ! Allowed : ''24h'' or ''max'' ')
+                raise ValueError('Wrong value for NimgMax ! Allowed : ''24h'', ''30h'' or ''max'' ')
                 
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
@@ -120,6 +120,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
            
         if NimgMax == 'max':
             nimgmax = GD['Img'].max() # number of images (duration) to plot for growth curve
+        elif NimgMax == '30h':
+            nimgmax = 61 # 24h
         else:
             nimgmax = 49 # 24h
         
@@ -168,19 +170,19 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     ######### Parameters of fit ###########
     
       
-    fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
+    fig4,ax4 = plt.subplots(dpi = 250,facecolor='white',figsize=(8,4.5))
     fig4.suptitle(Title + ' - Growth start time')
     plt.ylabel('Tstart (hours)')
       
-    fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
+    fig5,ax5 = plt.subplots(dpi = 250,facecolor='white',figsize=(8,4.5))
     fig5.suptitle(Title + ' - Growth caracteristic time')
     plt.ylabel('Tau growth (hours)')
     
-    fig6,ax6 = plt.subplots(dpi = 250,facecolor='white') 
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='white',figsize=(8,4.5) )
     fig6.suptitle(Title + ' - Starting area') 
-    plt.ylabel('Starting area from fit (mm²)') 
+    plt.ylabel('Starting area (mm²)') 
 
-    fig16,ax16 = plt.subplots(dpi = 250,facecolor='white')
+    fig16,ax16 = plt.subplots(dpi = 250,facecolor='white',figsize=(8,4.5))
     fig16.suptitle(Title + ' - Initial growth increase')
     plt.ylabel('Growth at Tstart (%)')
     
@@ -275,10 +277,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
 
             
-    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'gray', size=2, ax = ax4)
-    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'gray', size=2, ax = ax5)
-    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'gray', size=2, ax = ax6) 
-    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'gray', size=2, ax = ax16)
+    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'lightgray', size=2, ax = ax4)
+    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'lightgray', size=2, ax = ax5)
+    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'lightgray', size=2, ax = ax6) 
+    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'lightgray', size=2, ax = ax16)
     
     ax4.set_xticklabels(labs)
     ax5.set_xticklabels(labs)
@@ -359,7 +361,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
       
     ax5.set_ylabel('Area doubling (hours)')
     
-    ax6.set_ylabel('Starting area from fit (mm²)') 
+    ax6.set_ylabel('Starting area (mm²)') 
 
     ax16.set_ylabel('Growth at Tstart (%)')   
  

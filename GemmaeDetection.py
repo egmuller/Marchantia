@@ -93,7 +93,7 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     
     size = np.round(2*Scale) # 5µm in pixels
     
-    selem = create_circular_mask(size,size) # create circular element for opening
+    selem = create_circular_mask(size,size) # create circular element for closing
 
     DilBWimg = binary_closing(BWimg,selem) # image closing
     
