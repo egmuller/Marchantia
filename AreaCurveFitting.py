@@ -444,7 +444,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
                                 p0=[1, AreaCFitComp[0:TstartComp].mean(),AreaCFitComp[0:TstartComp].mean()*0.98,TimeFitComp[TstartComp],0],
                                 bounds = (0, np.inf), method='trf',loss='soft_l1')
 
-        R2 = np.round(vf.computeR2(AreaCFitComp,fitFuncOsmChoc(TimeFitComp,params[0],params[1],params[2],params[3]))*1000)/1000
+        R2 = np.round(vf.computeR2(AreaCFitComp,fitFuncOsmChoc2(TimeFitComp,params2[0],params2[1],params2[2],params2[3],params2[4]))*1000)/1000
 
         fig.suptitle(s + ' - R2 : ' + str(R2))
         
