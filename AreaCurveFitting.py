@@ -456,14 +456,16 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         # Physical parameters
         DeltaPiOut = 8.314*298*100/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 100 (100mM = 100 mol/m3 de choc)
         
-        E = params[1]/(params[1]-params[2])*DeltaPiOut # en MPa
-        Lh = 1/(params[0]*60*E*1e6) # en m/s/Pa
+        E = params[1]/np.abs(params[1]-params[2])*DeltaPiOut # en MPa
+        Eg = params2[1]/np.abs(params2[2]-params2[1])*DeltaPiOut # en MPa
+        Lh = 1/(params[0]*60*Eg*1e6) # en m/s/Pa
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params[0] 
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params[1] 
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params[2]   
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0-Aeq'] = params[1]-params[2]        
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = E             
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params2[0] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params2[1] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params2[2]   
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0-Aeq'] = params2[1]-params2[2]        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = Eg                   
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'EcompNG'] = E             
         GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Ecomp'] = 1/E       
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Comp'] = Lh      
         # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Comp'] = Lh*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']
@@ -509,13 +511,13 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         
             fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Rel : ' + str(R2rel))
 
-            Erel = paramsRel[2]/(paramsRel[2]-paramsRel[1])*DeltaPiOut # en MPa
+            Erel = paramsRel[1]/np.abs(paramsRel[2]-paramsRel[1])*DeltaPiOut # en MPa
             LhRel = 1/(paramsRel[0]*60*Erel*1e6) # en m/s/Pa
 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFluxRel'] = paramsRel[0] 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel'] = paramsRel[2] 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'AeqRel'] = paramsRel[1]   
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel-AeqRel'] = paramsRel[2]-paramsRel[1]        
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel'] = paramsRel[1] 
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'AeqRel'] = paramsRel[2]   
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel-AeqRel'] = paramsRel[1]-paramsRel[2]        
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Erel'] = Erel            
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Erel'] = 1/Erel     
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Rel'] = LhRel    
