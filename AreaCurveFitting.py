@@ -453,7 +453,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         
         E = params[1]/np.abs(params[1]-params[2])*DeltaPiOut # en MPa
         Eg = params2[1]/np.abs(params2[2]-params2[1])*DeltaPiOut # en MPa
-        Lh = 1/(params[0]*60*Eg*1e6) # en m/s/Pa
+        Lh = 1/(params2[0]*60*Eg*1e6) # en m/s/Pa
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params2[0] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params2[1] 
