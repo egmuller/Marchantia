@@ -24,6 +24,30 @@ import os
 
 # 1. Comparison of growth quantifications between different experiments
 
+# 1.0 simple plot of curves
+
+def PlotGrowth(GDs,FPH,Labels):# Computing mean area over all gemmae for each image
+    fig, ax = plt.subplots(dpi = 300)
+    ax.set_xlabel('Time (min)')
+    ax.set_ylabel('Area (normalized)')
+    for GD in GDs:    
+        nppg = len(np.unique(GD.index))
+        nimgmax = GD['Img'].max()
+        MeanA = np.empty(nimgmax)
+        MeanTime = np.empty(nimgmax)
+        StdA = np.empty(nimgmax)
+
+        for im in range(nimgmax):
+            MeanA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().mean()
+            MeanTime[im] = im*60/FPH
+            StdA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().std()
+            
+        ax.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3)
+        
+    ax.legend(Labels)
+
+# 1.1 plot curves and quantif
+
 # GDs : list of dataframe global data for experiments to analyse, Labels : list of 
 # labels for each experiment, colors list of colors to plot, P : path for figure saving,
 # Title : Name of the conditions plot (appears in figure titles)
@@ -453,7 +477,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     n = len(GDs)
     
     # Figure for E ratios 
-    f3,ax3 = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(7,5))
+    f3,ax3 = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(8,5))
     f3.patch.set_facecolor('black')
     ax3['a'].set_title('Growth rates change\n caused by Osmotic choc')
     
