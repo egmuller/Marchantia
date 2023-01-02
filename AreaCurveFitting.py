@@ -397,10 +397,13 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
 def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
     
     DebugPlots = False
+    Concentration = 100 # mM
     
     for key, value in kwargs.items(): 
         if key == 'debug':
             DebugPlots = value
+        if key == 'C_osmo':
+            Concentration = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -440,7 +443,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         fig.suptitle(s + ' - R2 : ' + str(R2))
         
         # Physical parameters
-        DeltaPiOut = 8.314*298*100/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 0.1 (100mM = 100 mol/m3 de choc)
+        DeltaPiOut = 8.314*298*Concentration/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 0.1 (100mM = 100 mol/m3 de choc)
         
         E = params[1]/(params[1]-params[2])*DeltaPiOut # en MPa
         Lh = 1/(params[0]*60*E*1e6) # en m/s/Pa
