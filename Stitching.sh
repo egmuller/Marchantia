@@ -3,13 +3,13 @@
 # to make file executable : chmod +x Stitching.sh
 # to execute file : ./Stitching.sh
 
-experiment_path=221103_doublechoc/choct30h/2xchoc/
+#experiment_path=221128_croissance_PME/PME/
 tile_nb=18
-nb_deb=1
+nb_deb=19
 
 
-dir_path=/run/media/emuller/Elise_these/Chip/$experiment_path
-
+#dir_path=/run/media/emuller/Elise_these/Chip/$experiment_path
+dir_path=/run/media/emuller/TRANSCEND/221207_croissance_EGTA/Ctrl/
 
 # copy files to stitching directory
 cd $dir_path
@@ -27,7 +27,7 @@ do
 	if [[ $res -lt 10 ]]; then res="0${res}"; fi;
 	file_of_interest=$(find . -name "*($i)*" -type f)
 	echo $file_of_interest
-	mv $file_of_interest "./${res}.tif" 
+	mv $file_of_interest "./tile_${res}.tif" 
 
 done
 
