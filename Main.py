@@ -82,6 +82,14 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         DoBin = True
         DoCont = False
         DoFit = False
+    elif ToDo == 'BC':
+        DoBin = True
+        DoCont = True
+        DoFit = False
+    elif ToDo == 'C':
+        DoBin = False
+        DoCont = True
+        DoFit = False
     elif ToDo == 'CF':
         DoBin = False
         DoCont = True
@@ -119,8 +127,8 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         print('\n\n')
         
         # Retrieve data on PPG position in chip 
-        if os.path.exists(Path + '\ChipPositions.xlsx'):
-            posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
+        if os.path.exists(Path + '/ChipPositions.xlsx'):
+            posinchip = pd.read_excel (Path + '/ChipPositions.xlsx', index_col='Name') 
             Rows = posinchip.loc[StackList].values[:,0]
         else:
             print('Finding PPGs position in chip...',end='')
@@ -172,6 +180,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     TstartComp = 3
     TstartRel = 9
     RelValidation = True
+    Concentration = 100
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -192,6 +201,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             TstartRel = value
         elif key == 'RelValidation':
             RelValidation = value
+        elif key == "C_osmo":
+            Concentration = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -202,6 +213,14 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     elif ToDo == 'B':
         DoBin = True
         DoCont = False
+        DoFit = False
+    elif ToDo == 'BC':
+        DoBin = True
+        DoCont = True
+        DoFit = False
+    elif ToDo == 'C':
+        DoBin = False
+        DoCont = True
         DoFit = False
     elif ToDo == 'CF':
         DoBin = False
@@ -234,8 +253,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     if DoFit:
         
         # Retrieve data on PPG position in chip 
-        if os.path.exists(Path + '\ChipPositions.xlsx'):
-            posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
+        if os.path.exists(Path + '/ChipPositions.xlsx'):
+            posinchip = pd.read_excel (Path + '/ChipPositions.xlsx', index_col='Name') 
             Rows = posinchip.loc[StackList].values[:,0]
         else:
             print('Finding PPGs position in chip...',end='')
@@ -246,7 +265,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         GD = pd.read_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
-        GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots)
+        GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,  C_osmo = Concentration)
         
         GD.loc[:,'Expe'] = stringName
         
