@@ -92,6 +92,7 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     BWimg = mask>0
     
     size = np.round(2*Scale) # 5µm in pixels
+    #size = np.round(4*Scale) # 5µm in pixels for 500 mM shocks
     
     selem = create_circular_mask(size,size) # create circular element for opening
 
@@ -347,43 +348,53 @@ def getEdgeAndArea(BinImg,Scale):
     
     # Find largest contour 
     cnts, _ = cv.findContours(BinImg, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
-    cnt = max(cnts, key=cv.contourArea)
-
-    Area = cv.contourArea(cnt)*Scale**2
-
-    # Create image with only largest object
-    out = np.zeros(BinImg.shape, np.uint8)
-    cv.drawContours(out, [cnt], -1, 255, cv.FILLED)
-    BinImg = cv.bitwise_and(BinImg, out)
-
-    # Computing center of propagule using euclidian distance transform
-    dist = cv.distanceTransform(BinImg, cv.DIST_L2, 3)
-    regions = regionprops(BinImg,dist)
-    center = regions[0].weighted_centroid
-
-    # Getting contour 
-    Ycnt = cnt[:,0,0]
-    Xcnt = cnt[:,0,1] 
+    if np.shape(cnts)[0] > 0:
+        cnt = max(cnts, key=cv.contourArea)
     
-    ContourCumLength = np.concatenate(([0],np.cumsum(np.sqrt(np.square(np.diff(Xcnt))+np.square(np.diff(Ycnt))))))
-    ContourLength = ContourCumLength[-1]
+        Area = cv.contourArea(cnt)*Scale**2
+    
+        # Create image with only largest object
+        out = np.zeros(BinImg.shape, np.uint8)
+        cv.drawContours(out, [cnt], -1, 255, cv.FILLED)
+        BinImg = cv.bitwise_and(BinImg, out)
+    
+        # Computing center of propagule using euclidian distance transform
+        dist = cv.distanceTransform(BinImg, cv.DIST_L2, 3)
+        regions = regionprops(BinImg,dist)
+        center = regions[0].weighted_centroid
+    
+        # Getting contour 
+        Ycnt = cnt[:,0,0]
+        Xcnt = cnt[:,0,1] 
         
-    ContourInterp = interp1d(ContourCumLength,[Xcnt,Ycnt], fill_value='extrapolate')            
-
-    npts = 1000
-
-    # create contour with regular points
-    deltaS = ContourLength/npts
-    ContourRegCumLength = np.linspace(0,npts,npts+1)*deltaS
-
-    RegXcnt,RegYcnt = ContourInterp(ContourRegCumLength)
+        ContourCumLength = np.concatenate(([0],np.cumsum(np.sqrt(np.square(np.diff(Xcnt))+np.square(np.diff(Ycnt))))))
+        ContourLength = ContourCumLength[-1]
+            
+        ContourInterp = interp1d(ContourCumLength,[Xcnt,Ycnt], fill_value='extrapolate')            
     
-    # Edge coordinate relative to the center
-    relativeIndicesX = RegXcnt-center[0]
-    relativeIndicesY = RegYcnt-center[1]      
+        npts = 1000
     
-    Xlength = relativeIndicesX.max() - relativeIndicesX.min()
-    Ylength = relativeIndicesY.max() - relativeIndicesY.min()
+        # create contour with regular points
+        deltaS = ContourLength/npts
+        ContourRegCumLength = np.linspace(0,npts,npts+1)*deltaS
+    
+        RegXcnt,RegYcnt = ContourInterp(ContourRegCumLength)
+        
+        # Edge coordinate relative to the center
+        relativeIndicesX = RegXcnt-center[0]
+        relativeIndicesY = RegYcnt-center[1]      
+        
+        Xlength = relativeIndicesX.max() - relativeIndicesX.min()
+        Ylength = relativeIndicesY.max() - relativeIndicesY.min()
+        
+    else:
+        relativeIndicesX=np.nan
+        relativeIndicesY=np.nan
+        center=np.nan
+        Area=np.nan
+        Xlength=np.nan
+        Ylength=np.nan
+        
     
     return(relativeIndicesX,relativeIndicesY,center,Area,Xlength,Ylength)
 
@@ -436,31 +447,33 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
             # Computing propagule edge and area from binary image
             SortedX,SortedY,center,Area,Xlength,Ylength = getEdgeAndArea(BinImg,Scale) 
             
-            # Storing contour data
-            data = {'Ximg':SortedY+center[1],
-                        'Yimg':SortedX+center[0],
-                        'Img':i*np.ones(len(SortedX))} 
-
-            CD = CD.append(pd.DataFrame(data=data,index = np.repeat(s,len(SortedX))))  # adding to global dataframe
+            if not np.isnan(Area):
             
-            data2 = {'Area':Area/1000000, # In mm²
-                     'Xlength':Xlength,
-                     'Ylength':Ylength,
-                        'Xcenter':center[1],
-                        'Ycenter':center[0],
-                        'Img':i,
-                        'Time (min)':i*60/FPH} 
-            
-            GD = GD.append(pd.DataFrame(data=data2,index = [s])) 
-            
-            if ((i == 0)|(i == 1)|(i == 2)) & DebugPlots: #((i == 1)|(i == 21)|(i == 41)) &
-                RGBimg = io.imread(P + '/' + s + '.tif', key = i)
-
-                plt.figure(dpi=250,facecolor='white')
-                plt.title(s)
-                plt.imshow(RGBimg)
-                plt.plot(SortedY+center[1],SortedX+center[0],'c-o',lw = 0.7,ms=1)
-                plt.show()
+                # Storing contour data
+                data = {'Ximg':SortedY+center[1],
+                            'Yimg':SortedX+center[0],
+                            'Img':i*np.ones(len(SortedX))} 
+    
+                CD = CD.append(pd.DataFrame(data=data,index = np.repeat(s,len(SortedX))))  # adding to global dataframe
+                
+                data2 = {'Area':Area/1000000, # In mm²
+                         'Xlength':Xlength,
+                         'Ylength':Ylength,
+                            'Xcenter':center[1],
+                            'Ycenter':center[0],
+                            'Img':i,
+                            'Time (min)':i*60/FPH} 
+                
+                GD = GD.append(pd.DataFrame(data=data2,index = [s])) 
+                
+                if ((i == 0)|(i == 1)|(i == 2)) & DebugPlots: #((i == 1)|(i == 21)|(i == 41)) &
+                    RGBimg = io.imread(P + '/' + s + '.tif', key = i)
+    
+                    plt.figure(dpi=250,facecolor='white')
+                    plt.title(s)
+                    plt.imshow(RGBimg)
+                    plt.plot(SortedY+center[1],SortedX+center[0],'c-o',lw = 0.7,ms=1)
+                    plt.show()
                 
         print('Contours saved.'.ljust(35), flush = True)
          
