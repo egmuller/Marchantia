@@ -82,6 +82,14 @@ Scale221207 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH221207 = 2 # Frames per hour
 Delay221207 = 24 # Delay between imbibition and experiment start
 
+Scale221209 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH221209 = 2 # Frames per hour
+Delay221209 = 49 # Delay between imbibition and experiment start
+
+Scale221215 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
+FPH221215 = 2 # Frames per hour
+Delay221215 = 40 # Delay between imbibition and experiment start
+
 P_Ct_Val =r'/run/media/emuller/Elise_these/Chip/Data_Ct_Valentin'
 
 
@@ -145,6 +153,16 @@ P221128_Osmo_t30_100 = r'/run/media/emuller/TRANSCEND/221128_choc_osmotique/choc
 
 P221207_EGTA = r'/run/media/emuller/TRANSCEND/221207_croissance_EGTA/EGTA/PPGs'
 P221207_Ct = r'/run/media/emuller/TRANSCEND/221207_croissance_EGTA/Ctrl/PPGs'
+
+P221209_Ct_30mM = r'/home/emuller/Documents/data/Chip_experiments/Chip_data/221209_croissance_CaCl2/Ctrl/PPGs'
+P221209_CaCl2 = r'/home/emuller/Documents/data/Chip_experiments/Chip_data/221209_croissance_CaCl2/CaCl2/PPGs'
+P221209_Ct_Tak1=r'/run/media/emuller/TRANSCEND/221209_croissance/tak_croissance/PPGs'
+P221209_mri=r'/run/media/emuller/TRANSCEND/221209_croissance/mri_croissance/PPGs'
+
+P221215_tak_100mM=r'/run/media/emuller/TRANSCEND/221215_mri_100mM/ctrl_100mM/PPGs'
+P221215_mri_100mM=r'/run/media/emuller/TRANSCEND/221215_mri_100mM/mri_100mM/PPGs'
+
+
 
 PFig = r'/home/emuller/Documents/data/Chip_experiments/Figures'
 
@@ -406,6 +424,54 @@ StackList221207_Ct =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','
                              'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50',
                              'PPG51','PPG53','PPG54','PPG55','PPG56','PPG58','PPG59','PPG60']  # 'PPG52', 'PPG57',
 
+StackList221209_Ct_30mM =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG41','PPG42','PPG43'] 
+
+StackList221209_CaCl2 =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG41','PPG42'] 
+
+StackList221209_Ct_Tak1 =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50',
+                             'PPG51','PPG52','PPG53','PPG54','PPG55','PPG56', 'PPG57','PPG58','PPG59','PPG60',
+                             'PPG61','PPG62','PPG63']
+
+StackList221209_mri =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG19','PPG20',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50',
+                             'PPG51','PPG52','PPG53','PPG54','PPG55','PPG56', 'PPG57','PPG58','PPG59','PPG60',
+                             'PPG61','PPG62','PPG63','PPG64','PPG65','PPG66','PPG67','PPG68','PPG69','PPG70',
+                             'PPG71','PPG72','PPG73','PPG74','PPG75','PPG76','PPG77','PPG79','PPG80', # 'PPG78',
+                             'PPG81','PPG82','PPG83','PPG84','PPG85','PPG86','PPG87','PPG88','PPG89','PPG90',
+                             'PPG91','PPG92','PPG93','PPG94','PPG95','PPG96','PPG97','PPG98','PPG99','PPG100',
+                             'PPG101','PPG102','PPG103','PPG104','PPG105','PPG106','PPG107','PPG108','PPG109','PPG110',
+                             'PPG111','PPG112','PPG113','PPG114','PPG115','PPG116','PPG117','PPG118','PPG119','PPG120']
+
+StackList221215_tak_100mM =  ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',
+                             'PPG11','PPG12','PPG13','PPG14','PPG15','PPG16','PPG17','PPG18','PPG20', #'PPG19',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40',
+                             'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48']
+
+StackList221215_mri_100mM =  ['PPG1','PPG2','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10',#'PPG3',
+                             'PPG11','PPG12','PPG14','PPG15','PPG16','PPG17','PPG19','PPG20', # 'PPG18','PPG13',
+                             'PPG21','PPG22','PPG23','PPG24', 'PPG25','PPG26','PPG27','PPG28','PPG29','PPG30', 
+                             'PPG31','PPG32','PPG33','PPG34','PPG35','PPG36','PPG39','PPG40', # 'PPG37', 'PPG38',
+                             'PPG41','PPG42','PPG43','PPG44','PPG45','PPG46','PPG47','PPG48','PPG49','PPG50',
+                             'PPG51','PPG52','PPG53','PPG54','PPG55','PPG56', 'PPG57','PPG58','PPG59','PPG60',
+                             'PPG61','PPG62','PPG63','PPG64','PPG65','PPG66','PPG67','PPG68','PPG69','PPG70',
+                             'PPG71','PPG72','PPG74','PPG75','PPG76','PPG77','PPG78','PPG80', # 'PPG79','PPG73',
+                             'PPG81','PPG82','PPG83','PPG84','PPG85','PPG86']
 
 # Valentin's experiments
 
