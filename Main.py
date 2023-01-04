@@ -10,6 +10,7 @@ Created on Tue Jun 21 16:42:37 2022
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
 from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
 from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
+from ContourQuantifs import computeMeanContourTime, DistToMean, computeSym, GetGrowth
 
 import numpy as np
 import pandas as pd
@@ -332,6 +333,8 @@ def ParametriseContour(stringName,Path,ExcludeList,dateCond,Scale,Todo, **kwargs
             
         StackList = [X for X in np.unique(GlobalData.index) if X not in ExcludeList]
 
+        GlobalData = GlobalData.loc[StackList]   
+        ContourData = ContourData.loc[StackList]   
 
         print('\n\n\nGetting landmarks for : ' + dateCond + '\n\n')
         ContourData_LM, GlobalData_LM = getLandmarks(ContourData,GlobalData,StackList,Scale,Path,stringName, 
@@ -380,4 +383,62 @@ def ParametriseContour(stringName,Path,ExcludeList,dateCond,Scale,Todo, **kwargs
     return
 
 
+#%% Shape quantifications wrapper function
 
+def quantifyShape(ExpName,Pfig,Path,**kwargs):
+    
+    ## Kwargs    
+    showPlots = False
+    doPlots = False
+    DebugPlots = False    
+    NormalProj = True    
+        
+    for key, value in kwargs.items(): 
+        if key == 'doPlots':
+            doPlots = value
+        elif key == 'showPlots':
+            showPlots = value  
+        elif key == 'DebugPlots':
+            DebugPlots = value  
+        elif key == 'NormalProj':
+            NormalProj = value         
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    
+    print('Mean contour computation for expe : ' + ExpName, end =  '\n\n')
+    
+    ### Loding data of parametrised contours
+    CD = pd.read_csv(Path + '\\ContourData' + ExpName + '_ParamAligned.csv', index_col = 'Ind')
+    GD = pd.read_csv(Path + '\\GlobalData' + ExpName + '_ParamAligned.csv', index_col = 'Ind') 
+    Tstarts = GD.loc[GD['Img']==0,'tdebShift']
+    
+    ### computation of mean contour
+    meanCD,meanGD = computeMeanContourTime(CD,GD,Tstarts)
+    
+    ### Saving mean contour
+    meanGD.to_csv(Path + '\\GlobalData' + ExpName + '_MeanCont.csv',index_label = 'Ind')
+    meanCD.to_csv(Path + '\\ContourData' + ExpName + '_MeanCont.csv',index_label = 'Ind')
+    
+    
+    print('Distance to mean contour computation for expe : ' + ExpName, end =  '\n\n')
+    
+    ### Compute distance to mean (saved in GD)
+    GD = DistToMean(Pfig,CD,GD,meanCD,ExpName,doPlots = doPlots, showPlots = showPlots)
+    
+    
+    print('Contour symetry computation for expe : ' + ExpName, end =  '\n\n')
+    
+    ### Compute symetry
+    GD = computeSym(CD,GD)
+
+
+    print('Contour growth computation for expe : ' + ExpName, end =  '\n\n')
+
+    ### Contour growth computation
+    GrowthMat = GetGrowth(CD,DebugPlots =DebugPlots,NormalProj = NormalProj)
+    
+    ### Final Saving
+    GD.to_csv(Path + '\\GlobalData' + ExpName + '_DistToMean_Symetry.csv',index_label = 'Ind')
+    GrowthMat.to_csv(Path + '\\GrowthData' + ExpName + '.csv',index_label = 'Ind')
+    
