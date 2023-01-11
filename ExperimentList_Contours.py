@@ -12,6 +12,13 @@ Scale220531_Osmo = 1.94 # Spatial scale (µm/px) for 16X 31-05-2022
 
 Scale220727 = 1.94 # Spatial scale (µm/px) for 16X 27-07-2022
 
+Scale220722 = 1.94 # Spatial scale (µm/px) for 16X 22-07-2022
+
+
+
+
+
+
 
 Scale220801 = 1.94 # Spatial scale (µm/px) for 16X 01-08-2022
 FPH220801 = 2 # Frames per hour
@@ -48,6 +55,9 @@ P220531_Ct2 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+
 P220531_Ct1_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\OC\Ctrl1'
 P220531_Ct2_Osmo = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220531_DV7_Ctrls+OC\OC\Ctrl2'
 
+P220722_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220722_DV7_Ctrl+ABA3.5uM_Natalia\Ctrl'
+P220722_ABA = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220722_DV7_Ctrl+ABA3.5uM_Natalia\ABA'
+
 P220727_Hyper = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls+OC_hyperhypo\TimeEvolution\Hyper'
 P220727_Hypo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\220727_DV7_Ctrls+OC_hyperhypo\TimeEvolution\Hypo'
 
@@ -81,6 +91,10 @@ ExcludeList220531_Ct2 = ['PPG13','PPG27']
 ExcludeList220531_Ct1_Osmo =  []
 
 ExcludeList220531_Ct2_Osmo = []
+
+ExcludeList220722_Ct = []
+
+ExcludeList220722_ABA = []
 
 
 ExcludeList220727_Hyper = ['PPG45','PPG43','PPG48','PPG49','PPG18','PPG22','PPG29']
