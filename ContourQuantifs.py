@@ -144,7 +144,7 @@ def computeMeanContourTime(CD,GD,Tstarts):
         
         nppgs = len(SL)
     
-    return(meanCD,meanGD)
+    return(meanCD,meanGD,GD)
             
 
 #%% Distance to mean contour for each ppg

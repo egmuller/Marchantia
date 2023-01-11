@@ -416,11 +416,14 @@ def quantifyShape(ExpName,Pfig,Path,ToDo,**kwargs):
         Tstarts = GD.loc[GD['Img']==0,'tdebShift']
         
         ### computation of mean contour
-        meanCD,meanGD = computeMeanContourTime(CD,GD,Tstarts)
+        meanCD,meanGD,GD = computeMeanContourTime(CD,GD,Tstarts)
         
         ### Saving mean contour
         meanGD.to_csv(Path + '\\GlobalData' + ExpName + '_MeanCont.csv',index_label = 'Ind')
         meanCD.to_csv(Path + '\\ContourData' + ExpName + '_MeanCont.csv',index_label = 'Ind')
+        
+        ### Saving additionnal info
+        GD.to_csv(Path + '\\GlobalData' + ExpName + '_ParamAligned.csv',index_label = 'Ind')
         
         del CD, GD, meanCD, meanGD, Tstarts
             
