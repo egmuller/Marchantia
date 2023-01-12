@@ -75,6 +75,14 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         DoBin = True
         DoCont = False
         DoFit = False
+    elif ToDo == 'BC':
+        DoBin = True
+        DoCont = True
+        DoFit = False
+    elif ToDo == 'C':
+        DoBin = False
+        DoCont = True
+        DoFit = False
     elif ToDo == 'CF':
         DoBin = False
         DoCont = True
@@ -168,6 +176,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     saveWB = False
     IgnoredCompPoints = []
     IgnoredRelPoints = []
+    Concentration = 100
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -194,6 +203,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             IgnoredCompPoints = value
         elif key == 'ignoreRelTimePoints':
             IgnoredRelPoints = value
+        elif key == "C_osmo":
+            Concentration = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -204,6 +215,14 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     elif ToDo == 'B':
         DoBin = True
         DoCont = False
+        DoFit = False
+    elif ToDo == 'BC':
+        DoBin = True
+        DoCont = True
+        DoFit = False
+    elif ToDo == 'C':
+        DoBin = False
+        DoCont = True
         DoFit = False
     elif ToDo == 'CF':
         DoBin = False
@@ -250,7 +269,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         
         GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],
                          TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,
-                         ignoredCTP = IgnoredCompPoints, ignoredRTP = IgnoredRelPoints)
+                         ignoredCTP = IgnoredCompPoints, ignoredRTP = IgnoredRelPoints, C_Osmo = Concentration)
         
         GD.loc[:,'Expe'] = stringName
         
