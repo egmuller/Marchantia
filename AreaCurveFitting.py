@@ -399,6 +399,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
     DebugPlots = False
     IgnoredCompPoints = []
     IgnoredRelPoints = []
+    Concentration = 100 # mM
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -407,6 +408,8 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
             IgnoredCompPoints = value
         elif key == 'ignoredRTP':
             IgnoredRelPoints = value
+        elif key == 'C_osmo':
+            Concentration = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -454,7 +457,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         fig.suptitle(s + ' - R2 : ' + str(R2))
         
         # Physical parameters
-        DeltaPiOut = 8.314*298*100/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 100 (100mM = 100 mol/m3 de choc)
+        DeltaPiOut = 8.314*298*Concentration/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 0.1 (100mM = 100 mol/m3 de choc)
         
         E = params[1]/np.abs(params[1]-params[2])*DeltaPiOut # en MPa
         Eg = params2[1]/np.abs(params2[2]-params2[1])*DeltaPiOut # en MPa
