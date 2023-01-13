@@ -15,6 +15,8 @@ from cycler import cycler
 import VallapFunc as vf
 from tqdm import tqdm
 
+from matplotlib.patches import Rectangle
+
 
 import numpy as np
 import pandas as pd
@@ -935,7 +937,55 @@ def successiveOC(GD1,GD2):
     ax.set_title('n = ' + str(ncommon) + '. Mean = ' + str(np.round(np.mean(ratio21)*100)/100))
     
     
+#%% Plots of rhizoides appearance time
     
+def plotRhizoides(Ps,colors,labels,nimgmaxes):
     
+    f, ax = plt.subplots(dpi=200)
+    f1, ax1 = plt.subplots(dpi=200)
+    f2, ax2 = plt.subplots(dpi=200)
     
+    for P,col,lab,ci,nimgmax in zip(Ps,colors,labels,range(len(Ps)),nimgmaxes):
+        
+        RD = pd.read_excel(P + '\\RhizoideData' + lab + '.xlsx',index_col = 'Ind')
+        
+        List = np.unique(RD.index) 
+        
+        RhizExit = RD[['RhizExit']].to_numpy().astype('float')  
+        
+        RhizExitAl = RD[['RhizExitAl']].to_numpy().astype('float')    
+        
+        RhizOut = RhizExit<200
+        
+        RhizExit = RhizExit[RhizOut]
+        RhizExitAl = RhizExitAl[RhizOut]
+        
+        time = np.arange(nimgmax)/2
+    
+        plotprops = {'color':'black'}
+        boxprops = {'color':'black','facecolor':col}
+        ax.boxplot(RhizExit/2, positions = [ci], labels = [lab],patch_artist = True, 
+                   boxprops=boxprops, capprops =plotprops,showfliers = False,whiskerprops=plotprops,medianprops =plotprops) 
+        
+        
+        RhizFrac = np.empty(nimgmax)
+        RhizFracAl = np.empty(nimgmax)
+        for ii in range(nimgmax):
+            RhizFrac[ii] = np.sum(RhizExit<ii+1)/len(List)*100
+            RhizFracAl[ii] = np.sum(RhizExitAl<ii+1)/len(List)*100
+            
+        ax1.plot(time,RhizFrac,'-o',color = col)
+        ax2.plot(time,RhizFracAl,'-o',color = col)
+        
+    handles = [Rectangle((0, 0), 1, 1, color=c, ec="k") for c in colors]
+    
+    ax.set_ylabel('Time of first rhizoides (hours)')
+    
+    ax1.set_xlabel('Time (hours)')
+    ax1.set_ylabel('% of gemmae with visible rhizoides')
+    ax1.legend(handles, labels)
+    
+    ax2.set_xlabel('Time after growth start (hours)')
+    ax2.set_ylabel('% of gemmae with visible rhizoides')
+    ax2.legend(handles, labels)
     
