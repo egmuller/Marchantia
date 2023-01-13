@@ -22,13 +22,14 @@ import VallapFunc as vf
 # Contours computed when at least 20 gemmae are averageable
 
 def computeMeanContourTime(CD,GD,Tstarts):
-    StackList = np.unique(Tstarts.index)
+    StackList = np.unique(CD.index) 
     
     meanCD = pd.DataFrame(data=None,columns = ['X','Y','Img'])
     meanGD = pd.DataFrame(data=None,columns = ['nppgs','Img'])
     
     # number of contour points
     npts = len(CD.loc[(CD.index == StackList[0]) & (CD['Img'] == 0),'X'])
+    
     
 ############################## Contours averaged at each time point ###################################################    
     cnt = 0 # number of mean contours done
@@ -39,7 +40,7 @@ def computeMeanContourTime(CD,GD,Tstarts):
     
     while nppgs>19:
         
-        print('Computing mean contour n°' + str(cnt+1) + ' :')
+        print('Computing mean contour on img n°' + str(cnt+1) + ' : ', end = '')
         
         # Storing variables
         Xs = np.empty((npts,nppgs))
@@ -49,7 +50,6 @@ def computeMeanContourTime(CD,GD,Tstarts):
 
 
         for s,i in zip(SL,range(len(SL))) :
-
 
             Xs[:,i] = CD.loc[(CD.index==s) & (CD['Img'] == int(cnt)), 'X']
             Ys[:,i] = CD.loc[(CD.index==s) & (CD['Img'] == int(cnt)), 'Y']
@@ -86,6 +86,7 @@ def computeMeanContourTime(CD,GD,Tstarts):
         
         nppgs = len(SL)
         
+        
 
  ################################ Contours aligned in time based on dormancy exit ####################################
     cnt = 0 # number of mean contours done
@@ -96,7 +97,7 @@ def computeMeanContourTime(CD,GD,Tstarts):
 
     while nppgs>19:
 
-        print('Computing mean contour (aligned in time) n°' + str(cnt+1) + ' :')
+        print('Computing mean contour (aligned in time) on img n°' + str(cnt+1) + ' : ', end = '')
 
         # Storing variables
         Xs = np.empty((npts,nppgs))
@@ -344,7 +345,7 @@ def DistToMean(Pfig,CD,GD,CDmean,Expname,**kwargs):
                 plt.close(fig1)
                 plt.close(fig2)
             
-    
+    return(GD)
     
 #%% Contour growth
 
@@ -531,33 +532,6 @@ def computeSym(CD,GD):
             XiRda,YiRda = RotTransAlignement(XiRr[:],YiRr[:],XiL[:],YiL[:]
                                           ,np.linspace(-20,20,81),np.linspace(-20,20,81),np.linspace(-20,20,81),False)
             
-            
-#             fig,ax = plt.subplots(dpi= 300)
-#             ax.set_title('Original contour')
-#             ax.plot(XiL,YiL,'-b',lw=1)
-#             ax.plot(XiR,YiR,'-r',lw=1)
-#             ax.set_aspect('equal')
-            
-#             fig, [ax2,ax3] = plt.subplots(ncols = 2, dpi = 300)
-            
-#             ax2.set_title('Notch Aligned')
-#             ax2.plot(XiLna,YiLna,'-b',lw=1)
-#             ax2.plot(XiRna,YiRna,'-r',lw=1)
-#             ax2.plot([np.transpose(XiLna[0:500:25]),np.transpose(XiRna[0:500:25])],
-#                      [np.transpose(YiLna[0:500:25]),np.transpose(YiRna[0:500:25])],'o-w',ms=2,lw=1.3)
-#             ax2.set_aspect('equal')
-            
-#             ax3.set_title('Distance aligned')
-#             ax3.plot(XiL,YiL,'-b',lw=1)
-#             ax3.plot(XiRda,YiRda,'-r',lw=1)
-#             ax3.plot([np.transpose(XiL[0:500:25]),np.transpose(XiRda[0:500:25])],
-#                      [np.transpose(YiL[0:500:25]),np.transpose(YiRda[0:500:25])],'o-w',ms=2,lw=1.3)
-#             ax3.set_aspect('equal')
-            
-#             fig.tight_layout()
-            
-#             plt.show()
-            
 
             sym[i] = np.median(vf.dist(XiL,YiL,XiRda,YiRda))
             
@@ -595,6 +569,6 @@ def computeSym(CD,GD):
         print('Computing symmetry for ' + s + ' (DONE)'.ljust(20), end='\n')
         
 
-            
+    return(GD)         
             
     

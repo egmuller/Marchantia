@@ -24,8 +24,6 @@ import VallapFunc as vf
 from matplotlib import path as mpltPath
 from matplotlib import pyplot as plt
 
-import time
-
 # other stuff
 from IPython import get_ipython
 get_ipython().run_line_magic('matplotlib', 'inline')
