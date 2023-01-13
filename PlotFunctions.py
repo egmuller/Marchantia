@@ -931,15 +931,15 @@ def successiveOC(GD1,GD2):
     
 #%% Plots of rhizoides appearance time
     
-def plotRhizoides(Ps,colors,labels,nimgmaxes):
+def plotRhizoides(Ps,colors,names,labels,nimgmaxes):
     
     f, ax = plt.subplots(dpi=200)
     f1, ax1 = plt.subplots(dpi=200)
     f2, ax2 = plt.subplots(dpi=200)
     
-    for P,col,lab,ci,nimgmax in zip(Ps,colors,labels,range(len(Ps)),nimgmaxes):
+    for P,col,name,lab,ci,nimgmax in zip(Ps,colors,names,labels,range(len(Ps)),nimgmaxes):
         
-        RD = pd.read_excel(P + '\\RhizoideData' + lab + '.xlsx',index_col = 'Ind')
+        RD = pd.read_excel(P + '\\RhizoideData' + name + '.xlsx',index_col = 'Ind')
         
         List = np.unique(RD.index) 
         
