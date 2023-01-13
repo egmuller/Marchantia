@@ -67,6 +67,14 @@ def getNormal(x1,y1,x2,y2, **kwargs):
 
 def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
 
+    showN = True
+    for key, value in kwargs.items(): 
+        if key == 'showN':
+            showN = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    
     fig,ax = plt.subplots(dpi = 250,facecolor='black',figsize = (5,3.5))
     fig.suptitle(Title)
  
@@ -82,12 +90,13 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
         plotprops = {'color':'white'}
         boxprops = {'color':'white','facecolor':col}
         
-        lab = lab + '\nn = ' + str(len(dat))
+        if showN:
+            lab = lab + '\nn = ' + str(len(dat))
         
         Labels[i] = lab
 
         bp = ax.boxplot(dat, positions = [i], labels = [lab],patch_artist =True, boxprops=boxprops, capprops =plotprops,
-                    showfliers=False,whiskerprops=plotprops,medianprops =plotprops)
+                    showfliers=False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(Data), 0.8])])
         
         grouping = np.append(grouping,np.ones(len(dat))*i)
     

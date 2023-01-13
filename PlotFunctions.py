@@ -981,3 +981,100 @@ def plotRhizoides(Ps,colors,names,labels,nimgmaxes):
     ax2.set_ylabel('% of gemmae with visible rhizoides')
     ax2.legend(handles, labels)
     
+
+
+#%% Plots for shape analysis
+
+# 1. Distances to mean contours
+
+def plotMeanDist(GDs,Expname,colors,Times):
+    
+        
+    ## Evolution in time per experiment
+    
+    for GD,col,j in zip(GDs,colors,range(len(Expname))):
+        
+ 
+
+    
+        fullMedDist = []
+        fullMedDistN = []
+        # fullL2Dist = []
+        # fullL2DistN = []
+        
+        ## Main code
+        for t in Times:
+            
+            MedDist = GD.loc[(GD['MeanCimg']==t*2),'MedDist']
+            MedDistN = GD.loc[(GD['MeanCimg']==t*2),'MedDistNorm']
+            # L2Dist = GD.loc[(GD['MeanCimg']==t*2),'L2Dist']
+            # L2DistN = GD.loc[(GD['MeanCimg']==t*2),'L2DistNorm']
+            
+            fullMedDist.append(MedDist)
+            fullMedDistN.append(MedDistN)
+            # fullL2Dist.append(L2Dist)
+            # fullL2DistN.append(L2DistN)
+            
+            
+            
+
+        cols = [col for i in Times]
+
+        fig0, ax0, _, _ = vf.boxswarmplot('Evolution of median distance to mean for ' + Expname[j],'Distance (µm)',
+                     fullMedDist,cols,[str(t) + 'h' for t in Times], showN = False)
+        ax0.set_xlabel('Time after dormancy exit (hours)')
+        
+        
+        fig1, ax1, _, _ = vf.boxswarmplot('Evolution of median distance to normalized mean for ' + Expname[j],'Distance (norm)',
+                     fullMedDistN,cols,[str(t) + 'h' for t in Times], showN = False)
+        ax1.set_xlabel('Time after dormancy exit (hours)')
+        
+        
+        # fig2, ax2, _, _ = vf.boxswarmplot('Evolution of L2 distance to mean for ' + Expname[j],'L2 distance to mean contour (µm)',
+        #              fullL2Dist,cols,[str(t) + 'h' for t in Times], showN = False)
+        # ax2.set_xlabel('Time after dormancy exit (hours)')
+        
+        
+        # fig3, ax3, _, _ = vf.boxswarmplot('Evolution of L2 distance to normalized mean for ' + Expname[j],'L2 distance to mean contour (norm)',
+        #              fullL2DistN,cols,[str(t) + 'h' for t in Times], showN = False)
+        # ax3.set_xlabel('Time after dormancy exit (hours)')
+        
+        
+    
+        
+     ## Comparison between experiments    
+    if len(GDs)>1:       
+        for t in Times:
+
+            # MedDist = [None]*len(GDs)
+            MedDistN = [None]*len(GDs)
+
+            for j,GD in enumerate(GDs):
+
+                # MedDist[j] = GD.loc[(GD['MeanCimg']==t*2),'MedDist']
+                MedDistN[j] = GD.loc[(GD['MeanCimg']==t*2),'MedDistNorm']
+
+
+            # fig10, ax10, cap, _ = vf.boxswarmplot('Distance to mean ' + str(t) + ' hours after dormancy exit',
+            #                                     'Distance (µm)',
+            #              MedDist,colors,Expname[:], showN = True)
+
+
+            fig11, ax11, capN, _ = vf.boxswarmplot('Distance to normalized mean ' + str(t) + ' hours after dormancy exit',
+                                                'Distance (norm)',
+                         MedDistN,colors,Expname[:], showN = True)
+
+
+            # step = np.max(cap)*0.125
+            stepN = np.max(capN)*0.125
+            # fullstep = 0
+            fullstepN = 0
+            # hmax = np.max(cap)
+            hmaxN = np.max(capN)
+
+
+            for i in range(len(GDs)-1):
+                for j in range(i+1,len(GDs)):
+
+                    # fullstep = plotSig(ax10,hmax,step,fullstep,MedDist[i],MedDist[j],i,j)
+                    fullstepN = plotSig(ax11,hmaxN,stepN,fullstepN,MedDistN[i],MedDistN[j],i,j)
