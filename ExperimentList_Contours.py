@@ -92,9 +92,9 @@ ExcludeList220531_Ct1_Osmo =  []
 
 ExcludeList220531_Ct2_Osmo = []
 
-ExcludeList220722_Ct = []
+ExcludeList220722_Ct = ['PPG20','PPG21']
 
-ExcludeList220722_ABA = []
+ExcludeList220722_ABA = ['PPG13']
 
 
 ExcludeList220727_Hyper = ['PPG45','PPG43','PPG48','PPG49','PPG18','PPG22','PPG29']
