@@ -131,12 +131,12 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
     ######### Curves of evolution ##########
     
-    fig2,ax2 = plt.subplots(dpi = 250,facecolor='white')
+    fig2,ax2 = plt.subplots(dpi = 250,facecolor='black')
     fig2.suptitle(Title + ' - Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (mm²)')
     
-    fig3,ax3 = plt.subplots(dpi = 250,facecolor='white')
+    fig3,ax3 = plt.subplots(dpi = 250,facecolor='black')
     fig3.suptitle(Title + ' - Norm Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
@@ -152,7 +152,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             nimgmax = 49 # 24h
         
         if IndividualPlots:
-            fig1,ax1 = plt.subplots(dpi = 250,facecolor='white')
+            fig1,ax1 = plt.subplots(dpi = 250,facecolor='black')
             fig1.suptitle(lab + ' - Area vs. time')
             plt.xlabel('Time (min)')
             plt.ylabel('Area (mm²)')
@@ -196,40 +196,36 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     ######### Parameters of fit ###########
     
       
-    fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
+    fig4,ax4 = plt.subplots(dpi = 250,facecolor='black')
     fig4.suptitle(Title + ' - Growth start time')
-    plt.ylabel('T start (hours)')
       
-    fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
+    fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
     fig5.suptitle(Title + ' - Growth caracteristic time')
-    plt.ylabel('Tau growth (hours)')
     
-    fig6,ax6 = plt.subplots(dpi = 250,facecolor='white') 
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black') 
     fig6.suptitle(Title + ' - Starting area') 
-    plt.ylabel('Starting area from fit (mm²)') 
 
-    fig16,ax16 = plt.subplots(dpi = 250,facecolor='white')
+    fig16,ax16 = plt.subplots(dpi = 250,facecolor='black')
     fig16.suptitle(Title + ' - Initial growth increase')
-    plt.ylabel('Growth at Tstart (%)')
     
     if len(newGDs) == 2:
         # Histogram for distribution comparison
-        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig7.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours)')
         plt.ylabel('PDF')
 
-        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig8.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min)')
         plt.ylabel('PDF')
         
-        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig9.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours) - median aligned')
         plt.ylabel('PDF')
 
-        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig10.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min) - median aligned')
         plt.ylabel('PDF')
@@ -352,6 +348,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     hmaxArea0 = np.max(capArea0) 
     hmaxAreaStart = np.max(capAreaStart)
     
+    ax4.set_ylabel('Tstart (hours)')
+    ax5.set_ylabel('Tau growth (hours)')
+    ax6.set_ylabel('Starting area from fit (mm²)') 
+    ax16.set_ylabel('Growth at Tstart (%)')
+    
     if stats=='ranksum':
         if AllSigs:
             for i in range(len(newGDs)-1):
@@ -383,7 +384,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         StatsKruskal(ax6,Area0)
         StatsKruskal(ax16,AreaStart)
                
- 
+    
  
     if stats=='ranksum':
         fig4.savefig(P + '\\AreaGrowth\\' + Title + '_Tstart.png')
