@@ -288,7 +288,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         
         if DebugPlots & VPlt:
             
-            fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
+            fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300, figsize = (7,5))
             
             fig0.suptitle(FitResPlot.name)
 

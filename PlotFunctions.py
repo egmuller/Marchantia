@@ -483,7 +483,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     n = len(GDs)
     
     # Figure for E ratios 
-    f3,ax3 = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(8,5))
+    f3,ax3 = plt.subplot_mosaic(vf.mosaicList(n)[0], dpi=200, figsize=(7,5))
     f3.patch.set_facecolor('black')
     ax3['a'].set_title('Growth rates change\n caused by Osmotic choc')
     
@@ -505,7 +505,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         
         if indiplots:
             fig0,ax0,cap,med = vf.boxswarmplot(Title + '\n\nElastic bulk modulus comparison for ' + lab,'E (MPa)',
-                                               [Ecomps[i],Erels[i]],[colors[i],colors[i]],['Ecomp','Erel'])
+                                               [Ecomps[i],Erels[i]],[colors[i],colors[i]],['Ed','Ei'])
     
             plotSig(ax0,np.max(cap),np.max(cap)*0.125,0,Ecomps[i],Erels[i],0,1)
             
@@ -530,7 +530,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                 ax00.hist(Eratios, facecolor=colors[i]) # ,density = True
                 fig00.suptitle('Median : ' + str(np.round(Eratios.median()*100)/100) + 
                                ' - Mean : ' + str(np.round(Eratios.mean()*100)/100))
-                ax00.set_xlabel('Erel/Ecomp')
+                ax00.set_xlabel('Ei/Ed')
                 ax00.set_ylabel('Count')
                 # fig00.savefig(P + '\\Hydromechanics\\' + lab + '_EComp-Rel_Dist.png')
                 if not showE:
@@ -571,7 +571,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     ### E ratios histograms
     ax3['a'].hist(AllRatios,color='gray', density = True, label = 'Pooled data')
     ax3['a'].set_ylabel('Density')
-    ax3['a'].set_xlabel('Erel/Ecomp')
+    ax3['a'].set_xlabel('Ei/Ed')
     ax3['a'].set_title('Mean : ' + '{0:.2f}'.format(AllRatios.mean()))
     ax3['a'].legend()
     f3.tight_layout()
@@ -579,8 +579,8 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     
     
     ### boxplots
-    fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
-    fig10,ax10,capErel,medErel = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (relaxation)','Erel (MPa)',Erels,colors,Labels[:])
+    fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ed (MPa)',Ecomps,colors,Labels[:])
+    fig10,ax10,capErel,medErel = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (relaxation)','Ei (MPa)',Erels,colors,Labels[:])
     fig2,ax2,capTauComp,medTauComp = vf.boxswarmplot(Title + '\n\nCaracteristic time (compression)','Tau (min)',TauComps,colors,Labels[:])
     fig20,ax20,capTauRel,medTauRel = vf.boxswarmplot(Title + '\n\nCaracteristic time (relaxation)','Tau (min)',TauRels,colors,Labels[:]) 
     fig3,ax3,capLovH,medLovH = vf.boxswarmplot(Title + '\n\nConductivity','L/H0 (Pa-1.s-1)',LovHs,colors,Labels[:]) 
