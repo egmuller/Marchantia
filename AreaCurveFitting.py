@@ -461,19 +461,17 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         
         E = params[1]/np.abs(params[1]-params[2])*DeltaPiOut # en MPa
         Eg = params2[1]/np.abs(params2[2]-params2[1])*DeltaPiOut # en MPa
-        Lh = 1/(params2[0]*60*Eg*1e6) # en m/s/Pa
+        LovH = 1/(params2[0]*60*Eg*1e6) # en /s/Pa
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params2[0] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params2[1] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params2[2]   
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0-Aeq'] = params2[1]-params2[2]        
+        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = Eg                   
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'EcompNG'] = E             
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Ecomp'] = 1/E       
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Comp'] = Lh      
-        # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Comp'] = Lh*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Comp'] = 1/Lh
-        # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Comp'] = 1/(GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']*Lh)
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'EcompNG'] = E  
+                        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H0'] = LovH 
+        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tdeb'] = params[3]
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params[3])) # img shift for alignemen
         
@@ -515,24 +513,22 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
             fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Rel : ' + str(R2rel))
 
             Erel = paramsRel[1]/np.abs(paramsRel[2]-paramsRel[1])*DeltaPiOut # en MPa
-            LhRel = 1/(paramsRel[0]*60*Erel*1e6) # en m/s/Pa
-
+            Phi = 1/Eg*(1/paramsRel[0] - 1/params2[0]) # en /MPa/min
+            
+        
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFluxRel'] = paramsRel[0] 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel'] = paramsRel[1] 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'AeqRel'] = paramsRel[2]   
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0Rel-AeqRel'] = paramsRel[1]-paramsRel[2]        
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Erel'] = Erel            
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Erel'] = 1/Erel     
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Rel'] = LhRel    
-            # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Rel'] = LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'] 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Rel'] = 1/LhRel
-            # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Rel'] = 1/(LhRel*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'])
+            
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Erel'] = Erel  
+            
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Phi'] = Phi  
+            
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TdebRel'] = paramsRel[3]
+            
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthSlope'] = paramsRel[4]
+            
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_AfterOC'] = paramsRel[4]/paramsRel[1]*60*24 # in day-1
-                 
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'E'] = (Erel+E)/2
-            GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/E'] = 2/(Erel+E)
 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2rel'] = R2rel
 

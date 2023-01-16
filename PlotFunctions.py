@@ -471,11 +471,12 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     
         
     ### Regroup data
-    Es= [None]*len(GDs)
     Ecomps= [None]*len(GDs)
-    Lcomps= [None]*len(GDs)
+    TauComps= [None]*len(GDs)
     Erels= [None]*len(GDs)
-    Lrels= [None]*len(GDs)
+    TauRels= [None]*len(GDs)
+    LovHs = [None]*len(GDs) 
+    Phis = [None]*len(GDs)
     
     AllRatios = np.empty(0)
     
@@ -491,11 +492,12 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     for GD,lab,i,nax in zip(GDs,Labels,range(len(GDs)),vf.mosaicList(n)[1]):
         
         # Retrieve data
-        Es[i] = GD.loc[GD['Img'] == 0, 'E']
         Ecomps[i] = GD.loc[GD['Img'] == 0, 'Ecomp']
-        Lcomps[i] = GD.loc[GD['Img'] == 0, 'L/H_Comp'] 
+        TauComps[i] = GD.loc[GD['Img'] == 0, 'TauFlux'] 
         Erels[i] = GD.loc[GD['Img'] == 0, 'Erel']
-        Lrels[i] = GD.loc[GD['Img'] == 0, 'L/H_Rel']  
+        TauRels[i] = GD.loc[GD['Img'] == 0, 'TauFluxRel']  
+        LovHs[i] = GD.loc[GD['Img'] == 0, 'L/H0'] 
+        Phis[i] = GD.loc[GD['Img'] == 0, 'Phi']*60
         
         
         Eratios = np.divide(Erels[i],Ecomps[i])
@@ -512,10 +514,10 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             if not showE:
                 plt.close(fig0)
             
-            fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nConductivity comparison for ' + lab,'Tau (min-1)',
-                                               [Lcomps[i],Lrels[i]],[colors[i],colors[i]],['L/H_comp','L/H_rel'])
+            fig01,ax01,cap,med = vf.boxswarmplot(Title + '\n\nCracteristic time comparison for ' + lab,'Tau (min)',
+                                               [TauComps[i],TauRels[i]],[colors[i],colors[i]],['Tau_comp','Tau_rel'])
     
-            plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,Lcomps[i],Lrels[i],0,1)
+            plotSig(ax01,np.max(cap),np.max(cap)*0.125,0,TauComps[i],TauRels[i],0,1)
             
             fig01.tight_layout()
             # fig01.savefig(P + '\\Hydromechanics\\' + lab + '_L/H_Comp-Rel.png')
@@ -535,16 +537,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     plt.close(fig00)
                 
                 
-                fig00, ax00 = plt.subplots(dpi=300)
-                ax00.hist(Es[i], facecolor=colors[i],bins=20) # ,density = True
-                fig00.suptitle('Bulk elastic moduli')
-                ax00.set_xlabel('E (MPa)')
-                ax00.set_ylabel('Count')
-                # ax00.set_xlim(right=1.5)
-                # fig00.savefig(P + '\\Hydromechanics\\' + lab + '_E_Dist.png')
-                if not showE:
-                    plt.close(fig00)
-                
     
                 linreg = linregress(Ecomps[i],Erels[i])
     
@@ -559,10 +551,10 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     plt.close(g)
                 
                 fig001, ax001 = plt.subplots(dpi=300)
-                ax001.hist(np.divide(Lrels[i],Lcomps[i]), facecolor=colors[i]) # ,density = True
-                fig001.suptitle('Median : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).median()*100)/100) + 
-                               ' - Mean : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).mean()*100)/100))
-                ax001.set_xlabel('L_Rel/L_Comp')
+                ax001.hist(np.divide(TauRels[i],TauComps[i]), facecolor=colors[i]) # ,density = True
+                fig001.suptitle('Median : ' + str(np.round(np.divide(TauRels[i],TauComps[i]).median()*100)/100) + 
+                               ' - Mean : ' + str(np.round(np.divide(TauRels[i],TauComps[i]).mean()*100)/100))
+                ax001.set_xlabel('Tau_Rel/Tau_Comp')
                 ax001.set_ylabel('Count')
                 # fig001.savefig(P + '\\Hydromechanics\\' + lab + '_L/HComp-Rel_Dist.png')
                 if not showTau:
@@ -589,17 +581,18 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     ### boxplots
     fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
     fig10,ax10,capErel,medErel = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (relaxation)','Erel (MPa)',Erels,colors,Labels[:])
-    fig11,ax11,capE,medE = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (mean)','E (MPa)',Es,colors,Labels[:])
-    fig2,ax2,capLcomp,medLcomp = vf.boxswarmplot(Title + '\n\nConductivity (compression)','L/H0_Comp (min-1)',Lcomps,colors,Labels[:])
-    fig20,ax20,capLrel,medLrel = vf.boxswarmplot(Title + '\n\nConductivity (relaxation)','L/H0_Rel (min-1)',Lrels,colors,Labels[:])       
+    fig2,ax2,capTauComp,medTauComp = vf.boxswarmplot(Title + '\n\nCaracteristic time (compression)','Tau (min)',TauComps,colors,Labels[:])
+    fig20,ax20,capTauRel,medTauRel = vf.boxswarmplot(Title + '\n\nCaracteristic time (relaxation)','Tau (min)',TauRels,colors,Labels[:]) 
+    fig3,ax3,capLovH,medLovH = vf.boxswarmplot(Title + '\n\nConductivity','L/H0 (Pa-1.s-1)',LovHs,colors,Labels[:]) 
+    fig4,ax4,capPhi,medPhi = vf.boxswarmplot(Title + '\n\nExtensibility','Phi (MPa-1.h-1)',Phis,colors,Labels[:])       
 
 
     ### stats
     fullstepE = 0
     fullstepEcomp = 0
-    fullstepLcomp = 0
+    fullstepTauComp = 0
     fullstepErel = 0
-    fullstepLrel = 0
+    fullstepTauRel = 0
     
     if stats=='ranksum':
         if AllSigs:
@@ -607,25 +600,25 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                 for j in range(i+1,len(GDs)):
 
                     fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
-                    fullstepE = plotSig(ax11,np.max(capE),np.max(capE)*0.125,fullstepE,Es[i],Es[j],i,j)
                     fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
-                    fullstepLcomp = plotSig(ax2,np.max(capLcomp),np.max(capLcomp)*0.125,fullstepLcomp,Lcomps[i],Lcomps[j],i,j)
-                    fullstepLrel = plotSig(ax20,np.max(capLrel),np.max(capLrel)*0.125,fullstepLrel,Lrels[i],Lrels[j],i,j)
+                    fullstepTauComp = plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,fullstepTauComp,TauComps[i],TauComps[j],i,j)
+                    fullstepTauRel = plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,fullstepTauRel,TauRels[i],TauRels[j],i,j)
 
         else:
             for i,j in sigpairs:
 
                     fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
-                    fullstepE = plotSig(ax11,np.max(capE),np.max(capE)*0.125,fullstepE,Es[i],Es[j],i,j)
                     fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
-                    fullstepLcomp = plotSig(ax2,np.max(capLcomp),np.max(capLcomp)*0.125,fullstepLcomp,Lcomps[i],Lcomps[j],i,j)
-                    fullstepLrel = plotSig(ax20,np.max(capLrel),np.max(capLrel)*0.125,fullstepLrel,Lrels[i],Lrels[j],i,j)
+                    fullstepTauComp = plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,fullstepTauComp,TauComps[i],TauComps[j],i,j)
+                    fullstepTauRel = plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,fullstepTauRel,TauRels[i],TauRels[j],i,j)
 
     fig1.tight_layout()
     fig2.tight_layout()
     fig10.tight_layout()
     fig20.tight_layout()
-    fig11.tight_layout()
+    fig3.tight_layout()
+    fig4.tight_layout()
+    
     
 
     if stats=='ranksum':
@@ -639,12 +632,10 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig1)
             plt.close(fig20)
             plt.close(fig10)
-            plt.close(fig11)
         else:
             if not showE:
                 plt.close(fig1)
                 plt.close(fig10)
-                plt.close(fig11)
             if not showTau:
                 plt.close(fig2)
                 plt.close(fig20)
@@ -656,13 +647,11 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig1)
             plt.close(fig20)
             plt.close(fig10)
-            plt.close(fig11)
             return
         else:
             if not showE:
                 plt.close(fig1)
                 plt.close(fig10)
-                plt.close(fig11)
             if not showTau:
                 plt.close(fig2)
                 plt.close(fig20)
