@@ -9,6 +9,7 @@ Created on Tue Nov 29 09:36:00 2022
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+
 import seaborn as sns
 from scipy.stats import ks_2samp, linregress
 from cycler import cycler
@@ -17,6 +18,7 @@ from tqdm import tqdm
 
 from matplotlib.patches import Rectangle
 
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import numpy as np
 import pandas as pd
@@ -1078,3 +1080,145 @@ def plotMeanDist(GDs,Expname,colors,Times):
 
                     # fullstep = plotSig(ax10,hmax,step,fullstep,MedDist[i],MedDist[j],i,j)
                     fullstepN = plotSig(ax11,hmaxN,stepN,fullstepN,MedDistN[i],MedDistN[j],i,j)
+                    
+                    
+                    
+ # 2. Growth
+ 
+def plotGrowth(PFig,GrowthD,CD,Expname,DPI):
+    
+    StackList = np.unique(GrowthD.index)
+    
+    Pfolder = PFig + '\\ContoursGrowth\\' 
+    
+    if not os.path.exists(Pfolder):
+        os.mkdir(Pfolder) # create general folder  
+    
+    Pfolder = Pfolder +  Expname + '\\'
+    
+    if not os.path.exists(Pfolder):
+        os.mkdir(Pfolder) # create general folder  
+        
+    Pinstant = Pfolder + 'InstantGrowth\\'
+    
+    if not os.path.exists(Pinstant):
+        os.mkdir(Pinstant) # create folder  
+    
+    Paccum = Pfolder + 'AccumulatedGrowth\\'
+    
+    if not os.path.exists(Paccum):
+        os.mkdir(Paccum) # create folder  
+    
+    Ptot = Pfolder + 'TotalGrowth\\'
+    
+    if not os.path.exists(Ptot):
+        os.mkdir(Ptot) # createfolder  
+        
+    for s in StackList:
+        
+        print('Plotting for : ' + s)
+        
+        nimg = np.max(GrowthD.loc[s,'Img'])
+        
+        fullP0 = Pinstant + s + '\\'
+
+        if not os.path.exists(fullP0):
+                os.mkdir(fullP0) # create experiment folde
+        
+        fullP1 = Paccum + s + '\\'
+
+        if not os.path.exists(fullP1):
+                os.mkdir(fullP1) # create experiment folde
+        
+        fullP2 = Ptot + s + '\\'
+
+        if not os.path.exists(fullP2):
+                os.mkdir(fullP2) # create experiment folde
+        
+        minInstGrowth = GrowthD.loc[s,'InstantGrowth'].min()
+        maxInstGrowth = np.percentile(GrowthD.loc[s,'InstantGrowth'].values,95)
+        
+        minAccGrowth = GrowthD.loc[s,'AccumulatedGrowth'].min()
+        maxAccGrowth = GrowthD.loc[s,'AccumulatedGrowth'].max()
+        
+        minTotGrowth = GrowthD.loc[s,'TotGrowth'].min()
+        maxTotGrowth = np.percentile(GrowthD.loc[s,'TotGrowth'].values,75)
+        
+        fig00,ax00 = plt.subplots(dpi = DPI)
+        fig00.suptitle('Instant growth of ' + s)
+        
+        fig01,ax01 = plt.subplots(dpi = DPI)
+        fig01.suptitle('Accumulated growth of ' + s)
+        
+        fig02,ax02 = plt.subplots(dpi = DPI)
+        fig02.suptitle('Total growth of ' + s)
+        
+        for i in range(1,nimg):
+            
+            X = CD.loc[(CD.index == s) & (CD['Img'] == i),'X']
+            Y = CD.loc[(CD.index == s) & (CD['Img'] == i),'Y']
+            
+            InstG = GrowthD.loc[(GrowthD.index == s) & (GrowthD['Img'] == i),'InstantGrowth']
+            AccuG = GrowthD.loc[(GrowthD.index == s) & (GrowthD['Img'] == i),'AccumulatedGrowth']
+            TotG = GrowthD.loc[(GrowthD.index == s) & (GrowthD['Img'] == i),'TotGrowth']
+            
+            fig0,ax0 = plt.subplots(dpi = DPI)
+            fig0.suptitle('Growth between image ' + str(i-1) + ' & ' + str(i) + '.')            
+            pts0 = ax0.scatter(X,Y,c = InstG, cmap = 'gist_rainbow_r',s = 0.3,marker = 'o',vmax=maxInstGrowth,vmin=minInstGrowth)
+            divider0 = make_axes_locatable(ax0)
+            cax0 = divider0.append_axes("right", size="5%", pad=0.05)
+            plt.colorbar(pts0,cax = cax0)
+            ax0.set_aspect('equal')
+            fig0.savefig(fullP0 + 'InstGrowthImg' + str(i-1) + '_' + str(i))
+            plt.close(fig0)
+            
+            
+            fig1,ax1 = plt.subplots(dpi = DPI)
+            fig1.suptitle('Accumulated growth a image ' + str(i) + '.')            
+            pts1 = ax1.scatter(X,Y,c = AccuG, cmap = 'gist_rainbow_r',s = 0.3,marker = 'o',vmax=maxAccGrowth,vmin=minAccGrowth)
+            divider1 = make_axes_locatable(ax1)
+            cax1 = divider1.append_axes("right", size="5%", pad=0.05)
+            plt.colorbar(pts1,cax = cax1)
+            ax1.set_aspect('equal')
+            fig1.savefig(fullP1 + 'AccGrowthImg' + str(i))
+            plt.close(fig1)
+            
+            
+            fig2,ax2 = plt.subplots(dpi = DPI)
+            fig2.suptitle('Total growth a image ' + str(i) + '.')          
+            pts2 = ax2.scatter(X,Y,c = TotG, cmap = 'gist_rainbow_r',s = 0.3,marker = 'o',vmax=maxTotGrowth,vmin=minTotGrowth)
+            divider2 = make_axes_locatable(ax2)
+            cax2 = divider2.append_axes("right", size="5%", pad=0.05)
+            plt.colorbar(pts2,cax = cax2)
+            ax2.set_aspect('equal')
+            fig2.savefig(fullP2 + 'TotGrowthImg' + str(i))
+            plt.close(fig2)
+            
+            pts00 = ax00.scatter(X,Y,c = InstG, cmap = 'gist_rainbow_r',s = 0.2,marker = 'o',vmax=maxInstGrowth,vmin=minInstGrowth)
+            pts01 = ax01.scatter(X,Y,c = AccuG, cmap = 'gist_rainbow_r',s = 0.2,marker = 'o',vmax=maxAccGrowth,vmin=minAccGrowth)
+            pts02 = ax02.scatter(X,Y,c = TotG, cmap = 'gist_rainbow_r',s = 0.2,marker = 'o',vmax=maxTotGrowth,vmin=minTotGrowth)
+
+        divider00 = make_axes_locatable(ax00)
+        cax00 = divider00.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(pts00,cax = cax00)
+        ax00.set_aspect('equal') 
+        fig00.savefig(fullP0 + 'FullInstantGrowth')
+        plt.close(fig00)
+                         
+        divider01 = make_axes_locatable(ax01)
+        cax01 = divider01.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(pts01,cax = cax01)
+        ax01.set_aspect('equal') 
+        fig01.savefig(fullP1 + 'FullAccumulatedGrowth')
+        plt.close(fig01)
+                         
+        divider02 = make_axes_locatable(ax02)
+        cax02 = divider02.append_axes("right", size="5%", pad=0.05)
+        plt.colorbar(pts02,cax = cax02)
+        ax02.set_aspect('equal') 
+        fig02.savefig(fullP2 + 'FullTotGrowth')
+            
+            
+            
+            
+            
