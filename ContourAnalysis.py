@@ -1006,7 +1006,7 @@ def getLandmarks(CD,GD,StackList,Scale,P,stringName, **kwargs):
                             NotchesRef = [[xN1OldAl,yN1OldAl],
                                          [xN2OldAl,yN2OldAl]]
 
-                        if (DA > Dmax):
+                        if (DA > 3*Dmax):
 
                             if AUTO:
                                # aligned old landlark points (= new reference points)
