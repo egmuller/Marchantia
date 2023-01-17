@@ -16,6 +16,8 @@ from cycler import cycler
 import VallapFunc as vf
 from tqdm import tqdm
 
+import gc
+
 from matplotlib.patches import Rectangle
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
@@ -140,6 +142,16 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig3.suptitle(Title + ' - Norm Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
+    
+    fig20,ax20 = plt.subplots(dpi = 250,facecolor='black')
+    fig20.suptitle(Title + ' - GrowthRate vs. time')
+    plt.xlabel('Time (min)')
+    plt.ylabel('Growth rate')
+    
+    fig21,ax21 = plt.subplots(dpi = 250,facecolor='black')
+    fig21.suptitle(Title + ' - GrowthRate aligned vs. time')
+    plt.xlabel('Time (min)')
+    plt.ylabel('Growth rate aligned at tdeb')
 
     
     for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
@@ -168,16 +180,26 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         MeanA = np.empty(nimgmax)
         MeanTime = np.empty(nimgmax)
         StdA = np.empty(nimgmax)
+        MeanGR = np.empty(nimgmax)
+        StdGR = np.empty(nimgmax)
+        MeanGRal = np.empty(nimgmax)
+        StdGRal = np.empty(nimgmax)
 
         for im in range(nimgmax):
 
             MeanA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().mean()
             MeanTime[im] = im*30
             StdA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().std()
+            MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()
+            StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std() 
+            MeanGRal[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())
+            StdGRal[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())  
         
         nppg = len(GD.loc[GD['Img'] == 0,'Area'].to_numpy())
 
         ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax20.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax21.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax3.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         
     plt.figure(fig2.number)
@@ -185,6 +207,18 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig2.savefig(P + '\\AreaGrowth\\' + Title + '_AreaCurve.png')
     if not showcurve:
         plt.close(fig2)
+        
+    plt.figure(fig20.number)
+    plt.legend(prop={'size': 8})
+    fig20.savefig(P + '\\AreaGrowth\\' + Title + '_GrowthRateCurve.png')
+    if not showcurve:
+        plt.close(fig20)
+        
+    plt.figure(fig21.number)
+    plt.legend(prop={'size': 8})
+    fig21.savefig(P + '\\AreaGrowth\\' + Title + '_GrowthRateAlignedCurve.png')
+    if not showcurve:
+        plt.close(fig21)
 
     plt.figure(fig3.number)
     plt.legend(prop={'size': 8})
@@ -1187,6 +1221,10 @@ def plotGrowth(PFig,GrowthD,CD,Expname,DPI):
             pts00 = ax00.scatter(X,Y,c = InstG, cmap = 'gist_rainbow_r',s = 0.2,marker = 'o',vmax=maxInstGrowth,vmin=minInstGrowth)
             pts01 = ax01.scatter(X,Y,c = AccuG, cmap = 'gist_rainbow_r',s = 0.2,marker = 'o',vmax=maxAccGrowth,vmin=minAccGrowth)
             pts02 = ax02.scatter(X,Y,c = TotG, cmap = 'gist_rainbow_r',s = 0.2,marker = 'o',vmax=maxTotGrowth,vmin=minTotGrowth)
+            
+            del X, Y, InstG, AccuG, TotG
+            
+            gc.collect()
 
         divider00 = make_axes_locatable(ax00)
         cax00 = divider00.append_axes("right", size="5%", pad=0.05)
@@ -1207,6 +1245,7 @@ def plotGrowth(PFig,GrowthD,CD,Expname,DPI):
         plt.colorbar(pts02,cax = cax02)
         ax02.set_aspect('equal') 
         fig02.savefig(fullP2 + 'FullTotGrowth')
+        plt.close(fig02)
             
             
             
