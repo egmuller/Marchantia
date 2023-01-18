@@ -102,6 +102,23 @@ def fitFuncOsmChoc(t,T,A0,Aeq,tdeb): #
     
     return(f)
 
+# 2.bis Exponential decay + plasmolysis plateau
+def fitFuncOsmChoc_plasmo(t,T,A0,Aeq,tdeb, Ap, tp): # 
+    
+    f = np.multiply((A0-Aeq),np.exp(np.divide(-(t-tdeb),T))) + Aeq
+        
+    f[t<tdeb] = A0
+    f[t > tp] = Ap
+    
+    return(f)
+
+
+def fitFuncOsmChoc_constant(t,Ap): # 
+    
+    f = Ap*np.ones(np.shape(t))
+    
+    return(f)
+
 # 3. Exponential decay from initial volume to equilibrium volume + affine component after choc
 
 def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B): 
@@ -512,6 +529,158 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
             GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/E'] = 2/(Erel+E)
 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2rel'] = R2rel
+
+        fig.tight_layout()
+        
+        if DebugPlots:
+            plt.show()
+        else:
+            plt.close(fig)
+        
+        
+    
+    return(GD)
+
+
+def fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartComp2,ImgEqComp2,TstartComp2,ImgStartComp3,ImgEqComp3,TstartComp3, **kwargs):
+    
+    DebugPlots = False
+    Concentration = 100 # mM
+    #Concentration2 = 500
+    #Concentration3 = 700
+    
+    
+    for key, value in kwargs.items(): 
+        if key == 'debug':
+            DebugPlots = value
+        if key == 'C_osmo':
+            Concentration = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    print('Sorting data.')
+    CD,GD,StackList = sortChocs(CD,GD,StackList,ImgStartComp,ImgEqComp,DebugPlots)      
+
+    for s,row in zip(StackList,Rows):
+        
+        print('Fitting curve for : ' + s.ljust(5), end='\n')           
+        
+        Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
+        AreaC = GD.loc[s,'Area'].values
+        
+        # data for compression 1 fit
+        TimeFitComp = GD.loc[s,'Img'].values.astype(float)[ImgStartComp:ImgEqComp]/FPH*60 # in minutes
+        TimeOffset = TimeFitComp[0]
+        Time = Time - TimeOffset
+        TimeFitComp = TimeFitComp - TimeOffset
+        AreaCFitComp = AreaC[ImgStartComp:ImgEqComp]
+               
+        fig,ax = plt.subplots(dpi=300)
+        ax.plot(Time,AreaC,'*y',ms=3,label='FullData')
+        ax.set_xlabel('Time (min)')
+        ax.set_ylabel('Area (mm²)')
+
+        DenseTimeComp = np.linspace(TimeFitComp[0],TimeFitComp[-1],100)
+
+        
+
+        # fit of compression 1
+        params, cov = curve_fit(f=fitFuncOsmChoc, xdata=TimeFitComp, ydata=AreaCFitComp, 
+                                p0=[1, AreaCFitComp[0:TstartComp].mean(),AreaCFitComp[0:TstartComp].mean()*0.98,TimeFitComp[TstartComp]],
+                                bounds = (0, np.inf), method='trf',loss='soft_l1')
+
+        R2 = np.round(vf.computeR2(AreaCFitComp,fitFuncOsmChoc(TimeFitComp,params[0],params[1],params[2],params[3]))*1000)/1000
+
+        fig.suptitle(s + ' - R2 : ' + str(R2))
+        
+        ax.plot(TimeFitComp,AreaCFitComp,'*c',ms=2,label='FittedData')
+        ax.plot(DenseTimeComp,fitFuncOsmChoc(DenseTimeComp,params[0],params[1],params[2],params[3]),'--b',lw=1,label='SoftL1')
+        
+        # data for compression 2 fit 
+        TimeFitComp2 = GD.loc[s,'Img'].values.astype(float)[ImgStartComp2:ImgEqComp2]/FPH*60 # in minutes
+        TimeFitComp2 = TimeFitComp2 - TimeOffset
+        AreaCFitComp2 = AreaC[ImgStartComp2:ImgEqComp2]
+        
+        DenseTimeComp2 = np.linspace(TimeFitComp2[0],TimeFitComp2[-1],100)
+               
+        ax.plot(TimeFitComp2,AreaCFitComp2,'*m',ms=2,label='FittedDataComp2')
+
+        # fit of compression 2
+        
+        #params2, cov2 = curve_fit(f=fitFuncOsmChoc_plasmo, xdata=TimeFitComp2, ydata=AreaCFitComp2, 
+         #                       p0=[params[0], params[2], AreaCFitComp2[-11:-1].mean(),TimeFitComp2[TstartComp2], AreaCFitComp2[-11:-1].mean(), TimeFitComp2[TstartComp2+10]],
+          #                      bounds = (0, np.inf), method='trf',loss='soft_l1')
+
+        
+        params2, cov2 = curve_fit(f=fitFuncOsmChoc_plasmo, xdata=TimeFitComp2, ydata=AreaCFitComp2, 
+                                p0=[params[0], params[2], AreaCFitComp2[-11:-1].mean(),np.min(TimeFitComp2[AreaCFitComp2 < 0.99*AreaCFitComp2[0:10].mean()]), AreaCFitComp2[-11:-1].mean(), np.max(TimeFitComp2[AreaCFitComp2 > 1.005*AreaCFitComp2[-11:-1].mean()])],
+                                method='lm')
+
+        R2Comp2 = np.round(vf.computeR2(AreaCFitComp2,fitFuncOsmChoc_plasmo(TimeFitComp2,params2[0],params2[1],params2[2],params2[3],params2[4], params2[5]))*1000)/1000
+
+
+        ax.plot(DenseTimeComp2,fitFuncOsmChoc_plasmo(DenseTimeComp2,params2[0],params2[1],params2[2],params2[3],params2[4], params2[5]),'--r',lw=1,label='SoftL1')
+    
+        fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Comp2 : ' + str(R2Comp2))
+        
+        
+        # data for compression fit 3
+        TimeFitComp3 = GD.loc[s,'Img'].values.astype(float)[ImgStartComp3:ImgEqComp3]/FPH*60 # in minutes
+        TimeFitComp3 = TimeFitComp3 - TimeOffset
+        AreaCFitComp3 = AreaC[ImgStartComp3:ImgEqComp3]
+        
+        DenseTimeComp3 = np.linspace(TimeFitComp3[0],TimeFitComp3[-1],100)
+               
+        ax.plot(TimeFitComp3,AreaCFitComp3,'*k',ms=2,label='FittedDataComp3')
+        
+        
+        # fit of compression 2
+        params3, cov3 = curve_fit(f= fitFuncOsmChoc_constant, xdata=TimeFitComp3, ydata=AreaCFitComp3, 
+                                p0=[params2[4]],
+                                bounds = (0, np.inf), method='trf',loss='soft_l1')
+
+        R2Comp3 = np.round(vf.computeR2(AreaCFitComp3,fitFuncOsmChoc_constant(TimeFitComp3,params3[0]))*1000)/1000
+
+
+        ax.plot(DenseTimeComp3,fitFuncOsmChoc_constant(DenseTimeComp3,params3[0]),'--r',lw=1,label='SoftL1')
+    
+        fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Comp2 : ' + str(R2Comp2) + ' - R2Comp3 : ' + str(R2Comp3))
+        
+        
+        
+        # Physical parameters
+        DeltaPiOut1 = 8.314*298*Concentration/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 0.1 (100mM = 100 mol/m3 de choc)
+        #DeltaPiOut2 = 8.314*298*Concentration2/1e6 - DeltaPiOut1 
+        
+        Pi0 = params[1]*(params[1]-params2[4])*DeltaPiOut1/(params[1]-params[2])/(2*params[1]-params2[4])
+        E = params[1]*params2[4]*DeltaPiOut1/(params[1]-params[2])/(2*params[1]-params2[4])      
+        Lh = 1/(params[0]*60*(E*1e6 + 2*Pi0)) # en m/s/Pa
+                                                      
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params[0] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params[1] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params[2]  
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aplasmo_Comp2'] = params2[4]  
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aplasmo_Comp3'] = params3[0]
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Pi0'] = Pi0   
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = E             
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Ecomp'] = 1/E       
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Comp'] = Lh      
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Comp'] = Lh*100*10**(-6)
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Comp'] = 1/Lh
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tdeb'] = params[3]
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tdeb_Comp2'] = params2[3]
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tplasmo_Comp2'] = params2[5]
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params[3])) # img shift for alignement
+        
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_Comp2'] = R2Comp2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_Comp3'] = R2Comp3
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = 'Osmotic choc fit'
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
+        
 
         fig.tight_layout()
         

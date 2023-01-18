@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
@@ -176,11 +176,16 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     HSVrange = [(25, 25, 70),(60, 120,220)]
     ImgList = [0, 20, 40]
     FitIntervalComp = [0,25]
+    FitIntervalComp2 = [25,50]
+    FitIntervalComp3 = [50,75]
     FitIntervalRel = [25,55]
     TstartComp = 3
+    TstartComp2 = 3
+    TstartComp3 = 3
     TstartRel = 9
     RelValidation = True
     Concentration = 100
+    DoFitMultiple = False
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -193,10 +198,18 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             HSVrange = value
         elif key == 'FitIntervalComp':
             FitIntervalComp = value
+        elif key == 'FitIntervalComp2':
+            FitIntervalComp2 = value
+        elif key == 'FitIntervalComp3':
+            FitIntervalComp3 = value
         elif key == 'FitIntervalRel':
             FitIntervalRel = value
         elif key == 'TstartComp':
             TstartComp = value
+        elif key == 'TstartComp2':
+            TstartComp2 = value
+        elif key == 'TstartComp3':
+            TstartComp3 = value
         elif key == 'TstartRel':
             TstartRel = value
         elif key == 'RelValidation':
@@ -230,6 +243,11 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         DoBin = False
         DoCont = False
         DoFit = True
+    elif ToDo == 'FMultiple':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitMultiple = True
     else:
         raise NameError('ToDo variable is wrong')
     
@@ -265,14 +283,19 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         GD = pd.read_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
-        GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,  C_osmo = Concentration)
+        if DoFitMultiple:
+            GD = fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,debug = DebugPlots,  C_osmo = Concentration)
+            GD.loc[:,'Expe'] = stringName
         
-        GD.loc[:,'Expe'] = stringName
+        else :
+            GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,  C_osmo = Concentration)
         
-        # Selecting only good R2s for both compand rel, could be changed in the future for more general plots
-        GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
-        if RelValidation:
-            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist,key = 'fitR2rel')
+            GD.loc[:,'Expe'] = stringName
+        
+            # Selecting only good R2s for both compand rel, could be changed in the future for more general plots
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
+            if RelValidation:
+                GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist,key = 'fitR2rel')
         
         # Saving sorted contour and fit data
         GD.to_csv(Path + '/GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
