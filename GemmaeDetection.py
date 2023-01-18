@@ -91,8 +91,8 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     ## slice 
     BWimg = mask>0
     
-    size = np.round(2*Scale) # 5µm in pixels
-    #size = np.round(4*Scale) # 5µm in pixels for 500 mM shocks
+    #size = np.round(2*Scale) # 5µm in pixels
+    size = np.round(4*Scale) # 5µm in pixels for 500 mM shocks
     
     selem = create_circular_mask(size,size) # create circular element for opening
 
@@ -101,6 +101,7 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     FilledBWimg = remove_small_holes(DilBWimg, area_threshold=5*1e3) # fills dark regions
     
     Size = np.round(30*Scale) # 30µm in pixels
+    #Size = np.round(15*Scale) # 30µm in pixels
     
     Selem = create_circular_mask(Size,Size) # create circular element for opening
 
@@ -138,6 +139,9 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
         print('')
     
     return(FinalImg)
+
+
+
 
 #%% Binarize stacks function
 
@@ -398,6 +402,77 @@ def getEdgeAndArea(BinImg,Scale):
     
     return(relativeIndicesX,relativeIndicesY,center,Area,Xlength,Ylength)
 
+def getEdgeAndArea_shapeDescriptors(BinImg,Scale):
+    
+    # Find largest contour 
+    cnts, _ = cv.findContours(BinImg, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+    if np.shape(cnts)[0] > 0:
+        cnt = max(cnts, key=cv.contourArea)
+    
+        Area = cv.contourArea(cnt)*Scale**2
+    
+        # Create image with only largest object
+        out = np.zeros(BinImg.shape, np.uint8)
+        cv.drawContours(out, [cnt], -1, 255, cv.FILLED)
+        BinImg = cv.bitwise_and(BinImg, out)
+    
+        # Computing center of propagule using euclidian distance transform
+        dist = cv.distanceTransform(BinImg, cv.DIST_L2, 3)
+        regions = regionprops(BinImg,dist)
+        center = regions[0].weighted_centroid
+    
+        # Getting contour 
+        Ycnt = cnt[:,0,0]
+        Xcnt = cnt[:,0,1] 
+        
+        ContourCumLength = np.concatenate(([0],np.cumsum(np.sqrt(np.square(np.diff(Xcnt))+np.square(np.diff(Ycnt))))))
+        ContourLength = ContourCumLength[-1]
+            
+        ContourInterp = interp1d(ContourCumLength,[Xcnt,Ycnt], fill_value='extrapolate')            
+    
+        npts = 1000
+    
+        # create contour with regular points
+        deltaS = ContourLength/npts
+        ContourRegCumLength = np.linspace(0,npts,npts+1)*deltaS
+    
+        RegXcnt,RegYcnt = ContourInterp(ContourRegCumLength)
+        
+        # Edge coordinate relative to the center
+        relativeIndicesX = RegXcnt-center[0]
+        relativeIndicesY = RegYcnt-center[1]      
+        
+        Xlength = relativeIndicesX.max() - relativeIndicesX.min()
+        Ylength = relativeIndicesY.max() - relativeIndicesY.min()
+        
+        x,y,w,h = cv.boundingRect(cnt)
+        AspectRatio = float(w)/h
+        
+        hull = cv.convexHull(cnt)
+        hull_area = cv.contourArea(hull)
+        hull_perimeter = cv.arcLength(hull,True)
+        
+        Solidity = float(Area)/hull_area
+        
+        Perimeter = cv.arcLength(cnt,True)
+        Circularity = 4*np.pi*Area/Perimeter**2
+        Convexity = hull_perimeter/Perimeter
+        
+    else:
+        relativeIndicesX=np.nan
+        relativeIndicesY=np.nan
+        center=np.nan
+        Area=np.nan
+        Xlength=np.nan
+        Ylength=np.nan
+        AspectRatio=np.nan
+        Solidity=np.nan
+        Circularity=np.nan
+        Convexity=np.nan
+        
+    
+    return(relativeIndicesX,relativeIndicesY,center,Area,Xlength,Ylength,AspectRatio,Solidity,Circularity,Convexity)
+
 
 #%% Area & contours from stacks
 
@@ -445,7 +520,8 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
             BinImg = io.imread(ProcessedPath + '/' + str(i) + '.tif')
 
             # Computing propagule edge and area from binary image
-            SortedX,SortedY,center,Area,Xlength,Ylength = getEdgeAndArea(BinImg,Scale) 
+            #SortedX,SortedY,center,Area,Xlength,Ylength = getEdgeAndArea(BinImg,Scale) 
+            SortedX,SortedY,center,Area,Xlength,Ylength,AspectRatio,Solidity,Circularity,Convexity = getEdgeAndArea_shapeDescriptors(BinImg,Scale)
             
             if not np.isnan(Area):
             
@@ -456,13 +532,25 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
     
                 CD = CD.append(pd.DataFrame(data=data,index = np.repeat(s,len(SortedX))))  # adding to global dataframe
                 
+                '''data2 = {'Area':Area/1000000, # In mm²
+                         'Xlength':Xlength,
+                         'Ylength':Ylength,
+                            'Xcenter':center[1],
+                            'Ycenter':center[0],
+                            'Img':i,
+                            'Time (min)':i*60/FPH} '''
+                
                 data2 = {'Area':Area/1000000, # In mm²
                          'Xlength':Xlength,
                          'Ylength':Ylength,
                             'Xcenter':center[1],
                             'Ycenter':center[0],
                             'Img':i,
-                            'Time (min)':i*60/FPH} 
+                            'Time (min)':i*60/FPH,
+                            'AspectRatio':AspectRatio,
+                            'Solidity':Solidity,
+                            'Circularity':Circularity,
+                            'Convexity':Convexity} 
                 
                 GD = GD.append(pd.DataFrame(data=data2,index = [s])) 
                 
