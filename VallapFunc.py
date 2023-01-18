@@ -67,7 +67,7 @@ def getNormal(x1,y1,x2,y2, **kwargs):
 
 def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
 
-    fig,ax = plt.subplots(dpi = 250,facecolor='black',figsize = (5,3.5))
+    fig,ax = plt.subplots(dpi = 250,facecolor='white',figsize = (5,3.5))
     fig.suptitle(Title)
  
     
@@ -79,8 +79,8 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     for dat,col,lab,i in zip(Data,facecolors,Labels,range(len(Data))):
     
         # plots properties
-        plotprops = {'color':'white'}
-        boxprops = {'color':'white','facecolor':col}
+        plotprops = {'color':'black'}
+        boxprops = {'color':'black','facecolor':col}
         
         lab = lab + '\nn = ' + str(len(dat))
         
@@ -94,7 +94,7 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
         cap[i] = bp['caps'][1].get_ydata(orig=True)[0]
         med[i] = bp['medians'][0].get_ydata(orig=True)[0]
     
-    sns.swarmplot(x=grouping,y=pd.concat(Data),color = 'white', size=2, ax = ax)
+    sns.swarmplot(x=grouping,y=pd.concat(Data),color = 'lightgray', size=2, ax = ax)
     
     ax.set_ylabel(Ylabel)
     

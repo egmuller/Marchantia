@@ -387,22 +387,22 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
     ######### Curves of evolution ##########
     
-    fig2,ax2 = plt.subplots(dpi = 250,facecolor='black')
+    fig2,ax2 = plt.subplots(dpi = 250,facecolor='white')
     fig2.suptitle(Title + ' - Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (mm²)')
     
-    fig3,ax3 = plt.subplots(dpi = 250,facecolor='black')
+    fig3,ax3 = plt.subplots(dpi = 250,facecolor='white')
     fig3.suptitle(Title + ' - Norm Area vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
     
-    """  fig10,ax10 = plt.subplots(dpi = 250,facecolor='black')
+    """  fig10,ax10 = plt.subplots(dpi = 250,facecolor='white')
     fig10.suptitle(Title + ' - Area vs. aligned time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (mm²)')
     
-    fig11,ax11 = plt.subplots(dpi = 250,facecolor='black')
+    fig11,ax11 = plt.subplots(dpi = 250,facecolor='white')
     fig11.suptitle(Title + ' - Norm Area vs. aligned time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')"""
@@ -417,7 +417,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             nimgmax = 49 # 24h
         
         if IndividualPlots:
-            fig1,ax1 = plt.subplots(dpi = 250,facecolor='black')
+            fig1,ax1 = plt.subplots(dpi = 250,facecolor='white')
             fig1.suptitle(lab + ' - Area vs. time')
             plt.xlabel('Time (min)')
             plt.ylabel('Area (mm²)')
@@ -461,40 +461,40 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     ######### Parameters of fit ###########
     
       
-    fig4,ax4 = plt.subplots(dpi = 250,facecolor='black')
+    fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
     fig4.suptitle(Title + ' - Growth start time')
     plt.ylabel('T start (hours)')
       
-    fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
+    fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
     fig5.suptitle(Title + ' - Growth caracteristic time')
     plt.ylabel('Tau growth (hours)')
     
-    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black') 
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='white') 
     fig6.suptitle(Title + ' - Starting area') 
     plt.ylabel('Starting area from fit (mm²)') 
 
-    fig16,ax16 = plt.subplots(dpi = 250,facecolor='black')
+    fig16,ax16 = plt.subplots(dpi = 250,facecolor='white')
     fig16.suptitle(Title + ' - Initial growth increase')
     plt.ylabel('Growth at Tstart (%)')
     
     if len(newGDs) == 2:
         # Histogram for distribution comparison
-        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig7.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours)')
         plt.ylabel('PDF')
 
-        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig8.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min)')
         plt.ylabel('PDF')
         
-        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig9.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours) - median aligned')
         plt.ylabel('PDF')
 
-        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
+        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
         fig10.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min) - median aligned')
         plt.ylabel('PDF')
@@ -535,8 +535,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         grouping = np.append(grouping,np.ones(len(tdebs[i]))*i)
 
 
-        plotprops = {'color':'white'}
-        boxprops = {'color':'white','facecolor':colors[i]}
+        plotprops = {'color':'black'}
+        boxprops = {'color':'black','facecolor':colors[i]}
         
          
         bp4 = ax4.boxplot(tdebs[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
@@ -568,10 +568,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
 
             
-    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'white', size=2, ax = ax4)
-    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'white', size=2, ax = ax5)
-    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'white', size=2, ax = ax6) 
-    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'white', size=2, ax = ax16)
+    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'lightgray', size=2, ax = ax4)
+    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'lightgray', size=2, ax = ax5)
+    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'lightgray', size=2, ax = ax6) 
+    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'lightgray', size=2, ax = ax16)
     
     ax4.set_xticklabels(labs)
     ax5.set_xticklabels(labs)
@@ -771,6 +771,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         
         if showhist:
             fig00, ax00 = plt.subplots(dpi=300)
+            fig00.patch.set_facecolor('white')
             ax00.hist(np.divide(Erels[i],Ecomps[i]), facecolor=colors[i]) # ,density = True
             fig00.suptitle('Median : ' + str(np.round(np.divide(Erels[i],Ecomps[i]).median()*100)/100) + 
                            ' - Mean : ' + str(np.round(np.divide(Erels[i],Ecomps[i]).mean()*100)/100))
@@ -782,6 +783,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             
             
             fig00, ax00 = plt.subplots(dpi=300)
+            fig00.patch.set_facecolor('white')
             ax00.hist(Es[i], facecolor=colors[i],bins=20) # ,density = True
             fig00.suptitle('Bulk elastic moduli')
             ax00.set_xlabel('E (MPa)')
@@ -801,10 +803,12 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
             g.ax_joint.legend([f"S = {linreg.slope:.2f}",
                                f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
                               fontsize='xx-large')
+            g.fig.patch.set_facecolor('white')
             if not showE:
                 plt.close(g)
             
             fig001, ax001 = plt.subplots(dpi=300)
+            fig001.patch.set_facecolor('white')
             ax001.hist(np.divide(Lrels[i],Lcomps[i]), facecolor=colors[i]) # ,density = True
             fig001.suptitle('Median : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).median()*100)/100) + 
                            ' - Mean : ' + str(np.round(np.divide(Lrels[i],Lcomps[i]).mean()*100)/100))
