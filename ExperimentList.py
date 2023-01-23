@@ -143,6 +143,12 @@ Delay221206 = 0 # Frames per hour
 Scale221206_Osmo = 1.94 # Spatial scale (µm/px) for 16X 06-12-2022
 FPH221206_Osmo = 120 # Frames per hour
 
+Scale230109 = 1.94 # Spatial scale (µm/px) for 16X 06-12-2022
+FPH230109 = 2 # Frames per hour
+Delay230109 = 30 # Frames per hour
+
+
+
 
 # Paths to data
 P210903_1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\210903_V5_TestFlux\1mlh'
@@ -223,6 +229,9 @@ P221206_Ct =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221206_DV7_OC_Pec
 P221206_Pase10U =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221206_DV7_OC_Pectinase10U\PartialTimeEvolution\Pectinase'
 P221206_Ct_Osmo =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221206_DV7_OC_Pectinase10U\OC\Ctrl'
 P221206_Pase10U_Osmo =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221206_DV7_OC_Pectinase10U\OC\Pectinase'
+P230109_Ct =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230109_TripleV7_ObservationPectinase\Ctrl'
+P230109_Pase5U =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230109_TripleV7_ObservationPectinase\5U'
+P230109_Pase10U =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230109_TripleV7_ObservationPectinase\10U'
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
@@ -674,8 +683,16 @@ StackList221206_Pase10U_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7'
                         'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61',
                         'PPG62','PPG63','PPG64','PPG65']
 
+StackList230109_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG19','PPG20','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG54','PPG55','PPG56','PPG57','PPG59']
 
+StackList230109_Pase5U = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43']
 
+StackList230109_Pase10U = []
 
 print('Data choice made.')
 
