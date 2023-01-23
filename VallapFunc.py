@@ -346,3 +346,19 @@ def dataSummary(GDs,Ns,labels,Mult,col,name,unit):
     PooledVar = np.round(np.mean(np.abs(DataPooled*Mult - PooledMedian))*10000/PooledMedian)/100
     print('Pooled -> ' + str(PooledMedian) + ' ' + unit + ' ' + u"\u00B1" + ' ' + str(PooledVar) + ' %' + ' % (n = ' + str(nPooled) + ')' )
     
+    
+# 12. Absolute average deviation computation
+
+def AAD(Xs):
+    
+    AADs = np.empty(len(Xs))
+    medXs = np.empty(len(Xs))
+    
+    for i,X in enumerate(Xs):
+        
+        medXs[i] = np.median(X)
+        AADs[i] = np.mean([np.abs(x-medXs[i]) for x in X])/medXs[i]
+    
+    return(medXs,AADs)
+    
+    
