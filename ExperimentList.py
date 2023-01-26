@@ -692,7 +692,10 @@ StackList230109_Pase5U = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8
                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG31',
                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43']
 
-StackList230109_Pase10U = []
+StackList230109_Pase10U = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG48','PPG50','PPG51']
 
 print('Data choice made.')
 
