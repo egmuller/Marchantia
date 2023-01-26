@@ -32,11 +32,11 @@ import os
 
 # 1.0 simple plot of curves
 
-def PlotGrowth(GDs,FPH,Labels):# Computing mean area over all gemmae for each image
+def PlotGrowth(GDs,FPH,Labels,colors):# Computing mean area over all gemmae for each image
     fig, ax = plt.subplots(dpi = 300)
     ax.set_xlabel('Time (min)')
     ax.set_ylabel('Area (normalized)')
-    for GD in GDs:    
+    for GD,col in zip(GDs,colors):    
         nppg = len(np.unique(GD.index))
         nimgmax = GD['Img'].max()
         MeanA = np.empty(nimgmax)
@@ -48,7 +48,7 @@ def PlotGrowth(GDs,FPH,Labels):# Computing mean area over all gemmae for each im
             MeanTime[im] = im*60/FPH
             StdA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().std()
             
-        ax.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3)
+        ax.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), color = col, capsize=3)
         
     ax.legend(Labels)
 
@@ -152,6 +152,21 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig21.suptitle(Title + ' - GrowthRate aligned vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Growth rate aligned at tdeb')
+    
+    fig22,ax22 = plt.subplots(dpi = 250,facecolor='black')
+    fig22.suptitle(Title + ' - dAdt vs. time')
+    plt.xlabel('Time (min)')
+    plt.ylabel('Area derivative (µm²/min)')
+    
+    fig23,ax23 = plt.subplots(dpi = 250,facecolor='black')
+    fig23.suptitle(Title + ' - dAdt vs. A')
+    plt.xlabel('Area (mm²)')
+    plt.ylabel('Area derivative (µm²/min)')
+    
+    fig24,ax24 = plt.subplots(dpi = 250,facecolor='black')
+    fig24.suptitle(Title + ' - GrowthRate vs. A')
+    plt.xlabel('Area (mm²)')
+    plt.ylabel('Growth rate')
 
     
     for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
@@ -178,8 +193,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Computing mean area over all gemmae for each image
         MeanA = np.empty(nimgmax)
+        MeandAdt = np.empty(nimgmax)
         MeanTime = np.empty(nimgmax)
         StdA = np.empty(nimgmax)
+        StddAdt = np.empty(nimgmax)
         MeanGR = np.empty(nimgmax)
         StdGR = np.empty(nimgmax)
         MeanGRal = np.empty(nimgmax)
@@ -188,8 +205,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         for im in range(nimgmax):
 
             MeanA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().mean()
+            MeandAdt[im] = np.nanmean(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000) # µm²/min
             MeanTime[im] = im*30
             StdA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().std()
+            StddAdt[im] = np.nanstd(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000)
             MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()
             StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std() 
             MeanGRal[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())
@@ -200,6 +219,9 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax20.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax21.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax22.errorbar(MeanTime,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax23.errorbar(MeanA,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax24.errorbar(MeanA,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax3.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         
     plt.figure(fig2.number)

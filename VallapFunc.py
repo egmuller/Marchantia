@@ -310,10 +310,10 @@ def GrowthRate(A,Time):
     inv_A_S = savgol_filter(inv_A_timed,11, 3)
     
     
-    GR = np.multiply(inv_A_timed,dAdt)
-    GR_S = np.multiply(inv_A_S,dAdt_S)
+    RGR = np.multiply(inv_A_timed,dAdt)
+    RGR_S = np.multiply(inv_A_S,dAdt_S)
     
-    return(GR,GR_S,intTime)
+    return(dAdt_S,RGR,RGR_S,intTime)
         
 
 # 10. Creation of a list to define a mosaic subplot figure

@@ -231,9 +231,10 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         
         ### Growth rate 1/A * dA/dt computation
     
-        GR, GR_S, intTime = vf.GrowthRate(AreaC,Time)
+        dAdt, GR, GR_S, intTime = vf.GrowthRate(AreaC,Time)
         
         GD.loc[s,'GR_Full'] = np.concatenate((GR_S,[np.nan]))
+        GD.loc[s,'dAdt'] = np.concatenate((dAdt,[np.nan]))
         
         GR_end = np.mean(GR_S[-4:])
         
@@ -248,7 +249,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         ### Growth rate 1/A * dA/dt computation for fits
         
         if not np.array(FitRes_flat.FI).size == 0:
-            GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI]) 
+            dAdt_fit,GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI]) 
         else:
             GR_flat,intTime_flat = [0,0]
 
