@@ -143,30 +143,60 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
     
-    fig20,ax20 = plt.subplots(dpi = 250,facecolor='black')
-    fig20.suptitle(Title + ' - GrowthRate vs. time')
-    plt.xlabel('Time (min)')
-    plt.ylabel('Growth rate')
-    
-    fig21,ax21 = plt.subplots(dpi = 250,facecolor='black')
-    fig21.suptitle(Title + ' - GrowthRate aligned vs. time')
-    plt.xlabel('Time (min)')
-    plt.ylabel('Growth rate aligned at tdeb')
-    
-    fig22,ax22 = plt.subplots(dpi = 250,facecolor='black')
-    fig22.suptitle(Title + ' - dAdt vs. time')
+    fig4,ax4 = plt.subplots(dpi = 250,facecolor='black')
+    fig4.suptitle(Title + ' - dAdt vs. time')
     plt.xlabel('Time (min)')
     plt.ylabel('Area derivative (µm²/min)')
     
-    fig23,ax23 = plt.subplots(dpi = 250,facecolor='black')
-    fig23.suptitle(Title + ' - dAdt vs. A')
+    fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
+    fig5.suptitle(Title + ' - GrowthRate vs. time')
+    plt.xlabel('Time (min)')
+    plt.ylabel('Growth rate (day-1)')
+    
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black')
+    fig6.suptitle(Title + ' - GrowthRate aligned vs. time')
+    plt.xlabel('Time since Tstart (min)')
+    plt.ylabel('Growth rate aligned at tdeb (day-1)')
+    
+    
+    fig41,ax41 = plt.subplots(dpi = 250,facecolor='black')
+    fig41.suptitle(Title + ' - dAdt (Time avg) vs. A (Time avg)')
     plt.xlabel('Area (mm²)')
     plt.ylabel('Area derivative (µm²/min)')
     
-    fig24,ax24 = plt.subplots(dpi = 250,facecolor='black')
-    fig24.suptitle(Title + ' - GrowthRate vs. A')
+    fig51,ax51 = plt.subplots(dpi = 250,facecolor='black')
+    fig51.suptitle(Title + ' - GrowthRate (Time avg) vs. A (Time avg)')
     plt.xlabel('Area (mm²)')
-    plt.ylabel('Growth rate')
+    plt.ylabel('Growth rate (day-1)')
+    
+    fig52,ax52 = plt.subplots(dpi = 250,facecolor='black')
+    fig52.suptitle(Title + ' - GrowthRate (Time avg) vs. Anorm (Time avg)')
+    plt.xlabel('Area (norm)')
+    plt.ylabel('Growth rate (day-1)')
+    
+    
+    
+    fig42,ax42 = plt.subplots(dpi = 250,facecolor='black')
+    fig42.suptitle(Title + ' - dAdt (Area avg, a) vs. A (Area avg, a)')
+    plt.xlabel('Area (mm²)')
+    plt.ylabel('Area derivative (µm²/min)')
+    
+    fig53,ax53 = plt.subplots(dpi = 250,facecolor='black')
+    fig53.suptitle(Title + ' - GrowthRate (Area avg, a) vs. A (Area avg, a)')
+    plt.xlabel('Area (mm²)')
+    plt.ylabel('Growth rate (day-1)')
+    
+    
+    
+    fig43,ax43 = plt.subplots(dpi = 250,facecolor='black')
+    fig43.suptitle(Title + ' - dAdt (Area avg, b) vs. A (Area avg, b)')
+    plt.xlabel('Area (mm²)')
+    plt.ylabel('Area derivative (µm²/min)')
+    
+    fig54,ax54 = plt.subplots(dpi = 250,facecolor='black')
+    fig54.suptitle(Title + ' - GrowthRate (Area avg, b) vs. A (Area avg, b)')
+    plt.xlabel('Area (mm²)')
+    plt.ylabel('Growth rate (day-1)')
 
     
     for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
@@ -191,7 +221,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         nPPG = len(GD.loc[GD['Img'] == 0])
         lab = lab + ' - n = ' + str(nPPG)
         
-        # Computing mean area over all gemmae for each image
+        # Computing averages over all gemmae for each image
         MeanA = np.empty(nimgmax)
         MeandAdt = np.empty(nimgmax)
         MeanTime = np.empty(nimgmax)
@@ -209,44 +239,138 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             MeanTime[im] = im*30
             StdA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().std()
             StddAdt[im] = np.nanstd(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000)
-            MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()
-            StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std() 
+            MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()*60*24
+            StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std()*60*24
             MeanGRal[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())
             StdGRal[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())  
-        
+                
         nppg = len(GD.loc[GD['Img'] == 0,'Area'].to_numpy())
 
+
+
+        ### Computing averages based on size rather than time
+        Areas = GD['Area'].to_numpy() # mm²
+        GrowthRates = GD['GR_Full'].to_numpy()*60*24 # day-1
+        dAdts = GD['dAdt'].to_numpy()*1000000 # µm²/min
+        
+        npts = len(Areas)
+        
+        # Averages with constant number of elements
+        
+        mapping = np.argsort(Areas)
+        
+        Areas_Sort = Areas[mapping]
+        GrowthRates_Sort = GrowthRates[mapping]
+        dAdts_Sort = dAdts[mapping]
+        
+        ncurvepts = 15 
+        
+        samplesize = int(np.ceil(npts/ncurvepts))
+        
+        aMeanA = np.empty(ncurvepts)
+        aMeandAdt = np.empty(ncurvepts)
+        aStdA = np.empty(ncurvepts)
+        aStddAdt = np.empty(ncurvepts)
+        aMeanGR = np.empty(ncurvepts)
+        aStdGR = np.empty(ncurvepts)
+        
+        for ia in range(ncurvepts):
+            
+            aMeanA[ia] = np.nanmean(Areas_Sort[ia*samplesize:(ia+1)*samplesize-1])
+            aMeanGR[ia] = np.nanmean(GrowthRates_Sort[ia*samplesize:(ia+1)*samplesize-1])
+            aMeandAdt[ia] = np.nanmean(dAdts_Sort[ia*samplesize:(ia+1)*samplesize-1])
+            aStdA[ia] = np.nanstd(Areas_Sort[ia*samplesize:(ia+1)*samplesize-1].std())
+            aStdGR[ia] = np.nanstd(GrowthRates_Sort[ia*samplesize:(ia+1)*samplesize-1])
+            aStddAdt[ia] = np.nanstd(dAdts_Sort[ia*samplesize:(ia+1)*samplesize-1])
+           
+        
+        # Averages with constant bin size
+        
+        binsize = 0.05 # mm²
+        
+        # nbin = int(np.ceil(np.max(Areas)/binsize))
+        nbin = int(np.ceil(0.9/binsize))
+        
+        bMeanA = np.empty(nbin)
+        bMeandAdt = np.empty(nbin)
+        bStdA = np.empty(nbin)
+        bStddAdt = np.empty(nbin)
+        bMeanGR = np.empty(nbin)
+        bStdGR = np.empty(nbin)
+        sqrtn = np.empty(nbin)
+        
+        
+        for ib in range(nbin):
+            
+            mask = (Areas>=ib*binsize)&(Areas<(ib+1)*binsize)
+            
+            sqrtn[ib] = np.sqrt(np.sum(mask))
+            
+            bMeanA[ib] = np.nanmean(Areas[mask])
+            bStdA[ib] = np.nanstd(Areas[mask])
+            bMeandAdt[ib] = np.nanmean(dAdts[mask])
+            bStddAdt[ib] = np.nanstd(dAdts[mask])
+            bMeanGR[ib] = np.nanmean(GrowthRates[mask])
+            bStdGR[ib] = np.nanstd(GrowthRates[mask])
+        
+        # Plots
+        
         ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax20.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax21.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax22.errorbar(MeanTime,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax23.errorbar(MeanA,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax24.errorbar(MeanA,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax3.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax4.errorbar(MeanTime,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax5.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax6.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        
+        ax41.errorbar(MeanA,MeandAdt, yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax51.errorbar(MeanA,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax52.errorbar(MeanA/MeanA[0],MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        
+        ax42.errorbar(aMeanA,aMeandAdt, yerr = aStddAdt/np.sqrt(50), capsize=3,label=lab,color = colors[i])
+        ax53.errorbar(aMeanA,aMeanGR,yerr = aStdGR/np.sqrt(50), capsize=3,label=lab,color = colors[i])
+        
+        ax43.errorbar(bMeanA,bMeandAdt, yerr = bStddAdt/sqrtn, capsize=3,label=lab,color = colors[i])
+        ax54.errorbar(bMeanA,bMeanGR,yerr = bStdGR/sqrtn, capsize=3,label=lab,color = colors[i])
+        
+        
         
     plt.figure(fig2.number)
     plt.legend(prop={'size': 8})
-    fig2.savefig(P + '\\AreaGrowth\\' + Title + '_AreaCurve.png')
-    if not showcurve:
-        plt.close(fig2)
-        
-    plt.figure(fig20.number)
-    plt.legend(prop={'size': 8})
-    fig20.savefig(P + '\\AreaGrowth\\' + Title + '_GrowthRateCurve.png')
-    if not showcurve:
-        plt.close(fig20)
-        
-    plt.figure(fig21.number)
-    plt.legend(prop={'size': 8})
-    fig21.savefig(P + '\\AreaGrowth\\' + Title + '_GrowthRateAlignedCurve.png')
-    if not showcurve:
-        plt.close(fig21)
-
     plt.figure(fig3.number)
     plt.legend(prop={'size': 8})
-    fig3.savefig(P + '\\AreaGrowth\\' + Title + '_NormAreaCurve.png')
+    plt.figure(fig4.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig5.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig6.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig41.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig51.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig52.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig42.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig53.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig43.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig54.number)
+    plt.legend(prop={'size': 8})
+    
     if not showcurve:
+        plt.close(fig2)
         plt.close(fig3)
+        plt.close(fig4)
+        plt.close(fig5)
+        plt.close(fig6)
+        plt.close(fig41)
+        plt.close(fig51)
+        plt.close(fig52)
+        plt.close(fig42)
+        plt.close(fig53)
+        plt.close(fig43)
+        plt.close(fig54)
 
 
     ######### Parameters of fit ###########
@@ -443,10 +567,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
  
     if stats=='ranksum':
-        fig4.savefig(P + '\\AreaGrowth\\' + Title + '_Tstart.png')
-        fig5.savefig(P + '\\AreaGrowth\\'+ Title +  '_TauGrowth.png')
-        fig6.savefig(P + '\\AreaGrowth\\'+ Title +  '_StartingArea.png') 
-        fig16.savefig(P + '\\AreaGrowth\\'+ Title +  '_InitialGrowth.png')
+        # fig4.savefig(P + '\\AreaGrowth\\' + Title + '_Tstart.png')
+        # fig5.savefig(P + '\\AreaGrowth\\'+ Title +  '_TauGrowth.png')
+        # fig6.savefig(P + '\\AreaGrowth\\'+ Title +  '_StartingArea.png') 
+        # fig16.savefig(P + '\\AreaGrowth\\'+ Title +  '_InitialGrowth.png')
         if not showbox:
             plt.close(fig5)
             plt.close(fig4)
