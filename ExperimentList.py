@@ -148,6 +148,12 @@ FPH230109 = 2 # Frames per hour
 Delay230109 = 30 # Frames per hour
 
 
+Scale230201 = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
+FPH230201 = 2 # Frames per hour
+Delay230201 = 55 # Delay between imbibition and experiment start
+
+Scale230201_Osmo = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
+FPH230201_Osmo = 120 # Frames per hour
 
 
 # Paths to data
@@ -232,6 +238,10 @@ P221206_Pase10U_Osmo =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\221206_
 P230109_Ct =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230109_TripleV7_ObservationPectinase\Ctrl'
 P230109_Pase5U =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230109_TripleV7_ObservationPectinase\5U'
 P230109_Pase10U =  r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230109_TripleV7_ObservationPectinase\10U'
+P230201_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\TimeEvolution\Ctrl'
+P230201_100mM = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\TimeEvolution\100mM'
+P230201_Ct_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\OC\Ctrl'
+P230201_100mM_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\OC\100mM'
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
@@ -696,6 +706,27 @@ StackList230109_Pase10U = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG
                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG30','PPG31',
                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
                         'PPG47','PPG48','PPG50','PPG51']
+
+
+StackList230201_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43']
+
+
+StackList230201_100mM = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46']
+
+
+StackList230201_Ct_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPGA','PPGB','PPGC']
+
+
+StackList230201_100mM_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG21','PPG22','PPG23','PPG24','PPG26','PPG27','PPG28','PPG29','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG43','PPG46',
+                        'PPGA','PPGC','PPGD']
 
 print('Data choice made.')
 
