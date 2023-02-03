@@ -381,6 +381,9 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
       
     fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
     fig5.suptitle(Title + ' - Growth caracteristic time')
+      
+    fig51,ax51 = plt.subplots(dpi = 250,facecolor='black')
+    fig51.suptitle(Title + ' - Final Growth Rate')
     
     fig6,ax6 = plt.subplots(dpi = 250,facecolor='black') 
     fig6.suptitle(Title + ' - Starting area') 
@@ -417,6 +420,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     medtdeb= [None]*len(newGDs)
     medtau= [None]*len(newGDs)    
     
+    GR_ends = [None]*len(newGDs)
+    capGR_ends = [None]*len(newGDs)
+    medGR_ends = [None]*len(newGDs)   
+    
     Area0 = [None]*len(newGDs) 
     capArea0 = [None]*len(newGDs) 
     medArea0 = [None]*len(newGDs) 
@@ -438,6 +445,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
         taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
+        GR_ends[i] = GD.loc[GD['Img'] == 0, 'GR_end']  # in days-1     
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
         AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
         
@@ -456,6 +464,9 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         bp5 = ax5.boxplot(taus[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
                     showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
         
+        bp51 = ax51.boxplot(GR_ends[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+        
         bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops, 
             showfliers = False,whiskerprops=plotprops,medianprops =plotprops) 
         
@@ -464,10 +475,12 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
         captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
         captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
+        capGR_ends[i] = bp51['caps'][1].get_ydata(orig=True)[0]
         capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0] 
         capAreaStart[i] = bp26['caps'][1].get_ydata(orig=True)[0]
         medtdeb[i] = bp4['medians'][0].get_ydata(orig=True)[0]
         medtau[i] = bp5['medians'][0].get_ydata(orig=True)[0]
+        medGR_ends[i] = bp51['medians'][0].get_ydata(orig=True)[0]
         medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
         medAreaStart[i] = bp26['medians'][0].get_ydata(orig=True)[0]
         
@@ -481,11 +494,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             
     sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'white', size=2, ax = ax4)
     sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'white', size=2, ax = ax5)
+    sns.swarmplot(x=grouping,y=pd.concat(GR_ends),color = 'white', size=2, ax = ax51)
     sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'white', size=2, ax = ax6) 
     sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'white', size=2, ax = ax16)
     
     ax4.set_xticklabels(labs)
     ax5.set_xticklabels(labs)
+    ax51.set_xticklabels(labs)
     ax6.set_xticklabels(labs) 
     ax16.set_xticklabels(labs)
 
@@ -515,21 +530,25 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     
     steptdeb = np.max(captdeb)*0.125
     steptau = np.max(captau)*0.125
+    stepGR_ends = np.max(capGR_ends)*0.125
     stepArea0 = np.max(capArea0)*0.125 
     stepAreaStart = np.max(capAreaStart)*0.125
     
     fullsteptdeb = 0
     fullsteptau = 0
+    fullstepGR_ends = 0
     fullstepArea0 = 0 
     fullstepAreaStart = 0
     
     hmaxtdeb = np.max(captdeb)
     hmaxtau = np.max(captau)
+    hmaxGR_ends = np.max(capGR_ends)
     hmaxArea0 = np.max(capArea0) 
     hmaxAreaStart = np.max(capAreaStart)
     
     ax4.set_ylabel('Tstart (hours)')
     ax5.set_ylabel('Tau growth (hours)')
+    ax51.set_ylabel('Final growth rate  (days-1)')
     ax6.set_ylabel('Starting area from fit (mm²)') 
     ax16.set_ylabel('Growth at Tstart (%)')
     
@@ -541,6 +560,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
                     fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
 
                     fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+
+                    fullstepGR_ends = plotSig(ax51,hmaxGR_ends,stepGR_ends,fullstepGR_ends,GR_ends[i],GR_ends[j],i,j)
                     
                     fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
@@ -552,6 +573,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
                 fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
 
                 fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+
+                fullstepGR_ends = plotSig(ax51,hmaxGR_ends,stepGR_ends,fullstepGR_ends,GR_ends[i],GR_ends[j],i,j)
  
                 fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
 
@@ -561,6 +584,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         StatsKruskal(ax4,tdebs)
         StatsKruskal(ax5,taus)
+        StatsKruskal(ax51,GR_ends)
         StatsKruskal(ax6,Area0)
         StatsKruskal(ax16,AreaStart)
                
@@ -573,6 +597,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         # fig16.savefig(P + '\\AreaGrowth\\'+ Title +  '_InitialGrowth.png')
         if not showbox:
             plt.close(fig5)
+            plt.close(fig51)
             plt.close(fig4)
             plt.close(fig6)
             plt.close(fig16)
@@ -597,6 +622,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     else:
         if not showbox:
             plt.close(fig5)
+            plt.close(fig51)
             plt.close(fig4)
             plt.close(fig6) 
             plt.close(fig16)
