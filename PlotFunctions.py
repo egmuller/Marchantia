@@ -156,45 +156,16 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig6,ax6 = plt.subplots(dpi = 250,facecolor='black')
     fig6.suptitle(Title + ' - GrowthRate aligned vs. time')
     plt.xlabel('Time since Tstart (min)')
-    plt.ylabel('Growth rate aligned at tdeb (day-1)')
+    plt.ylabel('Growth rate aligned at tdeb (day-1)')    
     
     
     fig41,ax41 = plt.subplots(dpi = 250,facecolor='black')
-    fig41.suptitle(Title + ' - dAdt (Time avg) vs. A (Time avg)')
+    fig41.suptitle(Title + ' - dAdt (Area avg) vs. A (Area avg)')
     plt.xlabel('Area (mm²)')
     plt.ylabel('Area derivative (µm²/min)')
     
     fig51,ax51 = plt.subplots(dpi = 250,facecolor='black')
-    fig51.suptitle(Title + ' - GrowthRate (Time avg) vs. A (Time avg)')
-    plt.xlabel('Area (mm²)')
-    plt.ylabel('Growth rate (day-1)')
-    
-    fig52,ax52 = plt.subplots(dpi = 250,facecolor='black')
-    fig52.suptitle(Title + ' - GrowthRate (Time avg) vs. Anorm (Time avg)')
-    plt.xlabel('Area (norm)')
-    plt.ylabel('Growth rate (day-1)')
-    
-    
-    
-    fig42,ax42 = plt.subplots(dpi = 250,facecolor='black')
-    fig42.suptitle(Title + ' - dAdt (Area avg, a) vs. A (Area avg, a)')
-    plt.xlabel('Area (mm²)')
-    plt.ylabel('Area derivative (µm²/min)')
-    
-    fig53,ax53 = plt.subplots(dpi = 250,facecolor='black')
-    fig53.suptitle(Title + ' - GrowthRate (Area avg, a) vs. A (Area avg, a)')
-    plt.xlabel('Area (mm²)')
-    plt.ylabel('Growth rate (day-1)')
-    
-    
-    
-    fig43,ax43 = plt.subplots(dpi = 250,facecolor='black')
-    fig43.suptitle(Title + ' - dAdt (Area avg, b) vs. A (Area avg, b)')
-    plt.xlabel('Area (mm²)')
-    plt.ylabel('Area derivative (µm²/min)')
-    
-    fig54,ax54 = plt.subplots(dpi = 250,facecolor='black')
-    fig54.suptitle(Title + ' - GrowthRate (Area avg, b) vs. A (Area avg, b)')
+    fig51.suptitle(Title + ' - GrowthRate (Area avg) vs. A (Area avg)')
     plt.xlabel('Area (mm²)')
     plt.ylabel('Growth rate (day-1)')
 
@@ -321,15 +292,9 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         ax5.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax6.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         
-        ax41.errorbar(MeanA,MeandAdt, yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax51.errorbar(MeanA,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax52.errorbar(MeanA/MeanA[0],MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        
-        ax42.errorbar(aMeanA,aMeandAdt, yerr = aStddAdt/np.sqrt(50), capsize=3,label=lab,color = colors[i])
-        ax53.errorbar(aMeanA,aMeanGR,yerr = aStdGR/np.sqrt(50), capsize=3,label=lab,color = colors[i])
-        
-        ax43.errorbar(bMeanA,bMeandAdt, yerr = bStddAdt/sqrtn, capsize=3,label=lab,color = colors[i])
-        ax54.errorbar(bMeanA,bMeanGR,yerr = bStdGR/sqrtn, capsize=3,label=lab,color = colors[i])
+
+        ax41.errorbar(bMeanA,bMeandAdt, yerr = bStddAdt/sqrtn, capsize=3,label=lab,color = colors[i])
+        ax51.errorbar(bMeanA,bMeanGR,yerr = bStdGR/sqrtn, capsize=3,label=lab,color = colors[i])
         
         
         
@@ -347,17 +312,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     plt.legend(prop={'size': 8})
     plt.figure(fig51.number)
     plt.legend(prop={'size': 8})
-    plt.figure(fig52.number)
-    plt.legend(prop={'size': 8})
-    plt.figure(fig42.number)
-    plt.legend(prop={'size': 8})
-    plt.figure(fig53.number)
-    plt.legend(prop={'size': 8})
-    plt.figure(fig43.number)
-    plt.legend(prop={'size': 8})
-    plt.figure(fig54.number)
-    plt.legend(prop={'size': 8})
-    
     if not showcurve:
         plt.close(fig2)
         plt.close(fig3)
@@ -366,11 +320,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         plt.close(fig6)
         plt.close(fig41)
         plt.close(fig51)
-        plt.close(fig52)
-        plt.close(fig42)
-        plt.close(fig53)
-        plt.close(fig43)
-        plt.close(fig54)
 
 
     ######### Parameters of fit ###########
