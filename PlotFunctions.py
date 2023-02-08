@@ -870,13 +870,22 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
 def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,colors, **kwargs):
     
     PlotFits = False
+    PlotStats = False
     CorrType = 'pearson'
+    Normalize=False
+    PooledOnly = False
     
     for key,value in kwargs.items():
         if key == 'PlotFits':
             PlotFits= value
+        elif key == 'PlotStats':
+            PlotStats = value
         elif key == 'CorrType':
             CorrType = value
+        elif key == 'Norm':
+            Normalize = value
+        elif key == 'PooledOnly':
+            PooledOnly = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -892,10 +901,22 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
         print('n = ' + str(len(CommonList)))
 
         DataFit = GD_OC.loc[(GD_OC['Img']==0),['Img']+ParamOC].loc[CommonList]
+        
+        if Normalize:
+            for p in ParamOC:
+                DataFit[p] = DataFit[p]/np.mean(DataFit[p])
+        
         DataGrowth = GD_Growth.loc[(GD_Growth['Img']==0),ParamGrowth].loc[CommonList]
+        
+        if Normalize:
+            for p in ParamGrowth:
+                DataGrowth[p] = DataGrowth[p]/np.mean(DataGrowth[p])
+                
         Data = DataFit.join(DataGrowth) 
         
         Data['Expe'] = lab
+        
+            
         
         fullData = fullData.append(Data, ignore_index=True)
         
@@ -905,8 +926,14 @@ def GOC_Comp(GD_Growths,GD_OCs,ParamGrowth,ParamOC,labelsGrowth,labelsOC,Titles,
     
     columns = ParamGrowth+ParamOC
     
-    Corr(GDs,['Pooled'] + Titles,columns = columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,colors=colors, corrmethod =CorrType)
+    if PooledOnly:
+        
+        Corr([fullData],['Pooled'],columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,PlotStats=PlotStats,colors=colors, corrmethod =CorrType)
    
+    else:
+    
+        Corr(GDs,['Pooled'] + Titles,columns,columnslabels = labelsGrowth+labelsOC,PlotFits = PlotFits,PlotStats=PlotStats,colors=colors, corrmethod =CorrType)
+   # 
     
 #%% Variability in size 
 

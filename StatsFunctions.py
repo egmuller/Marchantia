@@ -56,27 +56,26 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
 # 'dfcols' (string name of dataframe columns) data to correlate, 'columnslabels' (string list) name 
 # to use for each columns chosen by dfcols, 'PlotFits' (True/False), 'colors' (RGB 0-1 triplets)
 
-def Corr(GDs,labels, **kwargs):
+def Corr(GDs,labels,dfcols, **kwargs):
     
     corrmethod = 'pearson'
-    dfcols = ['A0fit','Area','Tau','tdeb']
     colslab = dfcols
     colors = mtl.repmat([0.8, 0, 0.7],len(GDs),1)
     PlotFits = False
+    PlotStats = False
 
     
     for key, value in kwargs.items(): 
         if key == 'corrmethod':
             corrmethod = value 
-        elif key == 'columns':
-            dfcols = value
-            colslab = dfcols
         elif key == 'columnslabels':
             colslab = value
         elif key == 'colors':
             colors = value
         elif key == 'PlotFits':
             PlotFits = value
+        elif key == 'PlotStats':
+            PlotStats = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
 
@@ -90,17 +89,18 @@ def Corr(GDs,labels, **kwargs):
         corrMat = GDtoCorr.corr(method=corrmethod)
         pvalMat = GDtoCorr.corr(method=lambda x, y: pearsonr(x, y)[1])
         
-        plt.figure(dpi=250)
-        plt.title(corrmethod + ' correlation for \n' + lab)
-        mask = np.zeros_like(corrMat)
-        mask[np.tril_indices_from(mask,k=-1)] = True
-        sns.heatmap(corrMat,mask = mask,square=True,vmin=-1,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8}) #,cmap = 'YlGnBu'
-        
-        plt.figure(dpi=250,facecolor = 'white')
-        plt.title(corrmethod + ' p-value for \n' + lab)
-        mask = np.zeros_like(corrMat)
-        mask[np.tril_indices_from(mask,k=-1)] = True
-        sns.heatmap(pvalMat,mask = mask,square=True,vmin=0,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8},cmap = 'YlGnBu')
+        if PlotStats:
+            plt.figure(dpi=250)
+            plt.title(corrmethod + ' correlation for \n' + lab)
+            mask = np.zeros_like(corrMat)
+            mask[np.tril_indices_from(mask,k=-1)] = True
+            sns.heatmap(corrMat,mask = mask,square=True,vmin=-1,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8}) #,cmap = 'YlGnBu'
+            
+            plt.figure(dpi=250,facecolor = 'white')
+            plt.title(corrmethod + ' p-value for \n' + lab)
+            mask = np.zeros_like(corrMat)
+            mask[np.tril_indices_from(mask,k=-1)] = True
+            sns.heatmap(pvalMat,mask = mask,square=True,vmin=0,vmax=1,annot=True,fmt=".3f",annot_kws={"size":8},cmap = 'YlGnBu')
         
         if PlotFits:
             
