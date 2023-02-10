@@ -461,7 +461,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
                 plt.imshow(RGBimg)
                 plt.plot(SortedY+center[1],SortedX+center[0],'c-o',lw = 0.7,ms=1)
                 plt.show()
-                
+        
         print('Contours saved.'.ljust(35), flush = True)
          
     return(CD,GD)

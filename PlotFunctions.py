@@ -196,9 +196,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Computing averages over all gemmae for each image
         MeanA = np.empty(nimgmax)
+        MeanAnorm = np.empty(nimgmax)
         MeandAdt = np.empty(nimgmax)
         MeanTime = np.empty(nimgmax)
         StdA = np.empty(nimgmax)
+        StdAnorm = np.empty(nimgmax)
         StddAdt = np.empty(nimgmax)
         MeanGR = np.empty(nimgmax)
         StdGR = np.empty(nimgmax)
@@ -208,20 +210,21 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         for im in range(nimgmax):
 
             MeanA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().mean()
+            MeanAnorm[im] = GD.loc[GD['Img'] == im,'AreaNorm'].to_numpy().mean()
             MeandAdt[im] = np.nanmean(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000) # µm²/min
             MeanTime[im] = im*30
             StdA[im] = GD.loc[GD['Img'] == im,'Area'].to_numpy().std()
+            StdAnorm[im] = GD.loc[GD['Img'] == im,'AreaNorm'].to_numpy().std()
             StddAdt[im] = np.nanstd(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000)
             MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()*60*24
             StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std()*60*24
             MeanGRal[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())
             StdGRal[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())  
                 
-
-
-
+            
         ### Computing averages based on size rather than time
         Areas = GD['Area'].to_numpy() # mm²
+        AreasDescription = GD[['Area','Expe']]
         GrowthRates = GD['GR_Full'].to_numpy()*60*24 # day-1
         dAdts = GD['dAdt'].to_numpy()*1000000 # µm²/min
         
@@ -230,6 +233,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         binsize = 0.05 # mm²
         
         nbin = int(np.ceil(np.max(Areas)/binsize))
+        
         
         bMeanA = np.empty(nbin)
         bMeandAdt = np.empty(nbin)
@@ -260,7 +264,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         # Plots
         
         ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax3.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax3.errorbar(MeanTime,MeanAnorm,yerr=StdAnorm/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax4.errorbar(MeanTime,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax5.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax6.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])

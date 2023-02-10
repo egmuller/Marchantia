@@ -224,6 +224,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
         print('\nFitting area curve for : ' + s)           
         
+        GD.loc[s,'AreaNorm'] =  GD.loc[s,'Area'].to_numpy()/GD.loc[s,'Area'].to_numpy()[0]
+        
         Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
         AreaC = savgol_filter(GD.loc[s,'Area'].values, 11, 2)
         AreaI = interp1d(Time,AreaC,kind = 'quadratic')
