@@ -224,43 +224,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         GrowthRates = GD['GR_Full'].to_numpy()*60*24 # day-1
         dAdts = GD['dAdt'].to_numpy()*1000000 # µm²/min
         
-        npts = len(Areas)
-        
-        # Averages with constant number of elements
-        
-        mapping = np.argsort(Areas)
-        
-        Areas_Sort = Areas[mapping]
-        GrowthRates_Sort = GrowthRates[mapping]
-        dAdts_Sort = dAdts[mapping]
-        
-        ncurvepts = 15 
-        
-        samplesize = int(np.ceil(npts/ncurvepts))
-        
-        aMeanA = np.empty(ncurvepts)
-        aMeandAdt = np.empty(ncurvepts)
-        aStdA = np.empty(ncurvepts)
-        aStddAdt = np.empty(ncurvepts)
-        aMeanGR = np.empty(ncurvepts)
-        aStdGR = np.empty(ncurvepts)
-        
-        for ia in range(ncurvepts):
-            
-            aMeanA[ia] = np.nanmean(Areas_Sort[ia*samplesize:(ia+1)*samplesize-1])
-            aMeanGR[ia] = np.nanmean(GrowthRates_Sort[ia*samplesize:(ia+1)*samplesize-1])
-            aMeandAdt[ia] = np.nanmean(dAdts_Sort[ia*samplesize:(ia+1)*samplesize-1])
-            aStdA[ia] = np.nanstd(Areas_Sort[ia*samplesize:(ia+1)*samplesize-1].std())
-            aStdGR[ia] = np.nanstd(GrowthRates_Sort[ia*samplesize:(ia+1)*samplesize-1])
-            aStddAdt[ia] = np.nanstd(dAdts_Sort[ia*samplesize:(ia+1)*samplesize-1])
-           
-        
         # Averages with constant bin size
         
-        binsize = 0.05 # mm²
+        binsize = 0.1 # mm²
         
-        # nbin = int(np.ceil(np.max(Areas)/binsize))
-        nbin = int(np.ceil(0.9/binsize))
+        nbin = int(np.ceil(np.max(Areas)/binsize))
         
         bMeanA = np.empty(nbin)
         bMeandAdt = np.empty(nbin)
@@ -299,19 +267,19 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         
     plt.figure(fig2.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     plt.figure(fig3.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     plt.figure(fig4.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     plt.figure(fig5.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     plt.figure(fig6.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     plt.figure(fig41.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     plt.figure(fig51.number)
-    plt.legend(prop={'size': 8})
+    plt.legend(prop={'size': 5})
     if not showcurve:
         plt.close(fig2)
         plt.close(fig3)
@@ -396,7 +364,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
         GR_ends[i] = GD.loc[GD['Img'] == 0, 'GR_end']  # in days-1     
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
-        AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
+        AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart']*100
         
         
         # swarmplots
@@ -552,7 +520,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig16)
         return  
     elif stats == 'ANOVA':
-        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit','GrowthAtStart_flat'],[medtdeb,medtau,medArea0,medAreaStart],[fig4,fig5,fig6,fig16],[ax4,ax5,ax6,ax16],
+        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit','GrowthAtStart'],[medtdeb,medtau,medArea0,medAreaStart],[fig4,fig5,fig6,fig16],[ax4,ax5,ax6,ax16],
                                     [pd.concat(tdebs),pd.concat(taus),pd.concat(Area0),pd.concat(AreaStart)]):
 
             res = TwowayANOVA(v,diffcat,groupcat,GDs);

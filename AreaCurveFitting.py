@@ -310,21 +310,19 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
 
         
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb() + Delay
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_flat'] = np.argmin(np.abs(Time-FitRes_flat.tdeb())) # img shift for alignement on tdeb
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
-        
+
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() + Delay
-        tdebshift = np.argmin(np.abs(Time-FitResPlot.tdeb())) 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitRes_flat.name
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes_flat.tdeb() + Delay
+        tdebshift = np.argmin(np.abs(Time-FitRes_flat.tdeb())) 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = tdebshift# img shift for alignement on tdeb
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitResPlot.tau()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes_flat.tau()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes_flat.A0()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes_flat.R2()
                 
         GD.loc[s,'GR_Full_al'] = np.concatenate((GR_S[tdebshift:],np.matlib.repmat(np.nan,1,tdebshift+1)[0]))
         
