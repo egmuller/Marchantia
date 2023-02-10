@@ -299,20 +299,27 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
            
         coef = np.polyfit(intTime[0:Lfit-1],GR_S[0:Lfit-1],1)
         
+         
+
+        # plt.hist(R2s)
+        # plt.show()
+        
         p1_end_v1 = Lfit-2
         GR_acc_v1 = coef[0]
         
-        p1_end_v2 = np.max(np.argwhere(R2s>0.98)) + 5 # latest timepoint with good R2
-        GR_acc_v2 = Slopes[p1_end_v2 - 5]
+        if np.max(R2s)>0.98:
+            p1_end_v2 = np.max(np.argwhere(R2s>0.98)) + 5 # latest timepoint with good R2
+            GR_acc_v2 = Slopes[p1_end_v2 - 5]
+        else:
+            p1_end_v2 = np.nan
+            GR_acc_v2 = np.nan
+            
         
-        poly1d_fn = np.poly1d(coef) 
         
-        plt.plot(intTime[0:Lfit+15],GR_S[0:Lfit+15], 'yo', intTime[0:Lfit-1], poly1d_fn(intTime[0:Lfit-1]), '-g',
-                  intTime[Lfit-2],GR_S[Lfit-2],'*r',intTime[p1_end_v2],GR_S[p1_end_v2],'.b') #'--k'=black dashed line, 'yo' = yellow circle marker
-        plt.show()
-
-        plt.hist(R2s)
-        plt.show()
+        # poly1d_fn = np.poly1d(coef)
+        # plt.plot(intTime[0:Lfit+15],GR_S[0:Lfit+15], 'yo', intTime[0:Lfit-1], poly1d_fn(intTime[0:Lfit-1]), '-g',
+        #           intTime[Lfit-2],GR_S[Lfit-2],'*r',intTime[p1_end_v2],GR_S[p1_end_v2],'.b') 
+        # plt.show()
 
         # plt.hist(Slopes)
         # plt.show()
