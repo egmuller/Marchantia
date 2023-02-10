@@ -361,4 +361,18 @@ def AAD(Xs):
     
     return(medXs,AADs)
     
-    
+# 13. Polynomial Regression
+
+def polyfit(x, y, degree):
+    results = {}
+
+    coeffs = np.polyfit(x, y, degree)
+
+     # Polynomial Coefficients
+    results['polynomial'] = coeffs.tolist()
+
+    # r-squared
+    p = np.poly1d(coeffs)
+    results['determination'] = computeR2(y,p(x))
+
+    return results
