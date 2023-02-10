@@ -238,7 +238,88 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         
         GR_end = np.mean(GR_S[-4:])
         
+            # Growth rate acceleration in initial phase V1 : sliding windows vs full fit
+                
+        Lfit = 4 # start with 5 points fitted
+        Svar = 0 # slope variation
         
+        R2s = np.empty(len(GR_S)-5)
+        Slopes = np.empty(len(GR_S)-5)
+        L2Dists = np.empty(len(GR_S)-5)
+        
+        while -0.4<Svar<0.25:
+            Lfit += 1
+            
+            x = intTime[Lfit-5:Lfit]
+            y = GR_S[Lfit-5:Lfit]
+            
+            res = vf.polyfit(x,y,1)
+            sl = res['polynomial'][0]
+            poly1d_fn = np.poly1d(res['polynomial']) 
+            # poly1d_fn is now a function which takes in x and returns an estimate for y
+            
+            x2 = intTime[0:Lfit]
+            y2 = GR_S[0:Lfit]
+            
+            res2 = vf.polyfit(x2,y2,1)
+            sl2 = res2['polynomial'][0]
+            poly1d_fn2 = np.poly1d(res2['polynomial'])
+            
+            Svar = (sl2-sl)/sl
+            
+            R2s[Lfit-5] = res2['determination']
+            Slopes[Lfit-5] = res2['polynomial'][0]
+            
+            p = np.poly1d(res2['polynomial'])
+            L2Dists[Lfit-5] = np.sqrt(np.sum(np.square(y2-p(x2))))/Lfit
+            
+            
+            # plt.plot(intTime[0:Lfit+7],GR_S[0:Lfit+7], 'yo', intTime[0:Lfit], poly1d_fn2(intTime[0:Lfit]), '-r',
+            #           x, poly1d_fn(x), '--w',intTime[Lfit-2],GR_S[Lfit-2],'*r') #'--k'=black dashed line, 'yo' = yellow circle marker
+            # plt.title(str(Svar))
+            # plt.show()
+            
+            for l in range(Lfit+1,len(GR_S)):
+                
+                x2 = intTime[0:l]
+                y2 = GR_S[0:l]
+                
+                res2 = vf.polyfit(x2,y2,1)
+                
+                R2s[l-5] = res2['determination']
+                Slopes[l-5] = res2['polynomial'][0]
+                
+                p = np.poly1d(res2['polynomial'])
+                L2Dists[l-5] = np.sqrt(np.sum(np.square(y2-p(x2))))/l
+                
+                
+        
+           
+        coef = np.polyfit(intTime[0:Lfit-1],GR_S[0:Lfit-1],1)
+        
+        p1_end_v1 = Lfit-2
+        GR_acc_v1 = coef[0]
+        
+        p1_end_v2 = np.max(np.argwhere(R2s>0.98)) + 5 # latest timepoint with good R2
+        GR_acc_v2 = Slopes[p1_end_v2 - 5]
+        
+        poly1d_fn = np.poly1d(coef) 
+        
+        plt.plot(intTime[0:Lfit+15],GR_S[0:Lfit+15], 'yo', intTime[0:Lfit-1], poly1d_fn(intTime[0:Lfit-1]), '-g',
+                  intTime[Lfit-2],GR_S[Lfit-2],'*r',intTime[p1_end_v2],GR_S[p1_end_v2],'.b') #'--k'=black dashed line, 'yo' = yellow circle marker
+        plt.show()
+
+        plt.hist(R2s)
+        plt.show()
+
+        # plt.hist(Slopes)
+        # plt.show()
+
+        # plt.hist(L2Dists)
+        # plt.show()
+            # 
+                        
+            
         ### Iterative fits for a convergence of Tdeb with different fits      
         
         FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.05, 10, Debug, ax1)
@@ -314,6 +395,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc_v1'] = GR_acc_v1*60*24*60*24 # in day-2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc_v2'] = GR_acc_v2*60*24*60*24 # in day-2
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitRes_flat.name
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes_flat.tdeb() + Delay
@@ -323,6 +406,10 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes_flat.tau()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes_flat.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes_flat.R2()
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1_V1'] = p1_end_v1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1_V2'] = p1_end_v2
+        
                 
         GD.loc[s,'GR_Full_al'] = np.concatenate((GR_S[tdebshift:],np.matlib.repmat(np.nan,1,tdebshift+1)[0]))
         
