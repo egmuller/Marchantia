@@ -98,10 +98,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         elif key == 'diffcat' :
             diffcat = np.array(value)
         elif key == 'NimgMax' :
-            if (value == '24h') | (value == 'max'):
+            if (value == '24h') | (value == '30h')| (value == 'max'):
                 NimgMax = value 
             else:
-                raise ValueError('Wrong value for NimgMax ! Allowed : ''24h'' or ''max'' ')
+                raise ValueError('Wrong value for NimgMax ! Allowed : ''24h'', ''30h'' or ''max'' ')
                 
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
@@ -176,6 +176,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
            
         if NimgMax == 'max':
             nimgmax = GD['Img'].max() # number of images (duration) to plot for growth curve
+        elif NimgMax == '30h':
+            nimgmax = 61 # 30h
         else:
             nimgmax = 49 # 24h
         
@@ -189,8 +191,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.legend(prop={'size': 5})
 
         # number of ppgs and label
-        nPPG = len(GD.loc[GD['Img'] == 0])
-        lab = lab + ' - n = ' + str(nPPG)
+        nppg = len(GD.loc[GD['Img'] == 0])
+        lab = lab + ' - n = ' + str(nppg)
         
         # Computing averages over all gemmae for each image
         MeanA = np.empty(nimgmax)
@@ -215,7 +217,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             MeanGRal[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())
             StdGRal[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())  
                 
-        nppg = len(GD.loc[GD['Img'] == 0,'Area'].to_numpy())
 
 
 
@@ -226,7 +227,7 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         # Averages with constant bin size
         
-        binsize = 0.1 # mm²
+        binsize = 0.05 # mm²
         
         nbin = int(np.ceil(np.max(Areas)/binsize))
         
@@ -243,7 +244,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             
             mask = (Areas>=ib*binsize)&(Areas<(ib+1)*binsize)
             
-            sqrtn[ib] = np.sqrt(np.sum(mask))
+            subset = AreasDescription[mask]
+            
+            nppgsubset = np.sum([len(np.unique(subset.loc[idx,'Expe'])) for idx in np.unique(subset.index)])
+            
+            sqrtn[ib] = np.sqrt(nppgsubset) # not the good way of doing this 
             
             bMeanA[ib] = np.nanmean(Areas[mask])
             bStdA[ib] = np.nanstd(Areas[mask])
