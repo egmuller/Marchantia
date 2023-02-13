@@ -276,19 +276,19 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         
     plt.figure(fig2.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     plt.figure(fig3.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     plt.figure(fig4.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     plt.figure(fig5.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     plt.figure(fig6.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     plt.figure(fig41.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     plt.figure(fig51.number)
-    plt.legend(prop={'size': 5})
+    plt.legend(prop={'size': 8})
     if not showcurve:
         plt.close(fig2)
         plt.close(fig3)
@@ -317,27 +317,27 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig16,ax16 = plt.subplots(dpi = 250,facecolor='black')
     fig16.suptitle(Title + ' - Initial growth increase')
     
-    if len(newGDs) == 2:
+    if len(newGDs) <= 2:
         # Histogram for distribution comparison
         fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig7.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours)')
-        plt.ylabel('PDF')
+        plt.ylabel('Count')
 
         fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig8.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min)')
-        plt.ylabel('PDF')
+        plt.ylabel('Count')
         
         fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig9.suptitle(Title + ' - Growth caracteristic times')
         plt.xlabel('Tau growth (hours) - median aligned')
-        plt.ylabel('PDF')
+        plt.ylabel('Count')
 
         fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='black')
         fig10.suptitle(Title + ' - Growth start time')
         plt.xlabel('T start (min) - median aligned')
-        plt.ylabel('PDF')
+        plt.ylabel('Count')
     
     tdebs= [None]*len(newGDs)
     taus= [None]*len(newGDs)
@@ -385,19 +385,19 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
          
         bp4 = ax4.boxplot(tdebs[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
         
         bp5 = ax5.boxplot(taus[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
         
         bp51 = ax51.boxplot(GR_ends[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
         
         bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops, 
-            showfliers = False,whiskerprops=plotprops,medianprops =plotprops) 
+            showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8]) ])
         
         bp26 = ax16.boxplot(AreaStart[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
     
         captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
         captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
@@ -410,12 +410,12 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
         medAreaStart[i] = bp26['medians'][0].get_ydata(orig=True)[0]
         
-        if len(newGDs) == 2:
+        if len(newGDs) <= 2:
         
-            ax7.hist(taus[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
-            ax8.hist(tdebs[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
-            ax9.hist(taus[i]-np.median(taus[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
-            ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
+            ax7.hist(taus[i], nbins, density=False, facecolor=colors[i], alpha=0.5)
+            ax8.hist(tdebs[i], nbins, density=False, facecolor=colors[i], alpha=0.5)
+            ax9.hist(taus[i]-np.median(taus[i]), nbins, density=False, facecolor=colors[i], alpha=0.5)
+            ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=False, facecolor=colors[i], alpha=0.5)
 
             
     sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'white', size=2, ax = ax4)

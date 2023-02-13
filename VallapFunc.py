@@ -75,8 +75,8 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
     
-    fig,ax = plt.subplots(dpi = 250,facecolor='black',figsize = (5,3.5))
-    fig.suptitle(Title)
+    fig,ax = plt.subplots(dpi = 250,facecolor='black',figsize = (7,3.5))
+    # fig.suptitle(Title)
  
     
     cap= [None]*len(Data)
@@ -91,7 +91,7 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
         boxprops = {'color':'white','facecolor':col}
         
         if showN:
-            lab = lab + '\nn = ' + str(len(dat))
+            lab = lab + '\nn=' + str(len(dat))
         
         Labels[i] = lab
 
