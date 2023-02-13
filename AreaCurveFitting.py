@@ -413,6 +413,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = tdebshift# img shift for alignement on tdeb
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes_flat.tau()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_ini'] = 1/FitRes_flat.tau()*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes_flat.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes_flat.R2()
         

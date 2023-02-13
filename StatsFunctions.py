@@ -29,18 +29,21 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
     s,p = ranksums(data1,data2)
     mad = np.mean(np.abs(data1-np.median(data1)))
     ES = (np.median(data2)-np.median(data1))/mad
+    RC = (np.median(data2)-np.median(data1))/np.median(data1)
                         
     if pos2 == pos1+1: 
         h = np.median([np.median(data1),np.median(data2)])
         ax.plot([pos1+0.2, pos2-0.2], [h ,h], 'w-',zorder=0)
-        ax.text((pos1+pos2)/2,h+0.2*step,'p = ' + '{0:.3f}'.format(np.round(p*1000)/1000) + '\nES = ' + str(np.round(ES*10)/10), ha='center',fontsize='small')
+        ax.text((pos1+pos2)/2,h+0.2*step,'p = ' + '{0:.3f}'.format(np.round(p*1000)/1000) + '\nRC = ' + str(np.round(RC*10)/10) + 
+                '\nES = ' + str(np.round(ES*10)/10) , ha='center',fontsize='small')
         ax.set_ylim(top=hmax+fullstep+step)
             
     else:       
         h = hmax
         fullstep += step
         ax.plot([pos1, pos2], [h+fullstep ,h+fullstep], 'w-',zorder=0)
-        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + '{0:.3f}'.format(np.round(p*1000)/1000), ha='center',fontsize='small')
+        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + '{0:.3f}'.format(np.round(p*1000)/1000) + '\nRC = ' + str(np.round(RC*10)/10) + 
+                '\nES = ' + str(np.round(ES*10)/10) , ha='center',fontsize='small')
         ax.set_ylim(top=h+fullstep+step)
 
     return(fullstep)
@@ -124,6 +127,8 @@ def Corr(GDs,labels,dfcols, **kwargs):
                         g = sns.jointplot(data=GDtoCorr,x=dfcols[i],y=dfcols[j],kind='scatter',hue = 'Expe',height = 12, palette = colors[1:])
                         
                         g.ax_joint.legend(fontsize='xx-large')
+                        # g.ax_joint.set_xlim([-0.2,1.5])
+                        # g.ax_joint.set_ylim([-0.2,32])
                         
                     else:
     
