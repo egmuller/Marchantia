@@ -227,6 +227,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
     # Matrix for averaging growth rate
     
     GRmat = np.empty((200,len(StackList)))
+    GRmat = np.empty((400,len(StackList))) # for longer fit
     
     GRmat[:] = np.nan
             
@@ -280,7 +281,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
 
             r2 = np.square(linreg.rvalue)
             
-        
         
         GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
         
@@ -384,7 +384,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         
     if Debug:
             
-        fulltime = np.linspace(0,100,200)-25
+        fulltime = np.linspace(0,100,400)-25 # 400 instead of 200 for longer time course
         GR_mean = np.nanmean(GRmat,axis = 1)
         
         fig00,ax = plt.subplots(dpi=200)
