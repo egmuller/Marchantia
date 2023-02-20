@@ -929,6 +929,94 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                 plt.close(fig20)
             return
 
+# 2. Comparison of hydromechanical properties
+
+# GDs : list of dataframe global data for experiments to analyse, Labels : list of 
+# labels for each experiment, colors list of colors to plot, P : path for figure saving,
+# Title : Name of the conditions plot (appears in figure titles)
+
+# Kwargs : 'showbox/hist' (True/False) to choose the different graphs displayed,
+# 'stats' ('ranksum' or None) choose type of stats done 
+# 'sigpairs' (list of 2-lists of integers) if specified, will only do significance 
+# tests between selected data sets
+
+def compareHydroMech_Pi0(GDs, Labels, colors,P, Title, **kwargs):
+
+    AllSigs = True
+    stats = 'ranksum'
+    
+    for key, value in kwargs.items(): 
+        if key == 'sigpairs':
+            sigpairs = value
+            AllSigs = False
+        elif key == 'stats' :
+            stats = value
+        else:
+            print('Unknown key : ' + key + '. Ewarg ignored.')
+         
+    # check existence of figure folder, if absent, create it
+    if not os.path.exists(P + '/Hydromechanics'):
+            os.mkdir(P + '/Hydromechanics') # create folder
+    
+        
+    ### Regroup data
+    Ecomps= [None]*len(GDs)
+    Pi0s= [None]*len(GDs)
+    Lhcomps= [None]*len(GDs)
+    
+    for GD,lab,i in zip(GDs,Labels,range(len(GDs))):
+        
+        # Retrieve data
+        Ecomps[i] = GD.loc[GD['Img'] == 0, 'Ecomp']
+        Pi0s[i] = GD.loc[GD['Img'] == 0, 'Pi0']
+        Lhcomps[i] = GD.loc[GD['Img'] == 0, 'L/H_Comp'] 
+            
+            
+        
+    ### plot
+    fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
+    fig3,ax3,capPi0,medPi0 = vf.boxswarmplot(Title + '\n\nInternal pressure','Pi0 (MPa)',Pi0s,colors,Labels[:])
+    fig2,ax2,capLhcomp,medLhcomp = vf.boxswarmplot(Title + '\n\nTauFlux (compression)','L/H',Lhcomps,colors,Labels[:])      
+
+
+    ### stats
+    fullstepEcomp = 0
+    fullstepLhcomp = 0
+    fullstepPi0 = 0
+
+    
+    if stats=='ranksum':
+        if AllSigs:
+            for i in range(len(GDs)-1):
+                for j in range(i+1,len(GDs)):
+
+                    fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
+                    fullstepPi0 = plotSig(ax3,np.max(capPi0),np.max(capPi0)*0.125,fullstepPi0,Pi0s[i],Pi0s[j],i,j)
+                    fullstepLhcomp = plotSig(ax2,np.max(capLhcomp),np.max(capLhcomp)*0.125,fullstepLhcomp,Lhcomps[i],Lhcomps[j],i,j)
+
+
+        else:
+            for i,j in sigpairs:
+
+                    fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
+                    fullstepPi0 = plotSig(ax3,np.max(capPi0 ),np.max(capPi0 )*0.125,fullstepPi0 ,Pi0s[i],Pi0s[j],i,j)
+                    fullstepLhcomp = plotSig(ax2,np.max(capLhcomp),np.max(capLhcomp)*0.125,fullstepLhcomp,Lhcomps[i],Lhcomps[j],i,j)
+
+    fig1.tight_layout()
+    fig2.tight_layout()
+    fig3.tight_layout()
+ 
+    
+
+    if stats=='ranksum':
+        fig1.savefig(P + '/Hydromechanics/' + Title + '_Ecomp.png')
+        fig2.savefig(P + '/Hydromechanics/'+ Title +  '_LhComp.png')
+        fig3.savefig(P + '/Hydromechanics/' + Title + '_Pi0.png')
+
+
+            
+        return    
+
 
 
 # 3. Comparison and correlation between growth and mechanicas parameters
