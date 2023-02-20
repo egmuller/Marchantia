@@ -76,10 +76,16 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
 
     #init and read kwargs
     DebugPlots = False
+    factor1 = 2
+    factor2 = 30
     
     for key, value in kwargs.items(): 
         if key == 'debug':
             DebugPlots = value
+        elif key == "Binfactor1":
+            factor1 = value
+        elif key == "Binfactor2":
+            factor2 = value
             
 
     
@@ -91,8 +97,8 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     ## slice 
     BWimg = mask>0
     
-    #size = np.round(2*Scale) # 5µm in pixels
-    size = np.round(4*Scale) # 5µm in pixels for 500 mM shocks
+    size1 = np.round(factor1*Scale) # 5µm in pixels
+    #size = np.round(4*Scale) # 5µm in pixels for 500 mM shocks and Pase experiment
     
     selem = create_circular_mask(size,size) # create circular element for opening
 
@@ -100,10 +106,11 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     
     FilledBWimg = remove_small_holes(DilBWimg, area_threshold=5*1e3) # fills dark regions
     
-    Size = np.round(30*Scale) # 30µm in pixels
+    Size2 = np.round(factor2*Scale) # 30µm in pixels
     #Size = np.round(15*Scale) # 30µm in pixels
+    #Size = np.round(5*Scale) # or 10 for phytotron
     
-    Selem = create_circular_mask(Size,Size) # create circular element for opening
+    Selem = create_circular_mask(Size2,Size2) # create circular element for opening
 
     FinalImg = binary_opening(FilledBWimg,Selem) # image opening
     
@@ -165,6 +172,8 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
     HSVmax = (60, 120,220)
     ImgList = [0, 20, 40]
     saveWB = False
+    factor1 = 2
+    factor2 = 30
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -176,6 +185,10 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
         elif key == 'HSVrange':
             HSVmin = value[0]
             HSVmax = value[1]
+        elif key == "Binfactor1":
+            factor1 = value
+        elif key == "Binfactor2":
+            factor2 = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
      
@@ -320,7 +333,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             if not isBin:
                 print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
                 
-                BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots)
+                BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots, Binfactor1 = factor1, Binfactor2 = factor2)
                 
                 io.imsave(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
             
