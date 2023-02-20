@@ -100,7 +100,7 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     size1 = np.round(factor1*Scale) # 5µm in pixels
     #size = np.round(4*Scale) # 5µm in pixels for 500 mM shocks and Pase experiment
     
-    selem = create_circular_mask(size,size) # create circular element for opening
+    selem = create_circular_mask(size1,size1) # create circular element for opening
 
     DilBWimg = binary_closing(BWimg,selem) # image closing
     
