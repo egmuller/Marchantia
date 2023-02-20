@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
@@ -55,6 +55,9 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     ImgList = [0, 20, 40]
     fitwindow=15
     saveWB= False
+    SeveralPPGs = False
+    factor1 = 2
+    factor2 = 30
     
     for key, value in kwargs.items(): 
         if key == 'debugAll':
@@ -71,6 +74,12 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
             HSVrange = value
         elif key == 'fitwindow':
             fitwindow = value
+        elif key == 'several' :
+            SeveralPPGs = value
+        elif key == 'Binfactor1':
+            factor1 = value
+        elif key == "Binfactor2":
+            factor2 = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -107,13 +116,13 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     
     # Binarization of stacks
     if DoBin:
-        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList, saveWB = saveWB)
+        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList, saveWB = saveWB, Binfactor1 = factor1, Binfactor2 = factor2)
         print('\n\n')
     
     if DoCont:
                 
         # Computing contours from binary
-        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll)
+        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll, several = SeveralPPGs)
 
         # Saving all contours
         GD.to_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
@@ -186,6 +195,9 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     RelValidation = True
     Concentration = 100
     DoFitMultiple = False
+    DoFitDouble = False
+    factor1 = 2
+    factor2 = 30
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -216,6 +228,10 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             RelValidation = value
         elif key == "C_osmo":
             Concentration = value
+        elif key == 'Binfactor1':
+            factor1 = value
+        elif key == "Binfactor2":
+            factor2 = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -248,6 +264,11 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         DoCont = False
         DoFit = True
         DoFitMultiple = True
+    elif ToDo == 'FDouble':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitDouble = True
     else:
         raise NameError('ToDo variable is wrong')
     
@@ -255,7 +276,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     
     # Binarization of stacks
     if DoBin:
-        BinarizeStack(StackList, Path, Scale,debug = DebugPlots, HSVrange = HSVrange, debuglist = ImgList)
+        BinarizeStack(StackList, Path, Scale,debug = DebugPlots, HSVrange = HSVrange, debuglist = ImgList, Binfactor1 = factor1, Binfactor2 = factor2)
     
     if DoCont:
                 
@@ -285,6 +306,10 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         
         if DoFitMultiple:
             GD = fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,debug = DebugPlots,  C_osmo = Concentration)
+            GD.loc[:,'Expe'] = stringName
+            
+        elif DoFitDouble:
+            GD = fitOsmoChoc_double(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,debug = DebugPlots,  C_osmo = Concentration)
             GD.loc[:,'Expe'] = stringName
         
         else :
