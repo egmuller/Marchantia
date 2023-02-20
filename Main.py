@@ -136,14 +136,18 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         print('\n\n')
         
         # Retrieve data on PPG position in chip 
-        if os.path.exists(Path + '/ChipPositions.xlsx'):
-            posinchip = pd.read_excel (Path + '/ChipPositions.xlsx', index_col='Name') 
-            Rows = posinchip.loc[StackList].values[:,0]
-        else:
-            print('Finding PPGs position in chip...',end='')
-            Rows = FindChipPos(StackList,Path,Ori)
-            print('Done\n')
-        print('\n\n')
+        if Ori != 'NotChip':
+            if os.path.exists(Path + '/ChipPositions.xlsx'):
+                posinchip = pd.read_excel (Path + '/ChipPositions.xlsx', index_col='Name') 
+                Rows = posinchip.loc[StackList].values[:,0]
+            else:
+                print('Finding PPGs position in chip...',end='')
+                Rows = FindChipPos(StackList,Path,Ori)
+                print('Done\n')
+            print('\n\n')
+            
+        else :
+            Rows = np.ones(len(StackList))
         
         # Fitting area growth
         GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay,R2Threshold,ValidPlots= ValidPlots, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
