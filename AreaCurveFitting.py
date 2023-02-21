@@ -261,7 +261,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             
             res = vf.polyfit(x,y,1)
             sl = res['polynomial'][0]
-            poly1d_fn = np.poly1d(res['polynomial']) 
+            
             # poly1d_fn is now a function which takes in x and returns an estimate for y
             
             x2 = intTime[0:Lfit]
@@ -269,7 +269,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             
             res2 = vf.polyfit(x2,y2,1)
             sl2 = res2['polynomial'][0]
-            poly1d_fn2 = np.poly1d(res2['polynomial'])
             
             Svar = (sl2-sl)/sl
             
@@ -279,7 +278,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             p = np.poly1d(res2['polynomial'])
             L2Dists[Lfit-5] = np.sqrt(np.sum(np.square(y2-p(x2))))/Lfit
             
-            
+            # poly1d_fn = np.poly1d(res['polynomial']) 
+            # poly1d_fn2 = np.poly1d(res2['polynomial'])
             # plt.plot(intTime[0:Lfit+7],GR_S[0:Lfit+7], 'yo', intTime[0:Lfit], poly1d_fn2(intTime[0:Lfit]), '-r',
             #           x, poly1d_fn(x), '--w',intTime[Lfit-2],GR_S[Lfit-2],'*r') #'--k'=black dashed line, 'yo' = yellow circle marker
             # plt.title(str(Svar))
@@ -298,39 +298,22 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
                 p = np.poly1d(res2['polynomial'])
                 L2Dists[l-5] = np.sqrt(np.sum(np.square(y2-p(x2))))/l
                 
-                
+        GR_mean = np.mean(GR_S[Lfit-2:])       
         
            
         coef = np.polyfit(intTime[0:Lfit-1],GR_S[0:Lfit-1],1)
         
-         
-
-        # plt.hist(R2s)
-        # plt.show()
+        p1_end = Lfit-2
+        GR_acc = coef[0]
         
-        p1_end_v1 = Lfit-2
-        GR_acc_v1 = coef[0]
-        
-        if np.max(R2s)>0.98:
-            p1_end_v2 = np.max(np.argwhere(R2s>0.98)) + 5 # latest timepoint with good R2
-            GR_acc_v2 = Slopes[p1_end_v2 - 5]
-        else:
-            p1_end_v2 = np.nan
-            GR_acc_v2 = np.nan
+        if GR_acc < 0:
             
+            fig = plt.figure(dpi = 300)
+            plt.plot(intTime,GR_S,'bo-')
+            plt.plot(intTime[0:Lfit-1],GR_S[0:Lfit-1],'r*')
         
-        
-        # poly1d_fn = np.poly1d(coef)
-        # plt.plot(intTime[0:Lfit+15],GR_S[0:Lfit+15], 'yo', intTime[0:Lfit-1], poly1d_fn(intTime[0:Lfit-1]), '-g',
-        #           intTime[Lfit-2],GR_S[Lfit-2],'*r',intTime[p1_end_v2],GR_S[p1_end_v2],'.b') 
-        # plt.show()
-
-        # plt.hist(Slopes)
-        # plt.show()
-
-        # plt.hist(L2Dists)
-        # plt.show()
-            # 
+       
+            
                         
             
         ### Iterative fits for a convergence of Tdeb with different fits      
@@ -376,8 +359,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             ax02.plot(Time,FitResPlot.fC(),'--b',lw=1)
             ax02.set_xlabel('Time (min)')
             ax02.set_ylabel('Area (mm²)')
-            # ax02.set_xscale('log')
-            # ax02.set_yscale('log')
     
             fig0.tight_layout()
             
@@ -444,23 +425,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             # GRmat[50-tdebshift+1:50-tdebshift+1+len(GR_S),ii] = np.nan
         else:
             GRmat[50-tdebshift+1:50-tdebshift+1+len(GR_S),ii] = GR_S
-        
-        
-    if Debug:
             
-        fulltime = np.linspace(0,100,200)-25
-        GR_mean = np.nanmean(GRmat,axis = 1)
-        
-        fig00,ax = plt.subplots(dpi=200)
-        fig00.suptitle('Growth rates aligned')
-        ax.plot(fulltime,GRmat,lw = 1)
-        ax.plot(fulltime,GR_mean,'w--',lw = 2)
-        
-        
-        ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
-        
-        plt.show()
-    
     return(GD)
 
 #%% Osmotic chocs fit
