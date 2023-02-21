@@ -156,7 +156,12 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig6,ax6 = plt.subplots(dpi = 250,facecolor='black')
     fig6.suptitle(Title + ' - GrowthRate aligned vs. time')
     plt.xlabel('Time since Tstart (min)')
-    plt.ylabel('Growth rate aligned at tdeb (day-1)')    
+    plt.ylabel('Growth rate aligned at Tstart (day-1)')    
+    
+    fig61,ax61 = plt.subplots(dpi = 250,facecolor='black')
+    fig61.suptitle(Title + ' - GrowthRate aligned vs. time')
+    plt.xlabel('Time since Tp1 (min)')
+    plt.ylabel('Growth rate aligned at Tp1 (day-1)')    
     
     
     fig41,ax41 = plt.subplots(dpi = 250,facecolor='black')
@@ -167,6 +172,17 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     fig51,ax51 = plt.subplots(dpi = 250,facecolor='black')
     fig51.suptitle(Title + ' - GrowthRate (Area avg) vs. A (Area avg)')
     plt.xlabel('Area (mm²)')
+    plt.ylabel('Growth rate (day-1)')   
+    
+    
+    fig42,ax42 = plt.subplots(dpi = 250,facecolor='black')
+    fig42.suptitle(Title + ' - dAdt (Area avg) vs. Anorm (Area avg)')
+    plt.xlabel('Area (norm)')
+    plt.ylabel('Area derivative (µm²/min)')
+    
+    fig52,ax52 = plt.subplots(dpi = 250,facecolor='black')
+    fig52.suptitle(Title + ' - GrowthRate (Area avg) vs. Anorm (Area avg)')
+    plt.xlabel('Area (norm)')
     plt.ylabel('Growth rate (day-1)')
 
     
@@ -204,8 +220,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         StddAdt = np.empty(nimgmax)
         MeanGR = np.empty(nimgmax)
         StdGR = np.empty(nimgmax)
-        MeanGRal = np.empty(nimgmax)
-        StdGRal = np.empty(nimgmax)
+        MeanGRaltdeb = np.empty(nimgmax)
+        MeanGRaltp1 = np.empty(nimgmax)
+        StdGRaltdeb = np.empty(nimgmax)
+        StdGRaltp1 = np.empty(nimgmax)
 
         for im in range(nimgmax):
 
@@ -218,60 +236,105 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             StddAdt[im] = np.nanstd(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000)
             MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()*60*24
             StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std()*60*24
-            MeanGRal[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())
-            StdGRal[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al'].to_numpy())  
+            MeanGRaltdeb[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb'].to_numpy())*60*24
+            MeanGRaltp1[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tp1'].to_numpy())*60*24
+            StdGRaltdeb[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb'].to_numpy())*60*24
+            StdGRaltp1[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tp1'].to_numpy())*60*24
                 
             
         ### Computing averages based on size rather than time
-        Areas = GD['Area'].to_numpy() # mm²
-        AreasDescription = GD[['Area','Expe']]
+        Areas = GD['Area'].to_numpy() # normalized
+        AreasN = GD['AreaNorm'].to_numpy() # mm²
         GrowthRates = GD['GR_Full'].to_numpy()*60*24 # day-1
         dAdts = GD['dAdt'].to_numpy()*1000000 # µm²/min
         
         # Averages with constant bin size
         
         binsize = 0.05 # mm²
+        binsNorm = [1,1.005,1.01,1.02,1.05,1.08,1.11,1.15,1.2,1.3,1.4,1.6,1.8,2,2.2,2.4,2.6,2.8,3,3.5,4] 
         
         nbin = int(np.ceil(np.max(Areas)/binsize))
+        nbinN = int(len(binsNorm)-1)
         
         
-        bMeanA = np.empty(nbin)
-        bMeandAdt = np.empty(nbin)
-        bStdA = np.empty(nbin)
-        bStddAdt = np.empty(nbin)
-        bMeanGR = np.empty(nbin)
-        bStdGR = np.empty(nbin)
+        MeanA_A = np.empty(nbin)
+        MeandAdt_A = np.empty(nbin)
+        StddAdt_A = np.empty(nbin)
+        MeanGR_A = np.empty(nbin)
+        StdGR_A = np.empty(nbin)
         sqrtn = np.empty(nbin)
         
         
+        MeanA_Anorm = np.empty(nbinN)
+        MeandAdt_Anorm = np.empty(nbinN)
+        StddAdt_Anorm = np.empty(nbinN)
+        MeanGR_Anorm = np.empty(nbinN)
+        StdGR_Anorm = np.empty(nbinN)
+        sqrtnnorm = np.empty(nbinN)
+        
+        # With real area
         for ib in range(nbin):
             
             mask = (Areas>=ib*binsize)&(Areas<(ib+1)*binsize)
+                    
+            nppgsubset =len(np.unique(GD.loc[mask].index)) 
             
-            subset = AreasDescription[mask]
+            sqrtn[ib] = np.sqrt(nppgsubset)
             
-            nppgsubset = np.sum([len(np.unique(subset.loc[idx,'Expe'])) for idx in np.unique(subset.index)])
+            MeanA_A[ib] = np.nanmean(Areas[mask])
+            MeandAdt_A[ib] = np.nanmean(dAdts[mask])
+            StddAdt_A[ib] = np.nanstd(dAdts[mask])
+            MeanGR_A[ib] = np.nanmean(GrowthRates[mask])
+            StdGR_A[ib] = np.nanstd(GrowthRates[mask])
+         
+        # With normalized area
+        for ib in range(len(binsNorm)-1):
             
-            sqrtn[ib] = np.sqrt(nppgsubset) # not the good way of doing this 
+            mask = (AreasN>=binsNorm[ib])&(AreasN<binsNorm[ib+1])
+                    
+            nppgsubset =len(np.unique(GD.loc[mask].index)) 
             
-            bMeanA[ib] = np.nanmean(Areas[mask])
-            bStdA[ib] = np.nanstd(Areas[mask])
-            bMeandAdt[ib] = np.nanmean(dAdts[mask])
-            bStddAdt[ib] = np.nanstd(dAdts[mask])
-            bMeanGR[ib] = np.nanmean(GrowthRates[mask])
-            bStdGR[ib] = np.nanstd(GrowthRates[mask])
+            sqrtnnorm[ib] = np.sqrt(nppgsubset)
+            
+            if nppgsubset > 5:
+                MeanA_Anorm[ib] = np.nanmean(AreasN[mask])
+                MeandAdt_Anorm[ib] = np.nanmean(dAdts[mask])
+                StddAdt_Anorm[ib] = np.nanstd(dAdts[mask])
+                MeanGR_Anorm[ib] = np.nanmean(GrowthRates[mask])
+                StdGR_Anorm[ib] = np.nanstd(GrowthRates[mask])
+            else:
+                MeanA_Anorm[ib] = np.nan
+                MeandAdt_Anorm[ib] = np.nan
+                StddAdt_Anorm[ib] = np.nan
+                MeanGR_Anorm[ib] = np.nan
+                StdGR_Anorm[ib] = np.nan
+            
+            
+            
+            
         
         # Plots
         
         ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax3.errorbar(MeanTime,MeanAnorm,yerr=StdAnorm/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
         ax4.errorbar(MeanTime,MeandAdt,yerr=StddAdt/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        
+        
         ax5.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax6.errorbar(MeanTime,MeanGRal,yerr=StdGRal/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax6.errorbar(MeanTime,MeanGRaltdeb,yerr=StdGRaltdeb/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax61.errorbar(MeanTime,MeanGRaltp1,yerr=StdGRaltp1/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax5.set_ylim([-0.2,1])
+        ax6.set_ylim([-0.2,1])
+        ax61.set_ylim([-0.2,1])
+        
         
 
-        ax41.errorbar(bMeanA,bMeandAdt, yerr = bStddAdt/sqrtn, capsize=3,label=lab,color = colors[i])
-        ax51.errorbar(bMeanA,bMeanGR,yerr = bStdGR/sqrtn, capsize=3,label=lab,color = colors[i])
+        ax41.errorbar(MeanA_A,MeandAdt_A, yerr = StddAdt_A/sqrtn, capsize=3,label=lab,color = colors[i])
+        ax51.errorbar(MeanA_A,MeanGR_A,yerr = StdGR_A/sqrtn, capsize=3,label=lab,color = colors[i])
+        
+        ax42.errorbar(MeanA_Anorm,MeandAdt_Anorm, yerr = StddAdt_Anorm/sqrtnnorm, capsize=3,label=lab,color = colors[i])
+        ax52.errorbar(MeanA_Anorm,MeanGR_Anorm,yerr = StdGR_Anorm/sqrtnnorm, capsize=3,label=lab,color = colors[i])
+        
         
         
         
@@ -285,6 +348,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     plt.legend(prop={'size': 8})
     plt.figure(fig6.number)
     plt.legend(prop={'size': 8})
+    plt.figure(fig61.number)
+    plt.legend(prop={'size': 8})
     plt.figure(fig41.number)
     plt.legend(prop={'size': 8})
     plt.figure(fig51.number)
@@ -295,27 +360,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         plt.close(fig4)
         plt.close(fig5)
         plt.close(fig6)
+        plt.close(fig61)
         plt.close(fig41)
         plt.close(fig51)
 
 
     ######### Parameters of fit ###########
-    
-      
-    fig4,ax4 = plt.subplots(dpi = 250,facecolor='black')
-    fig4.suptitle(Title + ' - Growth start time')
-      
-    fig5,ax5 = plt.subplots(dpi = 250,facecolor='black')
-    fig5.suptitle(Title + ' - Growth caracteristic time')
-      
-    fig51,ax51 = plt.subplots(dpi = 250,facecolor='black')
-    fig51.suptitle(Title + ' - Final Growth Rate')
-    
-    fig6,ax6 = plt.subplots(dpi = 250,facecolor='black') 
-    fig6.suptitle(Title + ' - Starting area') 
 
-    fig16,ax16 = plt.subplots(dpi = 250,facecolor='black')
-    fig16.suptitle(Title + ' - Initial growth increase')
     
     if len(newGDs) <= 2:
         # Histogram for distribution comparison
@@ -340,75 +391,37 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         plt.ylabel('Count')
     
     tdebs= [None]*len(newGDs)
+    GRtdebs= [None]*len(newGDs)
     taus= [None]*len(newGDs)
-    captdeb= [None]*len(newGDs)
-    captau= [None]*len(newGDs)
-    medtdeb= [None]*len(newGDs)
-    medtau= [None]*len(newGDs)    
-    
     GR_ends = [None]*len(newGDs)
-    capGR_ends = [None]*len(newGDs)
-    medGR_ends = [None]*len(newGDs)   
-    
     Area0 = [None]*len(newGDs) 
-    capArea0 = [None]*len(newGDs) 
-    medArea0 = [None]*len(newGDs) 
-    
     AreaStart = [None]*len(newGDs)
-    capAreaStart = [None]*len(newGDs)
-    medAreaStart = [None]*len(newGDs)
-    
-    grouping = []
-    labs = []
-    
+   
     for GD,lab,i in zip(newGDs,Labels,range(len(newGDs))):
         
-        # number of ppgs and label
-        nPPG = len(GD.loc[GD['Img'] == 0])
-        lab = lab + 'n = ' + str(nPPG)
-        labs = np.append(labs,lab)
+        ###### GR tests ##############
+        
+        GR_end = GD.loc[(GD['Img'] == 0), 'GR_end'] # in day-1
+        GR_mean = GD.loc[(GD['Img'] == 0), 'GR_mean']  # in day-1
+        GR_ini = GD.loc[(GD['Img'] == 0), 'GR_ini'] # in day-1
+        GR_tdeb = GD.loc[(GD['Img'] == 0), 'GR_tdeb']  # in day-1
+        GR_tp1 = GD.loc[(GD['Img'] == 0), 'GR_tp1']# in day-1
+        GR_2h = GD.loc[(GD['Img'] == 0), 'GR_2h'] # in day-1
+        GR_4h = GD.loc[(GD['Img'] == 0), 'GR_4h']# in day-1
+        
+        vf.boxswarmplot(lab + '\nGrowth rate comparison a different points','Growth rate (day-1)',[GR_end,GR_mean,GR_ini,GR_tdeb,GR_tp1,GR_2h,GR_4h],
+                        ['gray','gray','gray','gray','gray','gray','gray'],['GR_end','GR_mean','GR_ini','GR_tdeb','GR_tp1','GR_2h','GR_4h'])       
+        
+        #############################################################################################
         
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
+        GRtdebs[i] = GD.loc[GD['Img'] == 0, 'GR_tdeb'] # in days-1
         taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
         GR_ends[i] = GD.loc[GD['Img'] == 0, 'GR_end']  # in days-1     
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
         AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart']*100
-        
-        
-        # swarmplots
-        grouping = np.append(grouping,np.ones(len(tdebs[i]))*i)
-
-
-        plotprops = {'color':'white'}
-        boxprops = {'color':'white','facecolor':colors[i]}
-        
-         
-        bp4 = ax4.boxplot(tdebs[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
-        
-        bp5 = ax5.boxplot(taus[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
-        
-        bp51 = ax51.boxplot(GR_ends[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
-        
-        bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops, 
-            showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8]) ])
-        
-        bp26 = ax16.boxplot(AreaStart[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
-                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(tdebs), 0.8])])
-    
-        captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
-        captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
-        capGR_ends[i] = bp51['caps'][1].get_ydata(orig=True)[0]
-        capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0] 
-        capAreaStart[i] = bp26['caps'][1].get_ydata(orig=True)[0]
-        medtdeb[i] = bp4['medians'][0].get_ydata(orig=True)[0]
-        medtau[i] = bp5['medians'][0].get_ydata(orig=True)[0]
-        medGR_ends[i] = bp51['medians'][0].get_ydata(orig=True)[0]
-        medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
-        medAreaStart[i] = bp26['medians'][0].get_ydata(orig=True)[0]
+ 
         
         if len(newGDs) <= 2:
         
@@ -416,19 +429,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             ax8.hist(tdebs[i], nbins, density=False, facecolor=colors[i], alpha=0.5)
             ax9.hist(taus[i]-np.median(taus[i]), nbins, density=False, facecolor=colors[i], alpha=0.5)
             ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=False, facecolor=colors[i], alpha=0.5)
-
-            
-    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'white', size=2, ax = ax4)
-    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'white', size=2, ax = ax5)
-    sns.swarmplot(x=grouping,y=pd.concat(GR_ends),color = 'white', size=2, ax = ax51)
-    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'white', size=2, ax = ax6) 
-    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'white', size=2, ax = ax16)
-    
-    ax4.set_xticklabels(labs)
-    ax5.set_xticklabels(labs)
-    ax51.set_xticklabels(labs)
-    ax6.set_xticklabels(labs) 
-    ax16.set_xticklabels(labs)
 
     if len(newGDs) == 2:
         # Distribution comparison with two-sample kolmogorov smirnov test
@@ -453,7 +453,24 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig8)
             plt.close(fig9)
             plt.close(fig10)
+            
+        
+    fig4,ax4,captdeb,medtdeb = vf.boxswarmplot(Title + ' - Growth start time','tdeb (hours)',tdebs,colors,Labels[:])
     
+    fig5,ax5,captau,medtau = vf.boxswarmplot(Title + ' - Growth caracteristic time','Tau (hours)',taus,colors,Labels[:])
+    
+    
+    fig51,ax51,capGR_ends,medGR_ends = vf.boxswarmplot(Title + ' - Final Growth Rate','Final growth Rate (day-1)',GR_ends,colors,Labels[:])
+    
+    
+    fig6,ax6,capArea0,medArea0 = vf.boxswarmplot(Title + ' - Starting area','A0 (mm²)',Area0,colors,Labels[:])
+    
+    
+    fig61,ax61,capGRtdebs,medGRtdebsb = vf.boxswarmplot(Title + ' - Growth rate at tdeb','Growth Rate (day-1)',GRtdebs,colors,Labels[:])
+    
+    
+    fig16,ax16,capAreaStart,medAreaStart = vf.boxswarmplot(Title + ' - Initial growth increase','Area increase (%)',AreaStart,colors,Labels[:])
+             
     steptdeb = np.max(captdeb)*0.125
     steptau = np.max(captau)*0.125
     stepGR_ends = np.max(capGR_ends)*0.125
@@ -471,12 +488,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     hmaxGR_ends = np.max(capGR_ends)
     hmaxArea0 = np.max(capArea0) 
     hmaxAreaStart = np.max(capAreaStart)
-    
-    ax4.set_ylabel('Tstart (hours)')
-    ax5.set_ylabel('Tau growth (hours)')
-    ax51.set_ylabel('Final growth rate  (days-1)')
-    ax6.set_ylabel('Starting area from fit (mm²)') 
-    ax16.set_ylabel('Growth at Tstart (%)')
     
     if stats=='ranksum':
         if AllSigs:
@@ -720,7 +731,6 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
 
 
     ### stats
-    fullstepE = 0
     fullstepEcomp = 0
     fullstepTauComp = 0
     fullstepErel = 0

@@ -76,7 +76,7 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     
     
     fig,ax = plt.subplots(dpi = 250,facecolor='black',figsize = (7,3.5))
-    # fig.suptitle(Title)
+    fig.suptitle(Title)
  
     
     cap= [None]*len(Data)
@@ -108,6 +108,8 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     ax.set_ylabel(Ylabel)
     
     ax.set_xticklabels(Labels)
+    
+    fig.tight_layout()
     
     return(fig,ax,cap,med)
     
