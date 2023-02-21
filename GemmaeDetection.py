@@ -160,6 +160,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
     HSVmax = (60, 120,220)
     ImgList = [0, 20, 40]
     saveWB = False
+    verbose = True
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -168,6 +169,8 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             ImgList = value 
         elif key == 'saveWB':
             saveWB = value 
+        elif key == 'verbose':
+            verbose = value 
         elif key == 'HSVrange':
             HSVmin = value[0]
             HSVmax = value[1]
@@ -200,8 +203,9 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             isBin = False
         else:
             isBin = True
-            
-        print('Processing ' + s + ' :')    
+        
+        if verbose:
+            print('Processing ' + s + ' :')    
 
         RGBstack = io.imread(P + '\\' + s + '.tif') # get the tiff stack
         Bckp_RGBstack = io.imread(P + '\\' + s + '.tif') # get the tiff stack for comparison
@@ -313,7 +317,8 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             
             # Binarization      
             if not isBin:
-                print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
+                if verbose:
+                    print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
                 
                 BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots)
                 
@@ -323,7 +328,8 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
                 if os.path.exists(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif'):
                     BinImg = io.imread(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif') 
                 else:
-                    print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
+                    if verbose:
+                        print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
                     
                     BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots)
                     io.imsave(P + '\\Processed\\' + s + '_Binarized\\' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
@@ -405,6 +411,8 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
     for key, value in kwargs.items(): 
         if key == 'debug':
             DebugPlots = value
+        elif key == 'verbose':
+            verbose = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -415,8 +423,8 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
     
     for s in StackList:
-
-        print('Processing ' + s + ' :')   
+        if verbose:
+            print('Processing ' + s + ' :')   
         
         ProcessedPath = P + '\\Processed\\' + s + '_Binarized\\'
 
@@ -428,7 +436,8 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
 
         for i in range(n):
             
-            print('Measuring contour for image ' + str(i+1) + '/' + str(n).ljust(10), flush=True, end = '\r')
+            if verbose:
+                print('Measuring contour for image ' + str(i+1) + '/' + str(n).ljust(10), flush=True, end = '\r')
                         
             # Loading binary image
             BinImg = io.imread(ProcessedPath + '\\' + str(i) + '.tif')
@@ -462,7 +471,8 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
                 plt.plot(SortedY+center[1],SortedX+center[0],'c-o',lw = 0.7,ms=1)
                 plt.show()
         
-        print('Contours saved.'.ljust(35), flush = True)
+        if verbose:
+            print('Contours saved.'.ljust(35), flush = True)
          
     return(CD,GD)
 

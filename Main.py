@@ -48,6 +48,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     ImgList = [0, 20, 40]
     fitwindow=15
     saveWB= False
+    verbose = False
     
     for key, value in kwargs.items(): 
         if key == 'debugAll':
@@ -64,6 +65,8 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
             HSVrange = value
         elif key == 'fitwindow':
             fitwindow = value
+        elif key == 'verbose':
+            verbose = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -94,14 +97,16 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     else:
         raise NameError('ToDo variable is wrong')
     
-    print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
-    print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ')
-    print('\n\nAnalyzing experiment : ' + stringName + '\n')
+    if verbose:
+        print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
+        print('\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ')
+        print('\n\nAnalyzing experiment : ' + stringName + '\n')
     
     # Binarization of stacks
     if DoBin:
         BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList, saveWB = saveWB)
-        print('\n\n')
+        if verbose:
+            print('\n\n')
     
     if DoCont:
                 
@@ -111,39 +116,47 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
         # Saving all contours
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
         CD.to_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_label = 'Ind')
-        print('\n\n')
+        if verbose:
+            print('\n\n')
 
     if DoFit:
         
         GD = pd.read_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '\\ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
-        print('\n\n')
+        if verbose:
+            print('\n\n')
         
         # Retrieve data on PPG position in chip 
         if os.path.exists(Path + '\ChipPositions.xlsx'):
             posinchip = pd.read_excel (Path + '\ChipPositions.xlsx', index_col='Name') 
             Rows = posinchip.loc[StackList].values[:,0]
         else:
-            print('Finding PPGs position in chip...',end='')
+            if verbose:
+                print('Finding PPGs position in chip...',end='')
             Rows = FindChipPos(StackList,Path,Ori)
-            print('Done\n')
-        print('\n\n')
+            if verbose:
+                print('Done\n')
+        if verbose:
+            print('\n\n')
         
         # Fitting area growth
-        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay,R2Threshold,ValidPlots= ValidPlots, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
+        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay,R2Threshold,ValidPlots= ValidPlots, verbose = verbose,debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
         
         GD.loc[:,'Expe'] = stringName
         
-        print('\n\n')
+        if verbose:
+            print('\n\n')
 
         # Sorting based on fit quality
         GD, CD, R2s, goodList = selectR2s(GD,CD,R2Threshold,stringName, showHist = DebugPlots)
-        print('\n\n')
+        if verbose:
+            print('\n\n')
         
         # Saving sorted contour and fit data
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaFit.csv',index_label = 'Ind')
         CD.to_csv(Path + '\\ContourData' + stringName + '_AreaFit.csv',index_label = 'Ind')
-        print('\n\n')
+        if verbose:
+            print('\n\n')
     
     return
 

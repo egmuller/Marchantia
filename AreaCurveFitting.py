@@ -192,6 +192,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
     Debug = True
     ValidPlots = False
     FitWindow = 15
+    verbose = False
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -201,6 +202,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             Debug = False
         elif key == 'ValidPlots':
             ValidPlots = value
+        elif key == 'verbose':
+            verbose = value
         elif key == 'fitwindow':
             FitWindow = value
         else:
@@ -221,8 +224,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             
     for ii,s,row in zip(range(len(StackList)),StackList,Rows):
         
-        print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
-        print('\nFitting area curve for : ' + s)           
+        if verbose:
+            print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
+            print('\nFitting area curve for : ' + s)           
         
         GD.loc[s,'AreaNorm'] =  GD.loc[s,'Area'].to_numpy()/GD.loc[s,'Area'].to_numpy()[0]
         
@@ -394,34 +398,42 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             
             plt.show()
             
-            print('\nType of fit displayed : ' + FitResPlot.name)
-            print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
+            if verbose:
+                print('\nType of fit displayed : ' + FitResPlot.name)
+                print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
             
 
         
         
 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
-
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc_v1'] = GR_acc_v1*60*24*60*24 # in day-2
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc_v2'] = GR_acc_v2*60*24*60*24 # in day-2
-        
+                
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitRes_flat.name
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitRes_flat.tdeb() + Delay
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb²'] = np.square((FitRes_flat.tdeb() + Delay)/60/24)
         tdebshift = np.argmin(np.abs(Time-FitRes_flat.tdeb())) 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = tdebshift# img shift for alignement on tdeb
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitRes_flat.tau()
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_ini'] = 1/FitRes_flat.tau()*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitRes_flat.A0()
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitRes_flat.R2()
         
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1_V1'] = p1_end_v1
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1_V2'] = p1_end_v2
-        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1'] = p1_end*60 + Delay
+        tp1shift = np.argmin(np.abs(Time-p1_end*60)) 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1Shift'] = tp1shift # img shift for alignement on tp1
                 
-        GD.loc[s,'GR_Full_al'] = np.concatenate((GR_S[tdebshift:],np.matlib.repmat(np.nan,1,tdebshift+1)[0]))
+        GD.loc[s,'GR_Full_al_tdeb'] = np.concatenate((GR_S[tdebshift:],np.matlib.repmat(np.nan,1,tdebshift+1)[0]))   
+        GD.loc[s,'GR_Full_al_tp1'] = np.concatenate((GR_S[tp1shift:],np.matlib.repmat(np.nan,1,tp1shift+1)[0]))       
+
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_mean'] = GR_mean*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_ini'] = 1/FitRes_flat.tau()*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_tdeb'] = GR_S[tdebshift]*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_tp1'] = GR_S[tp1shift]*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_2h'] = GR_S[4]*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_4h'] = GR_S[8]*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc'] = GR_acc*60*24*60*24 # in day-2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/GR_acc'] = 1/(GR_acc*60*24*60*24) # in day²
         
         try:
             GRmat[50-tdebshift+1:50-tdebshift+1+len(GR_S),ii] = GR_S # -GR_S[Len-1]
