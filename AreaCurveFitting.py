@@ -115,7 +115,7 @@ def fitFuncOsmChoc2(t,T,A0,Aeq,tdeb,B):
 
 # A. Function to do iterative fit on a specific window after tdeb, iterations until tdeb has converged
 
-def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
+def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax,verbose):
     
     FitObj = FitClass(t,y,name)
     
@@ -157,15 +157,18 @@ def iterFit(FitClass,name,fitwindow,t,y,params0,Th,maxIter,debug,ax):
                 ax.plot(tdeb_old,FitObj.tdeb(),'*w',ms=0.5)
             
 
-        cnt += 1       
-    print('\nModel for fit : ' + FitObj.name)
-    print('Number of iterations : ' + str(cnt))
-    print('Final tdeb variations :' + str(tdebVars[-3:]) )
+        cnt += 1 
+    
+    if verbose:
+        print('\nModel for fit : ' + FitObj.name)
+        print('Number of iterations : ' + str(cnt))
+        print('Final tdeb variations :' + str(tdebVars[-3:]) )
     
     if cnt == maxIter:
         if not all(np.array(tdebVars[-4:])<2*Th):
-            print('Thresohold : ' + str(Th) + 'tdebVars :')
-            print(tdebVars)
+            if verbose:
+                print('Thresohold : ' + str(Th) + 'tdebVars :')
+                print(tdebVars)
             FitObj.set_fitinterval([])
      
     return(FitObj)
@@ -208,13 +211,6 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             FitWindow = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
-
-    
-    # Matrix for averaging growth rate
-    
-    GRmat = np.empty((200,len(StackList)))
-    
-    GRmat[:] = np.nan
             
     if Debug:
         fig1,ax1 = plt.subplots(dpi=200)
@@ -306,23 +302,21 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         p1_end = Lfit-2
         GR_acc = coef[0]
         
-        if GR_acc < 0:
-            
-            fig = plt.figure(dpi = 300)
-            plt.plot(intTime,GR_S,'bo-')
-            plt.plot(intTime[0:Lfit-1],GR_S[0:Lfit-1],'r*')
-        
-       
-            
-                        
-            
+   
         ### Iterative fits for a convergence of Tdeb with different fits      
         
-        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.05, 10, Debug, ax1)
+        FitRes_flat = iterFit(ExpDel,'ExpDel',FitWindow,Time,AreaC,[30,100, AreaC[0]], 0.05, 10, Debug, ax1,verbose)
         
         FitResPlot =copy.deepcopy(FitRes_flat)
         
-        
+        if (GR_acc < 0) & (FitResPlot.R2() > Th):
+            
+            fig = plt.figure(dpi = 300)
+            plt.title(s)
+            plt.plot(intTime,GR_S,'bo-')
+            plt.plot(intTime[0:Lfit-1],GR_S[0:Lfit-1],'r*')
+            
+            
         ### Growth rate 1/A * dA/dt computation for fits
         
         if not np.array(FitRes_flat.FI).size == 0:
@@ -403,28 +397,33 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         tp1shift = np.argmin(np.abs(Time-p1_end*60)) 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tp1Shift'] = tp1shift # img shift for alignement on tp1
                 
-        GD.loc[s,'GR_Full_al_tdeb'] = np.concatenate((GR_S[tdebshift:],np.matlib.repmat(np.nan,1,tdebshift+1)[0]))   
-        GD.loc[s,'GR_Full_al_tp1'] = np.concatenate((GR_S[tp1shift:],np.matlib.repmat(np.nan,1,tp1shift+1)[0]))       
+        
+        GR_al_tdeb_p1 = np.concatenate((np.matlib.repmat(np.nan,1,int(len(GR_S)-tdebshift+1))[0],GR_S[:tdebshift]))
+        GR_al_tdeb_p2 = np.concatenate((GR_S[tdebshift:],np.matlib.repmat(np.nan,1,tdebshift+1)[0]))  
+        
+        GR_al_tp1_p1 = np.concatenate((np.matlib.repmat(np.nan,1,int(len(GR_S)-tp1shift+1))[0],GR_S[:tp1shift]))
+        GR_al_tp1_p2 = np.concatenate((GR_S[tp1shift:],np.matlib.repmat(np.nan,1,tp1shift+1)[0]))  
+        
+        GD.loc[s,'GR_Full_al_tdeb_p1'] = np.flip(GR_al_tdeb_p1)
+        GD.loc[s,'GR_Full_al_tdeb_p2'] = GR_al_tdeb_p2
+        GD.loc[s,'GR_Full_al_tp1_p1'] =  np.flip(GR_al_tp1_p1)
+        GD.loc[s,'GR_Full_al_tp1_p2'] = GR_al_tp1_p2
 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_mean'] = GR_mean*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_ini'] = 1/FitRes_flat.tau()*60*24 # in day-1
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_tdeb'] = GR_S[tdebshift]*60*24 # in day-1
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_tp1'] = GR_S[tp1shift]*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_tdeb'] = GR_S[tdebshift-1]*60*24 # in day-1
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_tp1'] = GR_S[tp1shift-1]*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_2h'] = GR_S[4]*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_4h'] = GR_S[8]*60*24 # in day-1
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc'] = GR_acc*60*24*60*24 # in day-2
-        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/GR_acc'] = 1/(GR_acc*60*24*60*24) # in day²
         
-        try:
-            GRmat[50-tdebshift+1:50-tdebshift+1+len(GR_S),ii] = GR_S # -GR_S[Len-1]
-        except:
-            print(50-tdebshift+1+len(GR_S))
-            print(tdebshift)
-            print(GR_S)
-            # GRmat[50-tdebshift+1:50-tdebshift+1+len(GR_S),ii] = np.nan
+        if GR_acc > 0:
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc'] = GR_acc*60*24*60*24 # in day-2
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/GR_acc'] = 1/(GR_acc*60*24*60*24) # in day²
         else:
-            GRmat[50-tdebshift+1:50-tdebshift+1+len(GR_S),ii] = GR_S
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_acc'] = np.nan
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/GR_acc'] = np.nan
+
             
     return(GD)
 

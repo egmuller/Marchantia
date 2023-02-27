@@ -407,6 +407,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
       
     # init and read kwargs    
     DebugPlots = False
+    verbose = True
     
     for key, value in kwargs.items(): 
         if key == 'debug':

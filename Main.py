@@ -111,7 +111,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     if DoCont:
                 
         # Computing contours from binary
-        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll)
+        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll, verbose=verbose)
 
         # Saving all contours
         GD.to_csv(Path + '\\GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
