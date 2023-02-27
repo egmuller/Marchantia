@@ -96,7 +96,7 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
         Labels[i] = lab
 
         bp = ax.boxplot(dat, positions = [i], labels = [lab],patch_artist =True, boxprops=boxprops, capprops =plotprops,
-                    showfliers=False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(Data), 0.8])])
+                    showfliers=False,whiskerprops=plotprops,medianprops =plotprops, widths = [np.min([0.1*len(Data), 0.5])])
         
         grouping = np.append(grouping,np.ones(len(dat))*i)
     

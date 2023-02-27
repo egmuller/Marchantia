@@ -220,10 +220,16 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         StddAdt = np.empty(nimgmax)
         MeanGR = np.empty(nimgmax)
         StdGR = np.empty(nimgmax)
-        MeanGRaltdeb = np.empty(nimgmax)
-        MeanGRaltp1 = np.empty(nimgmax)
-        StdGRaltdeb = np.empty(nimgmax)
-        StdGRaltp1 = np.empty(nimgmax)
+        
+        MeanGRaltdeb_p1 = np.empty(nimgmax)
+        StdGRaltdeb_p1 = np.empty(nimgmax)
+        MeanGRaltdeb_p2 = np.empty(nimgmax)
+        StdGRaltdeb_p2 = np.empty(nimgmax)
+        
+        MeanGRaltp1_p1 = np.empty(nimgmax)
+        StdGRaltp1_p1 = np.empty(nimgmax)
+        MeanGRaltp1_p2 = np.empty(nimgmax)
+        StdGRaltp1_p2 = np.empty(nimgmax)
 
         for im in range(nimgmax):
 
@@ -236,12 +242,26 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             StddAdt[im] = np.nanstd(GD.loc[GD['Img'] == im,'dAdt'].to_numpy()*1000000)
             MeanGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().mean()*60*24
             StdGR[im] = GD.loc[GD['Img'] == im,'GR_Full'].to_numpy().std()*60*24
-            MeanGRaltdeb[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb'].to_numpy())*60*24
-            MeanGRaltp1[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tp1'].to_numpy())*60*24
-            StdGRaltdeb[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb'].to_numpy())*60*24
-            StdGRaltp1[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tp1'].to_numpy())*60*24
-                
             
+            MeanGRaltdeb_p1[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb_p1'].to_numpy())*60*24
+            StdGRaltdeb_p1[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb_p1'].to_numpy())*60*24
+            MeanGRaltdeb_p2[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb_p2'].to_numpy())*60*24
+            StdGRaltdeb_p2[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tdeb_p2'].to_numpy())*60*24
+            
+            MeanGRaltp1_p1[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tp1_p1'].to_numpy())*60*24
+            StdGRaltp1_p1[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tp1_p1'].to_numpy())*60*24
+            MeanGRaltp1_p2[im] = np.nanmean(GD.loc[GD['Img'] == im,'GR_Full_al_tp1_p2'].to_numpy())*60*24
+            StdGRaltp1_p2[im] = np.nanstd(GD.loc[GD['Img'] == im,'GR_Full_al_tp1_p2'].to_numpy())*60*24
+                
+        
+        MeanGRaltdeb = np.concatenate((np.flip(MeanGRaltdeb_p1),MeanGRaltdeb_p2))   
+        StdGRaltdeb = np.concatenate((np.flip(StdGRaltdeb_p1),StdGRaltdeb_p2))  
+        
+        MeanGRaltp1 = np.concatenate((np.flip(MeanGRaltp1_p1),MeanGRaltp1_p2))   
+        StdGRaltp1 = np.concatenate((np.flip(StdGRaltp1_p1),StdGRaltp1_p2))  
+        
+        MeanTimeAl = np.linspace(-nimgmax,nimgmax-1,2*nimgmax)*30
+        
         ### Computing averages based on size rather than time
         Areas = GD['Area'].to_numpy() # normalized
         AreasN = GD['AreaNorm'].to_numpy() # mm²
@@ -321,11 +341,11 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         
         
         ax5.errorbar(MeanTime,MeanGR,yerr=StdGR/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax6.errorbar(MeanTime,MeanGRaltdeb,yerr=StdGRaltdeb/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax61.errorbar(MeanTime,MeanGRaltp1,yerr=StdGRaltp1/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
-        ax5.set_ylim([-0.2,1])
-        ax6.set_ylim([-0.2,1])
-        ax61.set_ylim([-0.2,1])
+        ax6.errorbar(MeanTimeAl,MeanGRaltdeb,yerr=StdGRaltdeb/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax61.errorbar(MeanTimeAl,MeanGRaltp1,yerr=StdGRaltp1/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        # ax5.set_ylim([-0.2,1])
+        # ax6.set_ylim([-0.2,1])
+        # ax61.set_ylim([-0.2,1])
         
         
 
@@ -994,17 +1014,31 @@ def plotGRratio(GDs,GD_Osmos,labels,colors):
     
     for GD,GD_Osmo,label,colo,nax in zip(GDs,GD_Osmos,labels,colors,vf.mosaicList(n)[1]):
         
+        
+        
         # GR ratio before/after OC
         GRbefore = GD.loc[GD['Img']==0,'GR_end']
         GRafter = GD_Osmo.loc[GD_Osmo['Img']==0,'GR_AfterOC']
-        GRs = pd.concat([GRbefore, GRafter],axis=1)
-        GRs = GRs.assign(GR_ratio = lambda x: (x['GR_AfterOC'] / x['GR_end']))
+        E = GD_Osmo.loc[GD_Osmo['Img']==0,'Ecomp'] # Elastic modulus for correlation
+        GRs = pd.concat([GRbefore, GRafter,E],axis=1)
+        GRs = GRs.assign(GR_ratio = lambda x: (x['GR_AfterOC'] / x['GR_end']))        
         
         Ratios = GRs['GR_ratio'].to_numpy()
-        Ratios = Ratios[~np.isnan(Ratios)]
-        Ratios_Valid = Ratios[(Ratios>0)&(Ratios<4)]
+        Valids = (~np.isnan(Ratios))&((Ratios>0)&(Ratios<4))
+        Ratios_Valid = Ratios[Valids]
         
         AllRatios = np.append(AllRatios,Ratios_Valid)
+        
+        # Quick plot for E vs ratio correlation
+        x,y = (GRs.loc[Valids,'Ecomp'],GRs.loc[Valids,'GR_ratio'])
+        
+        linreg = linregress(x,y)
+        
+        g=sns.jointplot(data=GRs.loc[Valids],x='Ecomp',y='GR_ratio',kind='reg',height = 12)
+        
+        g.ax_joint.legend([f"S = {linreg.slope:.2f}",
+                       f"CC = {linreg.rvalue:.3f}\nP = {linreg.pvalue:.3f}"],
+                      fontsize='xx-large')
         
         
         # GR ratio during growth
@@ -1096,7 +1130,7 @@ def plotRhizoides(Ps,colors,names,labels,nimgmaxes):
     
     f, ax = plt.subplots(dpi=200)
     f1, ax1 = plt.subplots(dpi=200)
-    f2, ax2 = plt.subplots(dpi=200)
+    # f2, ax2 = plt.subplots(dpi=200)
     
     for P,col,name,lab,ci,nimgmax in zip(Ps,colors,names,labels,range(len(Ps)),nimgmaxes):
         
@@ -1106,13 +1140,13 @@ def plotRhizoides(Ps,colors,names,labels,nimgmaxes):
         
         RhizExit = RD[['RhizExit']].to_numpy().astype('float')  
         
-        RhizExitAl = RD[['RhizExitAl']].to_numpy().astype('float')    
+        # RhizExitAl = RD[['RhizExitAl']].to_numpy().astype('float')    
         
         RhizOut = RhizExit<200
         
         RhizExit = RhizExit[RhizOut]
-        RhizExitAl = RhizExitAl[RhizOut]
-        
+        # RhizExitAl = RhizExitAl[RhizOut]
+        # 
         time = np.arange(nimgmax)/2
     
         plotprops = {'color':'black'}
@@ -1122,13 +1156,13 @@ def plotRhizoides(Ps,colors,names,labels,nimgmaxes):
         
         
         RhizFrac = np.empty(nimgmax)
-        RhizFracAl = np.empty(nimgmax)
+        # RhizFracAl = np.empty(nimgmax)
         for ii in range(nimgmax):
             RhizFrac[ii] = np.sum(RhizExit<ii+1)/len(List)*100
-            RhizFracAl[ii] = np.sum(RhizExitAl<ii+1)/len(List)*100
+            # RhizFracAl[ii] = np.sum(RhizExitAl<ii+1)/len(List)*100
             
         ax1.plot(time,RhizFrac,'-o',color = col)
-        ax2.plot(time,RhizFracAl,'-o',color = col)
+        # ax2.plot(time,RhizFracAl,'-o',color = col)
         
     handles = [Rectangle((0, 0), 1, 1, color=c, ec="k") for c in colors]
     
@@ -1138,9 +1172,9 @@ def plotRhizoides(Ps,colors,names,labels,nimgmaxes):
     ax1.set_ylabel('% of gemmae with visible rhizoides')
     ax1.legend(handles, labels)
     
-    ax2.set_xlabel('Time after growth start (hours)')
-    ax2.set_ylabel('% of gemmae with visible rhizoides')
-    ax2.legend(handles, labels)
+    # ax2.set_xlabel('Time after growth start (hours)')
+    # ax2.set_ylabel('% of gemmae with visible rhizoides')
+    # ax2.legend(handles, labels)
     
 
 
