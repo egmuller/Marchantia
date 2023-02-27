@@ -156,6 +156,18 @@ Scale230201_Osmo = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
 FPH230201_Osmo = 120 # Frames per hour
 
 
+Scale230221 = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
+FPH230221 = 2 # Frames per hour
+Delay230221 = 50 # Delay between imbibition and experiment start
+
+Scale230221_Osmo = 1.94 # Spatial scale (µm/px) for 16X 25-10-2022
+FPH230221_Osmo = 120 # Frames per hour
+
+
+
+
+
+
 # Paths to data
 P210903_1 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\210903_V5_TestFlux\1mlh'
 P210903_5 = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\210903_V5_TestFlux\500ulh'
@@ -242,6 +254,11 @@ P230201_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+O
 P230201_100mM = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\TimeEvolution\100mM'
 P230201_Ct_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\OC\Ctrl'
 P230201_100mM_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230201_DV7_100mM+OC\OC\100mM'
+P230221_Ct = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230221_DV7_ABA3.5+OC\TimeEvolution\Ctrl'
+P230221_ABA = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230221_DV7_ABA3.5+OC\TimeEvolution\ABA'
+P230221_Ct_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230221_DV7_ABA3.5+OC\OC\Ctrl'
+P230221_ABA_Osmo = r'd:\Users\laplaud\Desktop\PostDoc\Data\Microflu\230221_DV7_ABA3.5+OC\OC\ABA'
+
 PFig = r'D:\Users\laplaud\Desktop\PostDoc\Data\Microflu\Figures'
 
 
@@ -728,12 +745,29 @@ StackList230201_100mM_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','
                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG43','PPG46',
                         'PPGA','PPGC','PPGD']
 
+
+StackList230221_Ct = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29']
+
+StackList230221_ABA = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG48','PPG49']
+
+StackList230221_Ct_Osmo = ['PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPGA']
+
+StackList230221_ABA_Osmo = ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
+                        'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+                        'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+                        'PPG47','PPG48','PPG49','PPGA','PPGB','PPGC']
+
 print('Data choice made.')
 
 
 
 # ['PPG1','PPG2','PPG3','PPG4','PPG5','PPG6','PPG7','PPG8','PPG9','PPG10','PPG11','PPG12','PPG13','PPG14','PPG15','PPG16',
-                        # 'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
-                        # 'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
-                        # 'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61',
-                        # 'PPG62','PPG63','PPG64','PPG65']
+#                         'PPG17','PPG18','PPG19','PPG20','PPG21','PPG22','PPG23','PPG24','PPG25','PPG26','PPG27','PPG28','PPG29','PPG30','PPG31',
+#                         'PPG32','PPG33','PPG34','PPG35','PPG36','PPG37','PPG38','PPG39','PPG40','PPG41','PPG42','PPG43','PPG44','PPG45','PPG46',
+#                         'PPG47','PPG48','PPG49','PPG50','PPG51','PPG52','PPG53','PPG54','PPG55','PPG56','PPG57','PPG58','PPG59','PPG60','PPG61',
+#                         'PPG62','PPG63','PPG64','PPG65']
