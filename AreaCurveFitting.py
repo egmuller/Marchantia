@@ -508,6 +508,9 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         Eg = params2[1]/np.abs(params2[2]-params2[1])*DeltaPiOut # en MPa
         LovH = 1/(params2[0]*60*Eg*1e6) # en /s/Pa
         
+        if LovH>3e-8:
+            LovH = np.nan
+        
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params2[0] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params2[1] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params2[2]   
@@ -559,6 +562,9 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
 
             Erel = paramsRel[1]/np.abs(paramsRel[2]-paramsRel[1])*DeltaPiOut # en MPa
             Phi = 1/Eg*(1/paramsRel[0] - 1/params2[0]) # en /MPa/min
+            
+            if Phi<0:
+                Phi = np.nan
             
         
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFluxRel'] = paramsRel[0] 

@@ -263,8 +263,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         MeanTimeAl = np.linspace(-nimgmax,nimgmax-1,2*nimgmax)*30
         
         ### Computing averages based on size rather than time
-        Areas = GD['Area'].to_numpy() # normalized
-        AreasN = GD['AreaNorm'].to_numpy() # mm²
+        Areas = GD['Area'].to_numpy() # mm²
+        AreasN = GD['AreaNorm'].to_numpy() # normalized
         GrowthRates = GD['GR_Full'].to_numpy()*60*24 # day-1
         dAdts = GD['dAdt'].to_numpy()*1000000 # µm²/min
         
@@ -374,6 +374,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     plt.legend(prop={'size': 8})
     plt.figure(fig51.number)
     plt.legend(prop={'size': 8})
+    plt.figure(fig42.number)
+    plt.legend(prop={'size': 8})
+    plt.figure(fig52.number)
+    plt.legend(prop={'size': 8})
     if not showcurve:
         plt.close(fig2)
         plt.close(fig3)
@@ -383,6 +387,8 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         plt.close(fig61)
         plt.close(fig41)
         plt.close(fig51)
+        plt.close(fig42)
+        plt.close(fig52)
 
 
     ######### Parameters of fit ###########
@@ -418,27 +424,13 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     AreaStart = [None]*len(newGDs)
    
     for GD,lab,i in zip(newGDs,Labels,range(len(newGDs))):
-        
-        ###### GR tests ##############
-        
-        GR_end = GD.loc[(GD['Img'] == 0), 'GR_end'] # in day-1
-        GR_mean = GD.loc[(GD['Img'] == 0), 'GR_mean']  # in day-1
-        GR_ini = GD.loc[(GD['Img'] == 0), 'GR_ini'] # in day-1
-        GR_tdeb = GD.loc[(GD['Img'] == 0), 'GR_tdeb']  # in day-1
-        GR_tp1 = GD.loc[(GD['Img'] == 0), 'GR_tp1']# in day-1
-        GR_2h = GD.loc[(GD['Img'] == 0), 'GR_2h'] # in day-1
-        GR_4h = GD.loc[(GD['Img'] == 0), 'GR_4h']# in day-1
-        
-        vf.boxswarmplot(lab + '\nGrowth rate comparison a different points','Growth rate (day-1)',[GR_end,GR_mean,GR_ini,GR_tdeb,GR_tp1,GR_2h,GR_4h],
-                        ['gray','gray','gray','gray','gray','gray','gray'],['GR_end','GR_mean','GR_ini','GR_tdeb','GR_tp1','GR_2h','GR_4h'])       
-        
-        #############################################################################################
-        
+                
         # Retrieve data
         tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
         GRtdebs[i] = GD.loc[GD['Img'] == 0, 'GR_tdeb'] # in days-1
         taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
-        GR_ends[i] = GD.loc[GD['Img'] == 0, 'GR_end']  # in days-1     
+        GR_ends_tmp = GD.loc[GD['Img'] == 0, 'GR_end']  # in days-1 
+        GR_ends[i] = GR_ends_tmp[~np.isnan(GR_ends_tmp)]
         Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
         AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart']*100
  
@@ -475,9 +467,9 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
             plt.close(fig10)
             
         
-    fig4,ax4,captdeb,medtdeb = vf.boxswarmplot(Title + ' - Growth start time','tdeb (hours)',tdebs,colors,Labels[:])
+    fig4,ax4,captdeb,medtdeb = vf.boxswarmplot(Title + ' - Growth start time','Tstart (hours)',tdebs,colors,Labels[:])
     
-    fig5,ax5,captau,medtau = vf.boxswarmplot(Title + ' - Growth caracteristic time','Tau (hours)',taus,colors,Labels[:])
+    fig5,ax5,captau,medtau = vf.boxswarmplot(Title + ' - Growth caracteristic time','Tau growth (hours)',taus,colors,Labels[:])
     
     
     fig51,ax51,capGR_ends,medGR_ends = vf.boxswarmplot(Title + ' - Final Growth Rate','Final growth Rate (day-1)',GR_ends,colors,Labels[:])
@@ -659,8 +651,10 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         TauComps[i] = GD.loc[GD['Img'] == 0, 'TauFlux'] 
         Erels[i] = GD.loc[GD['Img'] == 0, 'Erel']
         TauRels[i] = GD.loc[GD['Img'] == 0, 'TauFluxRel']  
-        LovHs[i] = GD.loc[GD['Img'] == 0, 'L/H0'] 
-        Phis[i] = GD.loc[GD['Img'] == 0, 'Phi']*60
+        LovHs_tmp = GD.loc[GD['Img'] == 0, 'L/H0'] 
+        LovHs[i] = LovHs_tmp[~np.isnan(LovHs_tmp)] 
+        Phis_tmp = GD.loc[GD['Img'] == 0, 'Phi']*60
+        Phis[i] = Phis_tmp[~np.isnan(Phis_tmp)]
         
         
         Eratios = np.divide(Erels[i],Ecomps[i])
@@ -755,6 +749,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     fullstepTauComp = 0
     fullstepErel = 0
     fullstepTauRel = 0
+    fullstepLovH = 0
     
     if stats=='ranksum':
         if AllSigs:
@@ -765,14 +760,16 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
                     fullstepTauComp = plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,fullstepTauComp,TauComps[i],TauComps[j],i,j)
                     fullstepTauRel = plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,fullstepTauRel,TauRels[i],TauRels[j],i,j)
+                    plotSig(ax20,np.max(capLovH),np.max(capLovH)*0.125,fullstepLovH,LovHs[i],LovHs[j],i,j)
 
         else:
             for i,j in sigpairs:
 
-                    fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
-                    fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
-                    fullstepTauComp = plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,fullstepTauComp,TauComps[i],TauComps[j],i,j)
-                    fullstepTauRel = plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,fullstepTauRel,TauRels[i],TauRels[j],i,j)
+                    plotSig(ax1,np.max([Ecomps[i].max(),Ecomps[j].max()]),np.max([Ecomps[i].max(),Ecomps[j].max()])*0.125,0,Ecomps[i],Ecomps[j],i,j)
+                    plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,0,Erels[i],Erels[j],i,j)
+                    plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,0,TauComps[i],TauComps[j],i,j)
+                    plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,0,TauRels[i],TauRels[j],i,j)
+                    plotSig(ax20,np.max([LovHs[i].max(),LovHs[j].max()]),np.max([LovHs[i].max(),LovHs[j].max()])*0.125,0,LovHs[i],LovHs[j],i,j)
 
     fig1.tight_layout()
     fig2.tight_layout()
