@@ -652,9 +652,9 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
         Erels[i] = GD.loc[GD['Img'] == 0, 'Erel']
         TauRels[i] = GD.loc[GD['Img'] == 0, 'TauFluxRel']  
         LovHs_tmp = GD.loc[GD['Img'] == 0, 'L/H0'] 
-        LovHs[i] = LovHs_tmp[~np.isnan(LovHs_tmp)] 
+        LovHs[i] = LovHs_tmp[(~np.isnan(LovHs_tmp)) & (LovHs_tmp<6e-9)] 
         Phis_tmp = GD.loc[GD['Img'] == 0, 'Phi']*60
-        Phis[i] = Phis_tmp[~np.isnan(Phis_tmp)]
+        Phis[i] = Phis_tmp[(~np.isnan(Phis_tmp)) & (Phis_tmp<10)  & (Phis_tmp>-5)]
         
         
         Eratios = np.divide(Erels[i],Ecomps[i])
@@ -729,6 +729,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     ax3['a'].hist(AllRatios,color='gray', density = True, label = 'Pooled data')
     ax3['a'].set_ylabel('Density')
     ax3['a'].set_xlabel('Ei/Ed')
+    ax3['a'].set_xlim([0.5,1.5])
     ax3['a'].set_title('Mean : ' + '{0:.2f}'.format(AllRatios.mean()))
     ax3['a'].legend()
     f3.tight_layout()
@@ -750,6 +751,7 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
     fullstepErel = 0
     fullstepTauRel = 0
     fullstepLovH = 0
+    fullstepPhi = 0
     
     if stats=='ranksum':
         if AllSigs:
@@ -760,7 +762,8 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     fullstepErel = plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,fullstepErel,Erels[i],Erels[j],i,j)
                     fullstepTauComp = plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,fullstepTauComp,TauComps[i],TauComps[j],i,j)
                     fullstepTauRel = plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,fullstepTauRel,TauRels[i],TauRels[j],i,j)
-                    plotSig(ax20,np.max(capLovH),np.max(capLovH)*0.125,fullstepLovH,LovHs[i],LovHs[j],i,j)
+                    fullstepLovH = plotSig(ax3,np.max(capLovH),np.max(capLovH)*0.125,fullstepLovH,LovHs[i],LovHs[j],i,j)
+                    fullstepPhi = plotSig(ax4,np.max(capPhi),np.max(capPhi)*0.125,fullstepPhi,Phis[i],Phis[j],i,j)
 
         else:
             for i,j in sigpairs:
@@ -769,8 +772,9 @@ def compareHydroMech(GDs, Labels, colors,P, Title, **kwargs):
                     plotSig(ax10,np.max(capErel),np.max(capErel)*0.125,0,Erels[i],Erels[j],i,j)
                     plotSig(ax2,np.max(capTauComp),np.max(capTauComp)*0.125,0,TauComps[i],TauComps[j],i,j)
                     plotSig(ax20,np.max(capTauRel),np.max(capTauRel)*0.125,0,TauRels[i],TauRels[j],i,j)
-                    plotSig(ax20,np.max([LovHs[i].max(),LovHs[j].max()]),np.max([LovHs[i].max(),LovHs[j].max()])*0.125,0,LovHs[i],LovHs[j],i,j)
-
+                    plotSig(ax3,np.max([LovHs[i].max(),LovHs[j].max()]),np.max([LovHs[i].max(),LovHs[j].max()])*0.125,0,LovHs[i],LovHs[j],i,j)
+                    plotSig(ax4,np.max(capPhi),np.max(capPhi)*0.125,fullstepPhi,Phis[i],Phis[j],i,j)
+                    
     fig1.tight_layout()
     fig2.tight_layout()
     fig10.tight_layout()

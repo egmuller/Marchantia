@@ -294,9 +294,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
                 p = np.poly1d(res2['polynomial'])
                 L2Dists[l-5] = np.sqrt(np.sum(np.square(y2-p(x2))))/l
                 
-        GR_mean = np.mean(GR_S[Lfit-2:])       
-        
-           
+
         coef = np.polyfit(intTime[0:Lfit-1],GR_S[0:Lfit-1],1)
         
         p1_end = Lfit-2
@@ -409,6 +407,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         GD.loc[s,'GR_Full_al_tp1_p1'] =  np.flip(GR_al_tp1_p1)
         GD.loc[s,'GR_Full_al_tp1_p2'] = GR_al_tp1_p2
 
+        GR_mean = np.mean(GR_S[tdebshift:])
+
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_mean'] = GR_mean*60*24 # in day-1
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_ini'] = 1/FitRes_flat.tau()*60*24 # in day-1
@@ -508,8 +508,6 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         Eg = params2[1]/np.abs(params2[2]-params2[1])*DeltaPiOut # en MPa
         LovH = 1/(params2[0]*60*Eg*1e6) # en /s/Pa
         
-        if LovH>3e-8:
-            LovH = np.nan
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params2[0] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params2[1] 
@@ -561,10 +559,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
             fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Rel : ' + str(R2rel))
 
             Erel = paramsRel[1]/np.abs(paramsRel[2]-paramsRel[1])*DeltaPiOut # en MPa
-            Phi = 1/Eg*(1/paramsRel[0] - 1/params2[0]) # en /MPa/min
-            
-            if Phi<0:
-                Phi = np.nan
+            Phi = 1/(Erel*paramsRel[0]*60e6) - LovH # en /Pa/s
             
         
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFluxRel'] = paramsRel[0] 
