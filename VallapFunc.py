@@ -98,7 +98,7 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     
     ax.set_ylabel(Ylabel)
     
-    ax.set_xticklabels(Labels)
+    ax.set_xticklabels(Labels, fontsize = 5)
     
     return(fig,ax,cap,med)
     
@@ -290,7 +290,8 @@ def GrowthRate(A,Time):
     dt = np.diff(Time)
     
     dAdt = np.divide(dA,dt)
-    dAdt_S = savgol_filter(dAdt, 11, 3)    
+    #dAdt_S = savgol_filter(dAdt, 11, 3) # usual value 
+    dAdt_S = savgol_filter(dAdt, 9, 3)  # for initial growth   
     
     intTime = Time[0:-1]+dt/2
     
@@ -298,7 +299,8 @@ def GrowthRate(A,Time):
     inv_f = interp1d(Time,inv_A)
     inv_A_timed = inv_f(intTime)
     
-    inv_A_S = savgol_filter(inv_A_timed,11, 3)
+    #inv_A_S = savgol_filter(inv_A_timed,11, 3) # usual value
+    inv_A_S = savgol_filter(inv_A_timed,9, 3) # for initial growth
     
     
     GR = np.multiply(inv_A_timed,dAdt)
