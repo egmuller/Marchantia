@@ -78,6 +78,7 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     DebugPlots = False
     factor1 = 2
     factor2 = 30
+    Areath = 5*1e3
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -86,6 +87,8 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
             factor1 = value
         elif key == "Binfactor2":
             factor2 = value
+        elif key == "Binthreshold" :
+            Areath = value
             
 
     
@@ -109,7 +112,7 @@ def Binarize(Img, Scale, HSVmin, HSVmax, **kwargs):
     
     DilBWimg = binary_closing(BWimg,selem) # image closing
     
-    FilledBWimg = remove_small_holes(DilBWimg, area_threshold=5*1e3) # fills dark regions
+    FilledBWimg = remove_small_holes(DilBWimg, area_threshold=Areath) # fills dark regions
     
     Size2 = np.round(factor2*Scale) # 30µm in pixels
     #Size = np.round(15*Scale) # 30µm in pixels
@@ -179,6 +182,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
     saveWB = False
     factor1 = 2
     factor2 = 30
+    Areath = 5*1e3
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -194,6 +198,8 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             factor1 = value
         elif key == "Binfactor2":
             factor2 = value
+        elif key == "Binthreshold" :
+            Areath = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
      
@@ -338,7 +344,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
             if not isBin:
                 print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
                 
-                BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots, Binfactor1 = factor1, Binfactor2 = factor2)
+                BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots, Binfactor1 = factor1, Binfactor2 = factor2,  Binthreshold = Areath)
                 
                 io.imsave(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
             
@@ -348,7 +354,7 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
                 else:
                     print('Binarization of image ' + str(i+1) + '/' + str(len(RGBstack)).ljust(15), flush=True, end = '\r')
                     
-                    BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots)
+                    BinImg = Binarize(Img,Scale,HSVmin,HSVmax,debug =DebugPlots, Binfactor1 = factor1, Binfactor2 = factor2, Binthreshold = Areath)
                     io.imsave(P + '/Processed/' + s + '_Binarized/' + str(i) + '.tif', np.uint8(BinImg*255), plugin='tifffile')
             
 
@@ -545,7 +551,7 @@ def getEdgeAndArea_shapeDescriptors(BinImg,Scale, **kwargs):
 
 # Kwargs : 'debug' (True/False) for displaying debug plots
 
-def GetContours(StackList,P, Scale, FPH, **kwargs):
+def GetContours(StackList,P, Scale, FPH, Delay, **kwargs):
       
     # init and read kwargs    
     DebugPlots = False
@@ -572,6 +578,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
         ProcessedPath = P + '/Processed/' + s + '_Binarized/'
 
         n = len([entry for entry in os.listdir(ProcessedPath) if os.path.isfile(os.path.join(ProcessedPath, entry))]) # number of images
+        #list_entry = [entry for entry in os.listdir(ProcessedPath) if os.path.isfile(os.path.join(ProcessedPath, entry))].sort()
 
         jet_colorcycle = [plt.get_cmap('jet')(1. * i/n) for i in range(n)]
         mpl.rcParams['axes.prop_cycle'] = cycler(color=jet_colorcycle)        
@@ -583,6 +590,7 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
                         
             # Loading binary image
             BinImg = io.imread(ProcessedPath + '/' + str(i) + '.tif')
+            #BinImg = io.imread(ProcessedPath + '/' + list_entry[i])
 
             # Computing propagule edge and area from binary image
             #SortedX,SortedY,center,Area,Xlength,Ylength = getEdgeAndArea(BinImg,Scale) 
@@ -605,14 +613,26 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
                                 'Ycenter':center[0],
                                 'Img':i,
                                 'Time (min)':i*60/FPH} '''
-                    
-                    data2 = {'Area':Area/1000000, # In mm²
+                    if type(Delay) == int or type(Delay) == float :
+                        data2 = {'Area':Area/1000000, # In mm²
                              'Xlength':Xlength,
                              'Ylength':Ylength,
                                 'Xcenter':center[1],
                                 'Ycenter':center[0],
                                 'Img':i,
-                                'Time (min)':i*60/FPH,
+                                'Time (min)':i*60/FPH+Delay,
+                                'AspectRatio':AspectRatio,
+                                'Solidity':Solidity,
+                                'Circularity':Circularity,
+                                'Convexity':Convexity} 
+                    else :
+                        data2 = {'Area':Area/1000000, # In mm²
+                             'Xlength':Xlength,
+                             'Ylength':Ylength,
+                                'Xcenter':center[1],
+                                'Ycenter':center[0],
+                                'Img':i,
+                                'Time (min)':Delay[i],
                                 'AspectRatio':AspectRatio,
                                 'Solidity':Solidity,
                                 'Circularity':Circularity,
@@ -631,9 +651,14 @@ def GetContours(StackList,P, Scale, FPH, **kwargs):
                         plt.plot(SortedY+center[1],SortedX+center[0],'c-o',lw = 0.7,ms=1)
                         plt.show()
                 else :
-                    data2 = {'Area':Area/1000000,
+                    if type(Delay) == int or type(Delay) == float :
+                        data2 = {'Area':Area/1000000,
                              'Img':i,
-                             'Time (min)':i*60/FPH,}# In mm²
+                             'Time (min)':i*60/FPH + Delay}# In mm²
+                    else :
+                        data2 = {'Area':Area/1000000,
+                             'Img':i,
+                             'Time (min)':Delay[i]}
                     
                     GD = GD.append(pd.DataFrame(data=data2,index = [s]))
                     
