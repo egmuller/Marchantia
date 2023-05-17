@@ -58,6 +58,8 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     SeveralPPGs = False
     factor1 = 2
     factor2 = 30
+    Areath = 5*1e3
+    filtervalue = 11
     
     for key, value in kwargs.items(): 
         if key == 'debugAll':
@@ -80,6 +82,10 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
             factor1 = value
         elif key == "Binfactor2":
             factor2 = value
+        elif key == 'Binthreshold':
+            Areath = value
+        elif key == 'filterwindow':
+            filtervalue = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -116,13 +122,13 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
     
     # Binarization of stacks
     if DoBin:
-        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList, saveWB = saveWB, Binfactor1 = factor1, Binfactor2 = factor2)
+        BinarizeStack(StackList, Path, Scale,debug = DebugAll, HSVrange = HSVrange, debuglist = ImgList, saveWB = saveWB, Binfactor1 = factor1, Binfactor2 = factor2, Binthreshold = Areath)
         print('\n\n')
     
     if DoCont:
                 
         # Computing contours from binary
-        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugAll, several = SeveralPPGs)
+        CD,GD = GetContours(StackList,Path, Scale,FPH, Delay, debug=DebugAll, several = SeveralPPGs)
 
         # Saving all contours
         GD.to_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
@@ -150,7 +156,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
             Rows = np.ones(len(StackList))
         
         # Fitting area growth
-        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay,R2Threshold,ValidPlots= ValidPlots, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow)
+        GD = fitAreaGrowth(StackList,Rows,GD,FPH,Delay,R2Threshold,ValidPlots= ValidPlots, debugall = DebugAll, debug = DebugPlots,fitwindow = fitwindow, filterwindow = filtervalue)
         
         GD.loc[:,'Expe'] = stringName
         
@@ -180,7 +186,7 @@ def BinarizeAndFitArea(stringName,StackList,Path,Scale,FPH,Delay,R2Threshold,Ori
 # binarization min and max threshold values for the three channels of HSV image 
 # 'FitIntervalComp/Rel (list of two ints) Images corresponding to times between 
 # which to fit compression/relaxation
-
+fitOsmoChoc_Double_non_plasmo
 def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToDo, **kwargs):
     
     
@@ -191,17 +197,26 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     FitIntervalComp = [0,25]
     FitIntervalComp2 = [25,50]
     FitIntervalComp3 = [50,75]
+    FitIntervalComp4 = [85,100]
     FitIntervalRel = [25,55]
     TstartComp = 3
     TstartComp2 = 3
     TstartComp3 = 3
+    TstartComp4 = 3
     TstartRel = 9
     RelValidation = True
     Concentration = 100
+    Concentration2 = 500
     DoFitMultiple = False
     DoFitDouble = False
+    DoFitDoubleNonPlasmo = False
+    DoFit4x = False
+    DoFitPlateauPlasmo = False
+    DoFitDoublePlateau = False
     factor1 = 2
     factor2 = 30
+    Delay = 0.0
+    Sort = True
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -218,6 +233,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             FitIntervalComp2 = value
         elif key == 'FitIntervalComp3':
             FitIntervalComp3 = value
+        elif key == 'FitIntervalComp4':
+            FitIntervalComp4 = value
         elif key == 'FitIntervalRel':
             FitIntervalRel = value
         elif key == 'TstartComp':
@@ -226,16 +243,24 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             TstartComp2 = value
         elif key == 'TstartComp3':
             TstartComp3 = value
+        elif key == 'TstartComp4':
+            TstartComp3 = value
         elif key == 'TstartRel':
             TstartRel = value
         elif key == 'RelValidation':
             RelValidation = value
         elif key == "C_osmo":
             Concentration = value
+        elif key == "C_osmo2":
+            Concentration2 = value
         elif key == 'Binfactor1':
             factor1 = value
         elif key == "Binfactor2":
             factor2 = value
+        elif key == 'Delay':
+            Delay = value
+        elif key == 'Sorting':
+            Sort = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -273,6 +298,28 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         DoCont = False
         DoFit = True
         DoFitDouble = True
+    elif ToDo == 'FDoublePlateau':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitDoublePlateau = True
+    elif ToDo == 'FDoubleNonPlasmo':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitDoubleNonPlasmo = True
+    elif ToDo == 'FPlateauPlasmo':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitPlateauPlasmo = True
+    elif ToDo == 'F4x':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFit4x = True
+        
+        
     else:
         raise NameError('ToDo variable is wrong')
     
@@ -285,7 +332,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     if DoCont:
                 
         # Computing contours from binary
-        CD,GD = GetContours(StackList,Path, Scale,FPH, debug=DebugPlots)
+        CD,GD = GetContours(StackList,Path, Scale,FPH, Delay, debug=DebugPlots)
         
         # Saving all contours
         GD.to_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv',index_label = 'Ind')
@@ -294,30 +341,61 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         print('Contour saved')
 
     if DoFit:
-        
+        if Ori != "NotChip":
         # Retrieve data on PPG position in chip 
-        if os.path.exists(Path + '/ChipPositions.xlsx'):
-            posinchip = pd.read_excel (Path + '/ChipPositions.xlsx', index_col='Name') 
-            Rows = posinchip.loc[StackList].values[:,0]
-        else:
-            print('Finding PPGs position in chip...',end='')
-            Rows = FindChipPos(StackList,Path,Ori)
-            print('Done\n')
+            if os.path.exists(Path + '/ChipPositions.xlsx'):
+                posinchip = pd.read_excel(Path + '/ChipPositions.xlsx', index_col='Name') 
+                Rows = posinchip.loc[StackList].values[:,0]
+            else:
+                print('Finding PPGs position in chip...',end='')
+                Rows = FindChipPos(StackList,Path,Ori)
+                print('Done\n')
+        else :
+            Rows = np.ones(len(StackList))
         print('\n\n')
         
         GD = pd.read_csv(Path + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         CD = pd.read_csv(Path + '/ContourData' + stringName + '_AreaCont.csv',index_col = 'Ind')
         
         if DoFitMultiple:
-            GD = fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,debug = DebugPlots,  C_osmo = Concentration)
+            GD = fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,debug = DebugPlots,  C_osmo = Concentration, C_osmo2 = Concentration2, Delay = Delay, Sorting = Sort)
             GD.loc[:,'Expe'] = stringName
             
-        elif DoFitDouble:
-            GD = fitOsmoChoc_double(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,debug = DebugPlots,  C_osmo = Concentration)
+            print(GD.columns)
+            
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist, key = 'FitR2')
+        
+        elif DoFit4x :
+            GD = fitOsmoChoc_4x(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,FitIntervalComp4[0],FitIntervalComp4[1],TstartComp4,debug = DebugPlots,  C_osmo = Concentration, C_osmo2 = Concentration2, Delay = Delay, Sorting = Sort)
             GD.loc[:,'Expe'] = stringName
+            
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
+        
+            
+            
+        elif DoFitDoubleNonPlasmo:
+            GD = fitOsmoChoc_Double_non_plasmo(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,debug = DebugPlots,  C_osmo = Concentration, C_osmo2 = Concentration2, Delay = Delay, Sorting = Sort)
+            GD.loc[:,'Expe'] = stringName
+            
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
+            
+        elif DoFitDouble:
+            GD = fitOsmoChoc_double(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
+            GD.loc[:,'Expe'] = stringName
+            
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
+            
+        elif DoFitDoublePlateau:
+            GD = fitOsmoChoc_plateau(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],FitIntervalComp2[0],FitIntervalComp2[1],FitIntervalComp3[0],FitIntervalComp3[1], debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
+            GD.loc[:,'Expe'] = stringName
+            
+            #GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
+        elif DoFitPlateauPlasmo:
+             GD = fitOsmoChoc_plateau_plasmo(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],FitIntervalComp2[0],FitIntervalComp2[1],FitIntervalComp3[0],FitIntervalComp3[1],FitIntervalComp4[0],FitIntervalComp4[1], debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
+             GD.loc[:,'Expe'] = stringName
         
         else :
-            GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,  C_osmo = Concentration)
+            GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
         
             GD.loc[:,'Expe'] = stringName
         
@@ -426,15 +504,6 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     plt.xlabel('Time (min)')
     plt.ylabel('Area (normalized)')
     
-    """  fig10,ax10 = plt.subplots(dpi = 250,facecolor='white')
-    fig10.suptitle(Title + ' - Area vs. aligned time')
-    plt.xlabel('Time (min)')
-    plt.ylabel('Area (mm²)')
-    
-    fig11,ax11 = plt.subplots(dpi = 250,facecolor='white')
-    fig11.suptitle(Title + ' - Norm Area vs. aligned time')
-    plt.xlabel('Time (min)')
-    plt.ylabel('Area (normalized)')"""
     
     for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
         
@@ -602,10 +671,10 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
     sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'lightgray', size=2, ax = ax6) 
     sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'lightgray', size=2, ax = ax16)
     
-    ax4.set_xticklabels(labs)
-    ax5.set_xticklabels(labs)
-    ax6.set_xticklabels(labs) 
-    ax16.set_xticklabels(labs)
+    ax4.set_xticklabels(labs, fontsize = 8)
+    ax5.set_xticklabels(labs, fontsize = 8)
+    ax6.set_xticklabels(labs, fontsize = 8) 
+    ax16.set_xticklabels(labs, fontsize = 8)
 
     if len(newGDs) == 2:
         # Distribution comparison with two-sample kolmogorov smirnov test
@@ -944,6 +1013,7 @@ def compareHydroMech_Pi0(GDs, Labels, colors,P, Title, **kwargs):
 
     AllSigs = True
     stats = 'ranksum'
+    PlotLh = True
     
     for key, value in kwargs.items(): 
         if key == 'sigpairs':
@@ -951,6 +1021,8 @@ def compareHydroMech_Pi0(GDs, Labels, colors,P, Title, **kwargs):
             AllSigs = False
         elif key == 'stats' :
             stats = value
+        elif key == 'PlotLh':
+            PlotLh = value
         else:
             print('Unknown key : ' + key + '. Ewarg ignored.')
          
@@ -962,27 +1034,32 @@ def compareHydroMech_Pi0(GDs, Labels, colors,P, Title, **kwargs):
     ### Regroup data
     Ecomps= [None]*len(GDs)
     Pi0s= [None]*len(GDs)
-    Lhcomps= [None]*len(GDs)
+    if PlotLh :
+        Lhcomps= [None]*len(GDs)
     
     for GD,lab,i in zip(GDs,Labels,range(len(GDs))):
         
         # Retrieve data
         Ecomps[i] = GD.loc[GD['Img'] == 0, 'Ecomp']
         Pi0s[i] = GD.loc[GD['Img'] == 0, 'Pi0']
-        Lhcomps[i] = GD.loc[GD['Img'] == 0, 'L/H_Comp'] 
+        if PlotLh :
+            Lhcomps[i] = GD.loc[GD['Img'] == 0, 'L/H_Comp'] 
             
             
         
     ### plot
     fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\nElastic bulk modulus (compression)','Ecomp (MPa)',Ecomps,colors,Labels[:])
     fig3,ax3,capPi0,medPi0 = vf.boxswarmplot(Title + '\n\nInternal pressure','Pi0 (MPa)',Pi0s,colors,Labels[:])
-    fig2,ax2,capLhcomp,medLhcomp = vf.boxswarmplot(Title + '\n\nTauFlux (compression)','L/H',Lhcomps,colors,Labels[:])      
+    if PlotLh :
+        fig2,ax2,capLhcomp,medLhcomp = vf.boxswarmplot(Title + '\n\nTauFlux (compression)','L/H',Lhcomps,colors,Labels[:])      
 
 
     ### stats
     fullstepEcomp = 0
-    fullstepLhcomp = 0
     fullstepPi0 = 0
+    if PlotLh :
+        fullstepLhcomp = 0
+        
 
     
     if stats=='ranksum':
@@ -992,7 +1069,8 @@ def compareHydroMech_Pi0(GDs, Labels, colors,P, Title, **kwargs):
 
                     fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
                     fullstepPi0 = plotSig(ax3,np.max(capPi0),np.max(capPi0)*0.125,fullstepPi0,Pi0s[i],Pi0s[j],i,j)
-                    fullstepLhcomp = plotSig(ax2,np.max(capLhcomp),np.max(capLhcomp)*0.125,fullstepLhcomp,Lhcomps[i],Lhcomps[j],i,j)
+                    if PlotLh :
+                        fullstepLhcomp = plotSig(ax2,np.max(capLhcomp),np.max(capLhcomp)*0.125,fullstepLhcomp,Lhcomps[i],Lhcomps[j],i,j)
 
 
         else:
@@ -1000,22 +1078,95 @@ def compareHydroMech_Pi0(GDs, Labels, colors,P, Title, **kwargs):
 
                     fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
                     fullstepPi0 = plotSig(ax3,np.max(capPi0 ),np.max(capPi0 )*0.125,fullstepPi0 ,Pi0s[i],Pi0s[j],i,j)
-                    fullstepLhcomp = plotSig(ax2,np.max(capLhcomp),np.max(capLhcomp)*0.125,fullstepLhcomp,Lhcomps[i],Lhcomps[j],i,j)
+                    if PlotLh :
+                        fullstepLhcomp = plotSig(ax2,np.max(capLhcomp),np.max(capLhcomp)*0.125,fullstepLhcomp,Lhcomps[i],Lhcomps[j],i,j)
 
     fig1.tight_layout()
-    fig2.tight_layout()
     fig3.tight_layout()
+    if PlotLh :
+        fig2.tight_layout()
  
     
 
     if stats=='ranksum':
         fig1.savefig(P + '/Hydromechanics/' + Title + '_Ecomp.png')
-        fig2.savefig(P + '/Hydromechanics/'+ Title +  '_LhComp.png')
+        if PlotLh :
+            fig2.savefig(P + '/Hydromechanics/'+ Title +  '_LhComp.png')
+        
         fig3.savefig(P + '/Hydromechanics/' + Title + '_Pi0.png')
 
 
             
         return    
+    
+    
+    
+def compareHydroMech_param(GDs, Labels, colors,P, Title, param, **kwargs):
+
+    AllSigs = True
+    stats = 'ranksum'
+    YLabel = param
+    
+    for key, value in kwargs.items(): 
+        if key == 'sigpairs':
+            sigpairs = value
+            AllSigs = False
+        elif key == 'stats' :
+            stats = value
+        elif key == 'YLabel' :
+            YLabel = value
+        else:
+            print('Unknown key : ' + key + '. Ewarg ignored.')
+         
+    # check existence of figure folder, if absent, create it
+    if not os.path.exists(P + '/Hydromechanics'):
+            os.mkdir(P + '/Hydromechanics') # create folder
+    
+        
+    ### Regroup data
+    Ecomps= [None]*len(GDs)
+
+    
+    for GD,lab,i in zip(GDs,Labels,range(len(GDs))):
+        
+        # Retrieve data
+        Ecomps[i] = GD.loc[GD['Img'] == 0, param]
+            
+            
+        
+    ### plot
+    fig1,ax1,capEcomp,medEcomp = vf.boxswarmplot(Title + '\n\n' + YLabel,YLabel,Ecomps,colors,Labels[:])    
+
+
+    ### stats
+    fullstepEcomp = 0
+
+
+    
+    if stats=='ranksum':
+        if AllSigs:
+            for i in range(len(GDs)-1):
+                for j in range(i+1,len(GDs)):
+
+                    fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
+
+
+
+        else:
+            for i,j in sigpairs:
+
+                    fullstepEcomp = plotSig(ax1,np.max(capEcomp),np.max(capEcomp)*0.125,fullstepEcomp,Ecomps[i],Ecomps[j],i,j)
+
+
+    fig1.tight_layout()
+
+    #if stats=='ranksum':
+     #   fig1.savefig(P + '/Hydromechanics/' + Title + '_Ecomp.png')
+
+
+
+            
+    return    
 
 
 
