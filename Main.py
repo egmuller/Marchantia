@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double, fitOsmoChoc_Double_non_plasmo, fitOsmoChoc_plateau, fitOsmoChoc_plateau_plasmo, fitOsmoChoc_4x
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
