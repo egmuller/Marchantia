@@ -235,6 +235,40 @@ Scale230512 = 1.94 # Spatial scale
 FPH230512 = 2 # Frames per hour
 Delay230512 = 30 # Delay between imbibition and experiment start
 
+Scale230512_choc1h = 1.94 # Spatial scale
+FPH230512_choc1h = 120 # Frames per hour
+Delay230512_choc1h = 0 # Delay between imbibition and experiment start
+
+Scale230515 = 1.94 # Spatial scale
+FPH230515 = 2 # Frames per hour
+Delay230515 = 36 # Delay between imbibition and experiment start
+
+Scale230524 = 1.94 # Spatial scale
+FPH230524 = 2 # Frames per hour
+Delay230524 = 40 # Delay between imbibition and experiment start
+
+Scale230524_choc = 1.94 # Spatial scale
+FPH230524_choc = 120 # Frames per hour
+
+Scale230524_stored = 1.94 # Spatial scale
+FPH230524_stored = 2 # Frames per hour
+Delay230524_stored = 26 # Delay between imbibition and experiment start
+
+Scale230602 = 1.94 # Spatial scale
+FPH230602 = 102 # Frames per hour
+Delay230602 = 0 # Delay between imbibition and experiment start
+
+Scale230704_weight = 19
+Scale230704_ctrl = 18
+FPH230704_weight = 6 #4
+Delay230704_weight = 10+50
+
+Scale230705_weight = 19
+Scale230705_ctrl = 18
+FPH230705_weight = 6 #4
+Delay230705_weight = 10+50
+
+
 P_Ct_Val =r'/run/media/emuller/Elise_4T/Data/Chip/2022/Data_Ct_Valentin'
 
 
@@ -459,6 +493,33 @@ P230512_takM = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/t
 P230512_mriG = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/mri_0mM/PPGs'
 P230512_mriM = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/mri_100mM/PPGs'
 
+P230512_pmechoc1h = r'/run/media/emuller/Elise_these/Chip/2023/230512_tak_pme_choc1h/pme/PPGs'
+P230512_takchoc1h = r'/run/media/emuller/Elise_these/Chip/2023/230512_tak_pme_choc1h/tak/PPGs'
+
+P230515_200mM = r'/run/media/emuller/Elise_these/Chip/2023/230515_pme11_storedgrowth/200mM/PPGs'
+P230515_0mM = r'/run/media/emuller/Elise_these/Chip/2023/230515_pme11_storedgrowth/0mM/PPGs'
+P230515_changement = r'/run/media/emuller/Elise_these/Chip/2023/230515_pme11_storedgrowth/200mMto0mM/PPGs'
+
+P230524_EGCG = r'/run/media/emuller/Elise_these/Chip/2023/230524_EGCG/EGCG/PPGs'
+P230524_Ct = r'/run/media/emuller/Elise_these/Chip/2023/230524_EGCG/control/PPGs'
+
+P230524_pme11 = r'/run/media/emuller/Elise_these/Chip/2023/230524_tak_pme11_choc1h/pme11/PPGs'
+P230524_tak = r'/run/media/emuller/Elise_these/Chip/2023/230524_tak_pme11_choc1h/tak/PPGs'
+
+P230524_200mM = r'/run/media/emuller/TRANSCEND/Data/Chip/230524_storedgrowth_EF1aPME113.1/block1/200mM/PPGs'
+P230524_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/230524_storedgrowth_EF1aPME113.1/block1/0mM/PPGs'
+P230524_changement = r'/run/media/emuller/TRANSCEND/Data/Chip/230524_storedgrowth_EF1aPME113.1/block1/changement/PPGs'
+
+P230602_mri_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/mri/choc1h/PPGs/'
+P230602_mri_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/mri/choc8h/PPGs/'
+P230602_tak_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/tak/choc1h/PPGs/'
+P230602_tak_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/tak/choc8h/PPGs/'
+
+P230704_weight = r'/run/media/emuller/Elise_these/tests/230704_weight/weight/'
+P230704_ctrl = r'/run/media/emuller/Elise_these/tests/230704_weight/ctrl/'
+
+P230705_weight = r'/run/media/emuller/Elise_these/tests/230705_weight/weight/'
+P230705_ctrl = r'/run/media/emuller/Elise_these/tests/230705_weight/ctrl/'
 
 PFig = r'/home/emuller/Documents/data/Chip_experiments/Figures'
 
@@ -895,8 +956,8 @@ StackList230303_phyto_5ulNaOH = ['PPG'+str(i) for i in range(1,24+1)]
 
 StackList230309_mri_choc1h = ['PPG'+str(i) for i in range(1,33+1) if (i != 1 and i != 5 and i != 6 and i != 14 and i != 20 and i != 21 and i != 31 and i != 11)]
 StackList230309_mri_choc8h = ['PPG'+str(i) for i in range(1,67+1) if (i != 11 and i != 39 and i != 22 and i != 24 and i != 49 and i != 56)]
-StackList230309_tak_choc1h = ['PPG'+str(i) for i in range(1,45+1) if (i != 2 and i != 19 and i != 36 and i != 40 and i != 43)]
-StackList230309_tak_choc8h = ['PPG'+str(i) for i in range(1,77+1) if (0)]
+StackList230309_tak_choc1h = ['PPG'+str(i) for i in range(1,45+1) if (i != 2 and i != 19 and i != 36 and i != 40 and i != 43 and i != 25)]
+StackList230309_tak_choc8h = ['PPG'+str(i) for i in range(1,77+1) if (i != 8 and i != 51)]
 StackList230309_tak_choc8h_croissance = ['PPG'+str(i) for i in range(1,77+1) if (i != 5 and i != 17 and i != 23 and i != 25 and i != 26 and i != 29 and i != 30 and i != 33 and i != 35
                                                                                  and i != 37 and i != 38 and i != 43 and i != 48 and i != 50 and i != 64 and  i != 66 and i != 72 and i != 73 and i != 74 and i != 76)]
 StackList230309_mri_choc8h_croissance = ['PPG'+str(i) for i in range(1,67+1) if (i != 2 and i != 3 and i != 4 and i != 5 and i != 11 and i != 12 and i != 21 and i != 22 and i != 23 and i != 24 and i != 31 and i != 32 and i != 37
@@ -905,7 +966,7 @@ StackList230309_mri_choc8h_croissance = ['PPG'+str(i) for i in range(1,67+1) if 
 StackList230320_mri = ['PPG'+str(i) for i in range(1,47+1) if ( i != 43)]
 StackList230320_tak = ['PPG'+str(i) for i in range(1,46+1)]
 
-StackList230321_mri_choc1h = ['PPG'+str(i) for i in range(1,51+1) if (i != 36 and i != 45 and i != 5 and i != 1 and i != 4 and i != 7 and i != 9 and i != 28 and i != 39 and i != 22 and i != 37 and i != 43 and i != 3 and i != 21 and i != 33)]
+StackList230321_mri_choc1h = ['PPG'+str(i) for i in range(1,51+1) if (i != 36 and i != 48 and i != 45 and i != 5 and i != 1 and i != 4 and i != 7 and i != 9 and i != 28 and i != 39 and i != 22 and i != 37 and i != 43 and i != 3 and i != 21 and i != 33 and i != 47)]
 StackList230321_mri_choc8h = ['PPG'+str(i) for i in range(1,75+1) if (i != 41 and i != 72 and i != 43 and i != 7 and i != 58 and i != 16)]
 StackList230321_tak_choc1h = ['PPG'+str(i) for i in range(1,32+1) if (i != 6 and i != 3 and i != 4 and i != 8 and i != 9 and i != 18 and i != 19 and i != 20 and i != 32)]
 StackList230321_tak_choc8h = ['PPG'+str(i) for i in range(1,54+1) if (i != 9 and i != 14 and i != 15 and i != 20 and i != 21 and i != 2 and i != 3 and i != 4 and i != 26)]
@@ -951,5 +1012,33 @@ StackList230512_takG = ['PPG'+str(i) for i in range(1,62+1) if (i != 23 and i !=
 StackList230512_takM = ['PPG'+str(i) for i in range(1,57+1) if (i != 9 and i != 20 and i != 21 and i != 22 and i != 24 and i != 29 and i != 31 and i != 34 and i != 35 and i != 37 and i != 42 and i != 44 and i != 48 and i != 52)]
 StackList230512_mriG = ['PPG'+str(i) for i in range(1,40+1)]
 StackList230512_mriM = ['PPG'+str(i) for i in range(1,40+1)]
+
+StackList230512_pmechoc1h = ['PPG'+str(i) for i in range(1,35+1) if (i != 10 and i != 11 and i != 24 and i != 27 and i != 7 and i != 20 and i != 19)]
+StackList230512_takchoc1h = ['PPG'+str(i) for i in range(1,38+1) if ( i!= 7 and i != 22 and i != 11 and i != 13)]
+
+StackList230515_200mM = ['PPG'+str(i) for i in range(1,26+1) if (i != 11)]
+StackList230515_0mM = ['PPG'+str(i) for i in range(1,33+1) if (i != 6 and i != 16 and i != 29 and i != 33)]
+StackList230515_changement = ['PPG'+str(i) for i in range(1,26+1) if (i != 2 and i != 5)]
+
+StackList230524_EGCG = ['PPG'+str(i) for i in range(1,30+1)]
+StackList230524_Ct = ['PPG'+str(i) for i in range(1,31+1)]
+
+StackList230524_pme11 = ['PPG'+str(i) for i in range(1,33+1)]
+StackList230524_tak = ['PPG'+str(i) for i in range(1,32+1) if (i != 31)]
+
+StackList230524_200mM = ['PPG'+str(i) for i in range(1,26+1)]
+StackList230524_0mM = ['PPG'+str(i) for i in range(1,39+1)]
+StackList230524_changement = ['PPG'+str(i) for i in range(1,31+1)]
+
+StackList230602_mri_choc1h = ['PPG'+str(i) for i in range(1,22+1) if (i != 6)]
+StackList230602_mri_choc8h = ['PPG'+str(i) for i in range(1,50+1) if (i != 23 and i != 26 and i != 4 and i != 22 and i != 50)]
+StackList230602_tak_choc1h = ['PPG'+str(i) for i in range(1,22+1) if ( i != 8 and i != 9)]
+StackList230602_tak_choc8h = ['PPG'+str(i) for i in range(1,62+1) if (i != 18 and i != 35 and i != 61) ]
+
+StackList230704_weight = ['PPG'+str(i) for i in range(1,16+1)]
+StackList230704_ctrl = ['PPG'+str(i) for i in range(1,18+1)]
+
+StackList230705_weight = ['PPG'+str(i) for i in range(1,32+1) if (i != 11)]
+StackList230705_ctrl = ['PPG'+str(i) for i in range(1,37+1)]
 
 print('Data choice made.')
