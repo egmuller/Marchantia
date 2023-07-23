@@ -805,8 +805,11 @@ def fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartC
 
         # fit of compression 2
         params2, cov2 = curve_fit(f=fitFuncOsmChoc, xdata=TimeFitComp2, ydata=AreaCFitComp2, 
-                                p0=[params[0], params[2], AreaCFitComp2[-11:-1].mean(),np.min(TimeFitComp2[AreaCFitComp2 < 0.99*AreaCFitComp2[0:10].mean()])],
+                                p0=[1, params[2], AreaCFitComp2[-11:-1].mean(),np.min(TimeFitComp2[AreaCFitComp2 < 0.99*AreaCFitComp2[0:10].mean()])],
                                 method='trf',loss='soft_l1')
+        #params2, cov2 = curve_fit(f=fitFuncOsmChoc, xdata=TimeFitComp2, ydata=AreaCFitComp2, 
+                               # p0=[params[0], params[2], AreaCFitComp2[-11:-1].mean(),np.min(TimeFitComp2[AreaCFitComp2 < 0.99*AreaCFitComp2[0:10].mean()])],
+                                #method='trf',loss='soft_l1')
 
         R2Comp2 = np.round(vf.computeR2(AreaCFitComp2,fitFuncOsmChoc(TimeFitComp2,params2[0],params2[1],params2[2],params2[3]))*1000)/1000
 
@@ -894,6 +897,9 @@ def fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartC
             plt.close(fig)    
     
     return(GD)
+
+
+
 
 
 def fitOsmoChoc_4x(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartComp2,ImgEqComp2,TstartComp2,ImgStartComp3,ImgEqComp3,TstartComp3, ImgStartComp4,ImgEqComp4,TstartComp4, **kwargs):

@@ -70,6 +70,11 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     fig,ax = plt.subplots(dpi = 250,facecolor='white',figsize = (5,3.5))
     fig.suptitle(Title)
  
+    FSize = 5
+    
+    for key, value in kwargs.items(): 
+        if key == 'FSize':
+            FSize = value
     
     cap= [None]*len(Data)
     med= [None]*len(Data)
@@ -98,7 +103,7 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     
     ax.set_ylabel(Ylabel)
     
-    ax.set_xticklabels(Labels, fontsize = 5)
+    ax.set_xticklabels(Labels, fontsize = FSize)
     
     return(fig,ax,cap,med)
     

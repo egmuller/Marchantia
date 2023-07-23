@@ -361,9 +361,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             GD = fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,debug = DebugPlots,  C_osmo = Concentration, C_osmo2 = Concentration2, Delay = Delay, Sorting = Sort)
             GD.loc[:,'Expe'] = stringName
             
-            print(GD.columns)
-            
-            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist, key = 'FitR2')
+            GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)#, key = 'FitR2')
         
         elif DoFit4x :
             GD = fitOsmoChoc_4x(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,FitIntervalComp3[0],FitIntervalComp3[1],TstartComp3,FitIntervalComp4[0],FitIntervalComp4[1],TstartComp4,debug = DebugPlots,  C_osmo = Concentration, C_osmo2 = Concentration2, Delay = Delay, Sorting = Sort)
