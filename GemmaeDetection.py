@@ -385,7 +385,8 @@ def getEdgeAndArea(BinImg,Scale, ** kwargs):
     
     # Find largest contour 
     cnts, _ = cv.findContours(BinImg, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
-    if np.shape(cnts)[0] > 0:
+
+    if len(cnts)[0] > 0: # changed
         if not SeveralPPGs : 
             cnt = max(cnts, key=cv.contourArea)
     
@@ -458,8 +459,11 @@ def getEdgeAndArea_shapeDescriptors(BinImg,Scale, **kwargs):
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
     # Find largest contour 
-    cnts, _ = cv.findContours(BinImg, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
-    if np.shape(cnts)[0] > 0:
+    #cnts, _ = cv.findContours(BinImg, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+    
+    cnts,_ = cv.findContours(BinImg, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
+    #print(len(cnts))
+    if  len(cnts) > 0:
         if not SeveralPPGs : 
             cnt = max(cnts, key=cv.contourArea)
         
