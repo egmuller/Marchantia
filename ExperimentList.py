@@ -255,7 +255,7 @@ FPH230524_stored = 2 # Frames per hour
 Delay230524_stored = 26 # Delay between imbibition and experiment start
 
 Scale230602 = 1.94 # Spatial scale
-FPH230602 = 102 # Frames per hour
+FPH230602 = 120 # Frames per hour
 Delay230602 = 0 # Delay between imbibition and experiment start
 
 Scale230704_weight = 19
@@ -267,6 +267,30 @@ Scale230705_weight = 19
 Scale230705_ctrl = 18
 FPH230705_weight = 6 #4
 Delay230705_weight = 10+50
+
+Scale230704 = 1.94 # Spatial scale
+FPH230704 = 120 # Frames per hour
+Delay230704 = 0 # Delay between imbibition and experiment start
+
+Scale230726 = 1.94 # Spatial scale
+FPH230726 = 2 # Frames per hour
+Delay230726 = 48 # Delay between imbibition and experiment start
+
+Scale230601 = 1.94 # Spatial scale
+FPH230601 = 2 # Frames per hour
+Delay230601 = 15 # Delay between imbibition and experiment start
+
+Scale230801 = 1.94 # Spatial scale
+FPH230801 = 2 # Frames per hour
+Delay230801 = 22 # Delay between imbibition and experiment start
+
+Scale230808 = 1.94 # Spatial scale
+FPH230808 = 2 # Frames per hour
+Delay230808 = 17 # Delay between imbibition and experiment start
+
+Scale230617 = 1.94 # Spatial scale
+FPH230617 = 2 # Frames per hour
+Delay230617 = 25 # Delay between imbibition and experiment start
 
 
 P_Ct_Val =r'/run/media/emuller/Elise_4T/Data/Chip/2022/Data_Ct_Valentin'
@@ -341,17 +365,17 @@ P221209_mri=r'/run/media/emuller/Elise_4T/Data/Chip/2022/221209_croissance/mri_c
 P221215_tak_100mM=r'/run/media/emuller/Elise_4T/Data/Chip/2022/221215_mri_100mM/ctrl_100mM/PPGs'
 P221215_mri_100mM=r'/run/media/emuller/Elise_4T/Data/Chip/2022/221215_mri_100mM/mri_100mM/PPGs'
 
-P221215_2xchoc_t1h30=r'/run/media/emuller/TRANSCEND/Data/Chip/221215_osmotic_shocks/osmo_shock_1h30/PPGs'
-P221215_2xchoc_t8h=r'/run/media/emuller/TRANSCEND/Data/Chip/221215_osmotic_shocks/osmo_shock_8h/2xchoc/PPGs'
-P221215_1xchoc_t8h=r'/run/media/emuller/TRANSCEND/Data/Chip/221215_osmotic_shocks/osmo_shock_8h/1xchoc/PPGs'
+P221215_2xchoc_t1h30=r'/run/media/emuller/TRANSCEND/Data/Chip/2022/221215_osmotic_shocks/osmo_shock_1h30/PPGs'
+P221215_2xchoc_t8h=r'/run/media/emuller/TRANSCEND/Data/Chip/2022/221215_osmotic_shocks/osmo_shock_8h/2xchoc/PPGs'
+P221215_1xchoc_t8h=r'/run/media/emuller/TRANSCEND/Data/Chip/2022/221215_osmotic_shocks/osmo_shock_8h/1xchoc/PPGs'
 
-P221216_tak_1h=r'/run/media/emuller/TRANSCEND/Data/Chip/221216_mri_osmotic_shocks/shock_1hand1h30/tak1/PPGs'
-P221216_tak_8h=r'/run/media/emuller/TRANSCEND/Data/Chip/221216_mri_osmotic_shocks/shock_7h30and8h/tak1/PPGs'
+P221216_tak_1h=r'/run/media/emuller/TRANSCEND/Data/Chip/2022/221216_mri_osmotic_shocks/shock_1hand1h30/tak1/PPGs'
+P221216_tak_8h=r'/run/media/emuller/TRANSCEND/Data/Chip/2022/221216_mri_osmotic_shocks/shock_7h30and8h/tak1/PPGs'
 
-P230113_mri_2h50 = r'/run/media/emuller/TRANSCEND/Data/Chip/230113_Pi0/mri_2h50/PPGs'
-P230113_mri_7h = r'/run/media/emuller/TRANSCEND/Data/Chip/230113_Pi0/mri_7h/PPGs'
-P230113_tak_1h45 = r'/run/media/emuller/TRANSCEND/Data/Chip/230113_Pi0/tak1_1h45/PPGs'
-P230113_tak_6h = r'/run/media/emuller/TRANSCEND/Data/Chip/230113_Pi0/tak1_6h/PPGs'
+P230113_mri_2h50 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230113_Pi0/mri_2h50/PPGs'
+P230113_mri_7h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230113_Pi0/mri_7h/PPGs'
+P230113_tak_1h45 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230113_Pi0/tak1_1h45/PPGs'
+P230113_tak_6h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230113_Pi0/tak1_6h/PPGs'
 
 P230113_ISXCt = r'/run/media/emuller/TRANSCEND/230113_test_ISX/ISXCt'
 P230113_ISX10uM = r'/run/media/emuller/TRANSCEND/230113_test_ISX/ISX10uM'
@@ -368,34 +392,34 @@ P230120_Pi0mriM = r'/run/media/emuller/TRANSCEND/230120_Pi0/mri_100mM/PPGs'
 P230120_Pi0mriGb = r'/run/media/emuller/TRANSCEND/230120_Pi0/mri_Gb/PPGs'
 P230120_Pi0takGb = r'/run/media/emuller/TRANSCEND/230120_Pi0/tak_Gb/PPGs'
 
-P230123_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/230123_ISX/Ctrl/PPGs'
-P230123_ISX = r'/run/media/emuller/TRANSCEND/Data/Chip/230123_ISX/ISX/PPGs'
+P230123_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230123_ISX/Ctrl/PPGs'
+P230123_ISX = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230123_ISX/ISX/PPGs'
 
-P230130_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/230130_ISX/Ctrl/PPGs'
-P230130_ISX = r'/run/media/emuller/TRANSCEND/Data/Chip/230130_ISX/ISX/PPGs'
+P230130_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230130_ISX/Ctrl/PPGs'
+P230130_ISX = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230130_ISX/ISX/PPGs'
 
-P230203_1hchocs_Pi0 = r'/run/media/emuller/TRANSCEND/Data/Chip/230203_Pi0_1h8h/1h_chocs/PPGs'
-P230203_1hchocs_K = r'/run/media/emuller/TRANSCEND/Data/Chip/230203_Pi0_1h8h/1h_chocs/PPGs_K'
-P230203_8hchocs = r'/run/media/emuller/TRANSCEND/Data/Chip/230203_Pi0_1h8h/8h_chocs/PPGs'
-P230203_8hgrowth = r'/run/media/emuller/TRANSCEND/Data/Chip/230203_Pi0_1h8h/8h_croissance_t2h/PPGs'
+P230203_1hchocs_Pi0 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230203_Pi0_1h8h/1h_chocs/PPGs'
+P230203_1hchocs_K = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230203_Pi0_1h8h/1h_chocs/PPGs_K'
+P230203_8hchocs = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230203_Pi0_1h8h/8h_chocs/PPGs'
+P230203_8hgrowth = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230203_Pi0_1h8h/8h_croissance_t2h/PPGs'
 
 P230213_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Tests/230213_croissance_manitol_sorbitol/Ctrl/PPGs/'
 P230213_manitol = r'/run/media/emuller/TRANSCEND/Data/Tests/230213_croissance_manitol_sorbitol/manitol/PPGs/'
 P230213_sorbitol = r'/run/media/emuller/TRANSCEND/Data/Tests/230213_croissance_manitol_sorbitol/sorbitol/PPGs/'
 
-P230210_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/230210_Pi0_sorbitol/tak/PPGs'
-P230210_mri = r'/run/media/emuller/TRANSCEND/Data/Chip/230210_Pi0_sorbitol/mri/PPGs'
+P230210_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230210_Pi0_sorbitol/tak/PPGs'
+P230210_mri = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230210_Pi0_sorbitol/mri/PPGs'
 
-P230214_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230214_Pi0/choc_1h/PPGs'
-P230214_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230214_Pi0/choc_8h/PPGs'
-P230214_choc8hcroissance = r'/run/media/emuller/TRANSCEND/Data/Chip/230214_Pi0/croissance/PPGs'
-P230214_choc1h_sorbitol = r'/run/media/emuller/TRANSCEND/Data/Chip/230214_Pi0/choc_1h_sorbitol/PPGs'
+P230214_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230214_Pi0/choc_1h/PPGs'
+P230214_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230214_Pi0/choc_8h/PPGs'
+P230214_choc8hcroissance = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230214_Pi0/croissance/PPGs'
+P230214_choc1h_sorbitol = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230214_Pi0/choc_1h_sorbitol/PPGs'
 
 P230215_tak = r'/run/media/emuller/TRANSCEND/Data/Tests/230215_imbibition/PPGsTak'
 P230215_mri = r'/run/media/emuller/TRANSCEND/Data/Tests/230215_imbibition/PPGsmri'
 
-P230210_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/230210_50mM_CaCl2/Ctrl_150mM/PPGs'
-P230210_CaCl2 = r'/run/media/emuller/TRANSCEND/Data/Chip/230210_50mM_CaCl2/50mMCaCl2/PPGs'
+P230210_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230210_50mM_CaCl2/Ctrl_150mM/PPGs'
+P230210_CaCl2 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230210_50mM_CaCl2/50mMCaCl2/PPGs'
 
 P230223_tak = r'/run/media/emuller/TRANSCEND/Data/Tests/230223_imbibition/PPG_takGb'
 P230223_mriGb = r'/run/media/emuller/TRANSCEND/Data/Tests/230223_imbibition/PPG_mriGb'
@@ -405,15 +429,15 @@ P230223_Ctrl = r'/run/media/emuller/TRANSCEND/Data/Tests/230223_croissance_manit
 P230223_manitol = r'/run/media/emuller/TRANSCEND/Data/Tests/230223_croissance_manitol_sorbitol/PPGmanitol'
 P230223_sorbitol = r'/run/media/emuller/TRANSCEND/Data/Tests/230223_croissance_manitol_sorbitol/PPGsorbitol'
 
-P230224_tak_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/tak/choc1h/PPGs'
-P230224_mriGb_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/mriGb/choc1h/PPGs'
-P230224_mriM_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/mriM/choc1h/PPGs'
+P230224_tak_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/tak/choc1h/PPGs'
+P230224_mriGb_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/mriGb/choc1h/PPGs'
+P230224_mriM_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/mriM/choc1h/PPGs'
 
-P230224_tak_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/tak/choc8h/PPGs'
-P230224_mriGb_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/mriGb/choc8h/PPGs'
-P230224_mriM_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/mriM/choc8h/PPGs'
+P230224_tak_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/tak/choc8h/PPGs'
+P230224_mriGb_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/mriGb/choc8h/PPGs'
+P230224_mriM_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/mriM/choc8h/PPGs'
 
-P230224_tak_choc8hcroissance = r'/run/media/emuller/TRANSCEND/Data/Chip/230224_PI0_takmri/tak/time_course/PPGs'
+P230224_tak_choc8hcroissance = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230224_PI0_takmri/tak/time_course/PPGs'
 
 P230224_phyto_Ctrl = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230224_NaOH/PPGCtrl'
 P230224_phyto_NaOH = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230224_NaOH/PPGNaOH'
@@ -426,37 +450,37 @@ P230223_phyto_mriGb = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/2
 P230223_phyto_mriM = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230223_mritak/PPGmriM'
 P230223_phyto_takGb = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230223_mritak/PPGtakGb'
 
-P230301_CaCl2 = r'/run/media/emuller/TRANSCEND/Data/Chip/230301_CaCl2_PME/CaCl2/PPGs'
-P230301_Ctrl_Phosphate = r'/run/media/emuller/TRANSCEND/Data/Chip/230301_CaCl2_PME/Ctrl_Phosphate/PPGs'
-P230301_Ctrl_Manitol = r'/run/media/emuller/TRANSCEND/Data/Chip/230301_CaCl2_PME/Ctrl_Manitol/PPGs'
-P230301_PME = r'/run/media/emuller/TRANSCEND/Data/Chip/230301_CaCl2_PME/PME/PPGs'
+P230301_CaCl2 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230301_CaCl2_PME/CaCl2/PPGs'
+P230301_Ctrl_Phosphate = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230301_CaCl2_PME/Ctrl_Phosphate/PPGs'
+P230301_Ctrl_Manitol = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230301_CaCl2_PME/Ctrl_Manitol/PPGs'
+P230301_PME = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230301_CaCl2_PME/PME/PPGs'
 
 P230303_phyto_Ctrl = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230303_NaOH/PPG_Ctrl/'
 P230303_10ulNaOH = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230303_NaOH/PPG_10ul/'
 P230303_5ulNaOH = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230303_NaOH/PPG_5ul/'
 
-P230309_mri_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230309_mri_tak/mri/choc1h/PPGs'
-P230309_mri_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230309_mri_tak/mri/choc8h/PPGs'
-P230309_tak_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230309_mri_tak/tak/choc1h/PPGs'
-P230309_tak_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230309_mri_tak/tak/choc8h/PPGs'
-P230309_tak_choc8h_croissance = r'/run/media/emuller/TRANSCEND/Data/Chip/230309_mri_tak/tak/t1h/PPGs'
-P230309_mri_choc8h_croissance = r'/run/media/emuller/TRANSCEND/Data/Chip/230309_mri_tak/mri/t0h/PPGs'
+P230309_mri_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230309_mri_tak/mri/choc1h/PPGs'
+P230309_mri_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230309_mri_tak/mri/choc8h/PPGs'
+P230309_tak_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230309_mri_tak/tak/choc1h/PPGs'
+P230309_tak_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230309_mri_tak/tak/choc8h/PPGs'
+P230309_tak_choc8h_croissance = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230309_mri_tak/tak/t1h/PPGs'
+P230309_mri_choc8h_croissance = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230309_mri_tak/mri/t0h/PPGs'
 
-P230320_mri = r'/run/media/emuller/TRANSCEND/Data/Chip/230320_croissance_mri_tak/mri/PPGs'
-P230320_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/230320_croissance_mri_tak/tak/PPGs'
+P230320_mri = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230320_croissance_mri_tak/mri/PPGs'
+P230320_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230320_croissance_mri_tak/tak/PPGs'
 
-P230321_mri_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230321_mri_tak_chocs/mri/choc1h/PPGs'
-P230321_mri_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230321_mri_tak_chocs/mri/choc8h/PPGs'
-P230321_tak_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/230321_mri_tak_chocs/tak/choc1h/PPGs'
-P230321_tak_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/230321_mri_tak_chocs/tak/choc8h/PPGs'
+P230321_mri_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230321_mri_tak_chocs/mri/choc1h/PPGs'
+P230321_mri_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230321_mri_tak_chocs/mri/choc8h/PPGs'
+P230321_tak_choc1h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230321_mri_tak_chocs/tak/choc1h/PPGs'
+P230321_tak_choc8h = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230321_mri_tak_chocs/tak/choc8h/PPGs'
 
 P230321_tak_choc8h_croissance = r'/run/media/emuller/Elise_4T/Data/Chip/2023/230321_mri_tak_chocs/tak/croissance/PPGs'
 P230321_mri_choc8h_croissance = r'/run/media/emuller/Elise_4T/Data/Chip/2023/230321_mri_tak_chocs/mri/croissance/PPGs'
 
-P230411_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/230413_PME_fer_croissance/tak/PPGs'
-P230411_fer9 = r'/run/media/emuller/TRANSCEND/Data/Chip/230413_PME_fer_croissance/fer9/PPGs'
-P230411_pme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/230413_PME_fer_croissance/pme11-4/PPGs'
-P230411_ef1apme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/230413_PME_fer_croissance/EF1aPME11-12/PPGs'
+P230411_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230413_PME_fer_croissance/tak/PPGs'
+P230411_fer9 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230413_PME_fer_croissance/fer9/PPGs'
+P230411_pme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230413_PME_fer_croissance/pme11-4/PPGs'
+P230411_ef1apme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230413_PME_fer_croissance/EF1aPME11-12/PPGs'
 
 P230424_0d25 = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230424_test_lames/0d25agar'
 P230424_0d125 = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230424_test_lames/0d125agar'
@@ -468,30 +492,30 @@ P230414_fer9_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230414_PI0_tak_
 P230414_tak_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230414_PI0_tak_fer/tak/choc1h/PPGs'
 P230414_tak_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230414_PI0_tak_fer/tak/choc8h/PPGs'
 
-P230421_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/230421_PME_fer_croissance/tak/PPGs'
-P230421_pme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/230421_PME_fer_croissance/pme11/PPGs'
-P230421_ef1apme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/230421_PME_fer_croissance/ef1apme11/PPGs'
-P230421_fer9 = r'/run/media/emuller/TRANSCEND/Data/Chip/230421_PME_fer_croissance/fer9/PPGs'
+P230421_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230421_PME_fer_croissance/tak/PPGs'
+P230421_pme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230421_PME_fer_croissance/pme11/PPGs'
+P230421_ef1apme11 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230421_PME_fer_croissance/ef1apme11/PPGs'
+P230421_fer9 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230421_PME_fer_croissance/fer9/PPGs'
 
-P230426_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/230426_tak_mri/tak/PPG'
-P230426_mri = r'/run/media/emuller/TRANSCEND/Data/Chip/230426_tak_mri/mri/PPGs'
+P230426_tak = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230426_tak_mri/tak/PPG'
+P230426_mri = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230426_tak_mri/mri/PPGs'
 
 P230502_lame = r'/run/media/emuller/Elise_4T/Data/Phytotron_camera/2023/230502_lame_liquide/PPG_puit'
 
-P230504_takG = r'/run/media/emuller/TRANSCEND/Data/Chip/230504_tak_mri_0_100mM/tak_Gb/PPGs'
-P230504_takM = r'/run/media/emuller/TRANSCEND/Data/Chip/230504_tak_mri_0_100mM/tak_M/PPGs'
-P230504_mriG = r'/run/media/emuller/TRANSCEND/Data/Chip/230504_tak_mri_0_100mM/mri_Gb/PPGs'
-P230504_mriM = r'/run/media/emuller/TRANSCEND/Data/Chip/230504_tak_mri_0_100mM/mri_M/PPGs'
+P230504_takG = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230504_tak_mri_0_100mM/tak_Gb/PPGs'
+P230504_takM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230504_tak_mri_0_100mM/tak_M/PPGs'
+P230504_mriG = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230504_tak_mri_0_100mM/mri_Gb/PPGs'
+P230504_mriM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230504_tak_mri_0_100mM/mri_M/PPGs'
 
-P230509_200mM = r'/run/media/emuller/TRANSCEND/Data/Chip/230509_stored_growth/croissance_200_mM/PPGs'
-P230509_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/230509_stored_growth/croissance_0_mM/PPGs'
-P230509_changement = r'/run/media/emuller/TRANSCEND/Data/Chip/230509_stored_growth/croissance_200_puis_0_mM/PPGs'
+P230509_200mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230509_stored_growth/croissance_200_mM/PPGs'
+P230509_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230509_stored_growth/croissance_0_mM/PPGs'
+P230509_changement = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230509_stored_growth/croissance_200_puis_0_mM/PPGs'
 
 
-P230512_takG = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/tak_0mM/PPGs'
-P230512_takM = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/tak_100mM/PPGs'
-P230512_mriG = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/mri_0mM/PPGs'
-P230512_mriM = r'/run/media/emuller/TRANSCEND/Data/Chip/230512_tak_mri_0_100mM/mri_100mM/PPGs'
+P230512_takG = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230512_tak_mri_0_100mM/tak_0mM/PPGs'
+P230512_takM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230512_tak_mri_0_100mM/tak_100mM/PPGs'
+P230512_mriG = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230512_tak_mri_0_100mM/mri_0mM/PPGs'
+P230512_mriM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230512_tak_mri_0_100mM/mri_100mM/PPGs'
 
 P230512_pmechoc1h = r'/run/media/emuller/Elise_these/Chip/2023/230512_tak_pme_choc1h/pme/PPGs'
 P230512_takchoc1h = r'/run/media/emuller/Elise_these/Chip/2023/230512_tak_pme_choc1h/tak/PPGs'
@@ -506,20 +530,40 @@ P230524_Ct = r'/run/media/emuller/Elise_these/Chip/2023/230524_EGCG/control/PPGs
 P230524_pme11 = r'/run/media/emuller/Elise_these/Chip/2023/230524_tak_pme11_choc1h/pme11/PPGs'
 P230524_tak = r'/run/media/emuller/Elise_these/Chip/2023/230524_tak_pme11_choc1h/tak/PPGs'
 
-P230524_200mM = r'/run/media/emuller/TRANSCEND/Data/Chip/230524_storedgrowth_EF1aPME113.1/block1/200mM/PPGs'
-P230524_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/230524_storedgrowth_EF1aPME113.1/block1/0mM/PPGs'
-P230524_changement = r'/run/media/emuller/TRANSCEND/Data/Chip/230524_storedgrowth_EF1aPME113.1/block1/changement/PPGs'
+P230524_200mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230524_storedgrowth_EF1aPME113.1/block1/200mM/PPGs'
+P230524_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230524_storedgrowth_EF1aPME113.1/block1/0mM/PPGs'
+P230524_changement = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/230524_storedgrowth_EF1aPME113.1/block1/changement/PPGs'
 
-P230602_mri_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/mri/choc1h/PPGs/'
-P230602_mri_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/mri/choc8h/PPGs/'
-P230602_tak_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/tak/choc1h/PPGs/'
-P230602_tak_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/tak/choc8h/PPGs/'
+P230602_mri_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/mri/choc1h/PPGs'
+P230602_mri_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/mri/choc8h/PPGs'
+P230602_tak_choc1h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/tak/choc1h/PPGs'
+P230602_tak_choc8h = r'/run/media/emuller/Elise_these/Chip/2023/230602_Pi0_tak_mri/tak/choc8h/PPGs'
 
 P230704_weight = r'/run/media/emuller/Elise_these/tests/230704_weight/weight/'
 P230704_ctrl = r'/run/media/emuller/Elise_these/tests/230704_weight/ctrl/'
 
 P230705_weight = r'/run/media/emuller/Elise_these/tests/230705_weight/weight/'
 P230705_ctrl = r'/run/media/emuller/Elise_these/tests/230705_weight/ctrl/'
+
+P230704_chocs = r'/run/media/emuller/Elise_these/Chip/2023/230704_4chocs-tak/PPGs'
+
+P230726_tak1 = r'/run/media/emuller/Elise_these/Chip/2023/230726_EF1a_pme11/Tak-1/PPGs'
+P230726_pme11_9 = r'/run/media/emuller/Elise_these/Chip/2023/230726_EF1a_pme11/pme11-9/PPGs'
+P230726_EF1aPME11_31 = r'/run/media/emuller/Elise_these/Chip/2023/230726_EF1a_pme11/EF1aPME11-3.1/PPGs'
+
+P230601_pme11_9 = r'/run/media/emuller/Elise_these/Chip/2023/230601_croissance_pme11-9_EF1APME11_fer5/pme11-9/PPGs'
+P230601_tak1 = r'/run/media/emuller/Elise_these/Chip/2023/230601_croissance_pme11-9_EF1APME11_fer5/Tak-1/PPGs'
+P230601_fer5 = r'/run/media/emuller/Elise_these/Chip/2023/230601_croissance_pme11-9_EF1APME11_fer5/fer5/PPGs'
+P230601_EF1aPME11_21 = r'/run/media/emuller/Elise_these/Chip/2023/230601_croissance_pme11-9_EF1APME11_fer5/EF1aPME11,2.1/PPGs'
+
+P230801_Tak1 = r'/run/media/emuller/Elise_these/Chip/2023/230801_tak1_tak2/Tak1/PPGs/'
+P230801_Tak2 = r'/run/media/emuller/Elise_these/Chip/2023/230801_tak1_tak2/Tak2/PPGs/'
+P230808_Tak1 = r'/run/media/emuller/Elise_these/Chip/2023/230808_tak1_tak2/Tak1/PPGs/'
+P230808_Tak2 = r'/run/media/emuller/Elise_these/Chip/2023/230808_tak1_tak2/Tak2/PPGs/'
+
+P230617_tak1 = r'/run/media/emuller/Elise_these/Chip/2023/230617_croissance_EF1_fer5/tak1/PPGs'
+P230617_fer5 = r'/run/media/emuller/Elise_these/Chip/2023/230617_croissance_EF1_fer5/fer5/PPGs'
+P230617_EF1aPME11_31 = r'/run/media/emuller/Elise_these/Chip/2023/230617_croissance_EF1_fer5/EF1aPME11_31/PPGs'
 
 PFig = r'/home/emuller/Documents/data/Chip_experiments/Figures'
 
@@ -1040,5 +1084,25 @@ StackList230704_ctrl = ['PPG'+str(i) for i in range(1,18+1)]
 
 StackList230705_weight = ['PPG'+str(i) for i in range(1,32+1) if (i != 11)]
 StackList230705_ctrl = ['PPG'+str(i) for i in range(1,37+1)]
+
+StackList230704_chocs = ['PPG'+str(i) for i in range(1,51+1) if ( i != 25 and i != 51)]
+
+StackList230726_tak1 = ['PPG'+str(i) for i in range(1,62+1)]
+StackList230726_pme11_9 = ['PPG'+str(i) for i in range(1,32+1)]
+StackList230726_EF1aPME11_31 = ['PPG'+str(i) for i in range(1,58+1) if (i != 11 and i != 15)]
+
+StackList230601_tak1 = ['PPG'+str(i) for i in range(1,23+1)]
+StackList230601_pme11_9 = ['PPG'+str(i) for i in range(1,20+1)]
+StackList230601_fer5 = ['PPG'+str(i) for i in range(1,14+1)]
+StackList230601_EF1aPME11_21 = ['PPG'+str(i) for i in range(1,39+1) if ( i != 27 and i != 28)]
+
+StackList230801_Tak1 = ['PPG'+str(i) for i in range(1,58+1)]
+StackList230801_Tak2 = ['PPG'+str(i) for i in range(1,44+1)]
+StackList230808_Tak1 = ['PPG'+str(i) for i in range(1,46+1)]
+StackList230808_Tak2 = ['PPG'+str(i) for i in range(1,40+1)]
+
+StackList230617_tak1 = ['PPG'+str(i) for i in range(1,40+1)]
+StackList230617_fer5 = ['PPG'+str(i) for i in range(1,9+1)]
+StackList230617_EF1aPME11_31 = ['PPG'+str(i) for i in range(1,49+1)]
 
 print('Data choice made.')
