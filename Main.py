@@ -784,6 +784,366 @@ def compareGrowth(GDs, Labels, colors,P, Title, **kwargs):
         else:
             return
 
+def compareGrowth_time(GDs, Labels, colors,P, Title, **kwargs):
+
+    showcurve = False
+    showbox = False
+    showhist = False
+    nbins = 20
+    AllSigs = True
+    IndividualPlots = False
+    stats = 'ranksum'
+    groupcat = None
+    diffcat = None
+    NimgMax = '24h'
+    
+    for key, value in kwargs.items(): 
+        if key == 'showcurve':
+            showcurve = value 
+        elif key == 'showbox':
+            showbox = value
+        elif key == 'showhist':
+            showhist = value
+        elif key == 'nbins':
+            nbins = value
+        elif key == 'sigpairs':
+            sigpairs = value
+            AllSigs = False
+        elif key == 'indiplots' :
+            IndividualPlots = value
+        elif key == 'stats' :
+            stats = value
+        elif key == 'groupcat' :
+            groupcat = np.array(value)
+        elif key == 'diffcat' :
+            diffcat = np.array(value)
+        elif key == 'NimgMax' :
+            if (value == '24h') | (value == 'max'):
+                NimgMax = value 
+            else:
+                raise ValueError('Wrong value for NimgMax ! Allowed : ''24h'' or ''max'' ')
+                
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    # Colors
+    colorcycle = [plt.get_cmap('gist_rainbow')(1. * i/len(GDs)) for i in range(len(GDs))]
+    mpl.rcParams['axes.prop_cycle'] = cycler(color=colorcycle)
+         
+    # check existence of figure folder, if absent, create it
+    if not os.path.exists(P):
+            os.mkdir(P) # create folder
+            
+    # check existence of figure folder, if absent, create it
+    if not os.path.exists(P + '/AreaGrowth'):
+            os.mkdir(P + '/AreaGrowth') # create folder
+            
+    ## Data grouping if ANOVA : 
+    if stats == 'ANOVA':
+        cats = np.unique(groupcat)
+        newGDs = [None]*len(cats)
+        for s,ss in zip(cats,range(len(cats))):
+            pos = np.argwhere(groupcat==s)
+            PD = pd.DataFrame(data=None)
+            for i in pos:
+                PD = PD.append(GDs[i[0]])
+            newGDs[ss] = PD[:]
+    else:
+        newGDs = GDs[:]
+    
+    ######### Curves of evolution ##########
+    
+    fig2,ax2 = plt.subplots(dpi = 250,facecolor='white')
+    fig2.suptitle(Title + ' - Area vs. time')
+    plt.xlabel('Time (min)')
+    plt.ylabel('Area (mm²)')
+    
+    fig3,ax3 = plt.subplots(dpi = 250,facecolor='white')
+    fig3.suptitle(Title + ' - Norm Area vs. time')
+    plt.xlabel('Time (min)')
+    plt.ylabel('Area (normalized)')
+    
+    
+    for GD,lab,i in zip(newGDs,Labels,range(len(GDs))):
+        
+        StackList = np.unique(GD.index)
+           
+        if NimgMax == 'max':
+            nimgmax = np.shape(np.unique(GD['Time (min)']))[0] # number of images (duration) to plot for growth curve
+        else:
+            L = np.unique(GD['Time (min)'])
+            nimgmax =  np.shape(L[L <= 25*60])[0]
+        
+        if IndividualPlots:
+            fig1,ax1 = plt.subplots(dpi = 250,facecolor='white')
+            fig1.suptitle(lab + ' - Area vs. time')
+            plt.xlabel('Time (min)')
+            plt.ylabel('Area (mm²)')
+            for s in StackList:
+                ax1.plot(GD.loc[s,'Img']*30,GD.loc[s,'Area'],label=s,lw=1)
+            plt.legend(prop={'size': 5})
+
+        # number of ppgs and label
+        nPPG = len(GD.loc[GD['Img'] == 0])
+        lab = lab + ' - n = ' + str(nPPG)
+        
+        # Computing mean area over all gemmae for each image
+        MeanA = np.empty(nimgmax)
+        MeanTime = sorted(np.unique(GD['Time (min)']))[:nimgmax]
+        StdA = np.empty(nimgmax)
+
+        for im in range(nimgmax):
+
+            MeanA[im] = GD.loc[GD['Time (min)'] == MeanTime[im],'Area'].to_numpy().mean()
+            StdA[im] = GD.loc[GD['Time (min)'] == MeanTime[im],'Area'].to_numpy().std()
+        
+        nppg = len(GD.loc[GD['Img'] == 0,'Area'].to_numpy())
+
+        ax2.errorbar(MeanTime,MeanA,yerr=StdA/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        ax3.errorbar(MeanTime,MeanA/MeanA[0],yerr=StdA/MeanA[0]/np.sqrt(nppg), capsize=3,label=lab,color = colors[i])
+        
+    plt.figure(fig2.number)
+    plt.legend(prop={'size': 8})
+    fig2.savefig(P + '/AreaGrowth/' + Title + '_AreaCurve.png')
+    if not showcurve:
+        plt.close(fig2)
+
+    plt.figure(fig3.number)
+    plt.legend(prop={'size': 8})
+    fig3.savefig(P + '/AreaGrowth/' + Title + '_NormAreaCurve.png')
+    if not showcurve:
+        plt.close(fig3)
+
+
+    ######### Parameters of fit ###########
+    
+      
+    fig4,ax4 = plt.subplots(dpi = 250,facecolor='white')
+    fig4.suptitle(Title + ' - Growth start time')
+    plt.ylabel('T start (hours)')
+      
+    fig5,ax5 = plt.subplots(dpi = 250,facecolor='white')
+    fig5.suptitle(Title + ' - Growth caracteristic time')
+    plt.ylabel('Tau growth (hours)')
+    
+    fig6,ax6 = plt.subplots(dpi = 250,facecolor='white') 
+    fig6.suptitle(Title + ' - Starting area') 
+    plt.ylabel('Starting area from fit (mm²)') 
+
+    fig16,ax16 = plt.subplots(dpi = 250,facecolor='white')
+    fig16.suptitle(Title + ' - Initial growth increase')
+    plt.ylabel('Growth at Tstart (%)')
+    
+    if len(newGDs) == 2:
+        # Histogram for distribution comparison
+        fig7,ax7 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig7.suptitle(Title + ' - Growth caracteristic times')
+        plt.xlabel('Tau growth (hours)')
+        plt.ylabel('PDF')
+
+        fig8,ax8 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig8.suptitle(Title + ' - Growth start time')
+        plt.xlabel('T start (min)')
+        plt.ylabel('PDF')
+        
+        fig9,ax9 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig9.suptitle(Title + ' - Growth caracteristic times')
+        plt.xlabel('Tau growth (hours) - median aligned')
+        plt.ylabel('PDF')
+
+        fig10,ax10 = plt.subplots(dpi = 250,figsize = (5,3.5),facecolor='white')
+        fig10.suptitle(Title + ' - Growth start time')
+        plt.xlabel('T start (min) - median aligned')
+        plt.ylabel('PDF')
+    
+    tdebs= [None]*len(newGDs)
+    taus= [None]*len(newGDs)
+    captdeb= [None]*len(newGDs)
+    captau= [None]*len(newGDs)
+    medtdeb= [None]*len(newGDs)
+    medtau= [None]*len(newGDs)    
+    
+    Area0 = [None]*len(newGDs) 
+    capArea0 = [None]*len(newGDs) 
+    medArea0 = [None]*len(newGDs) 
+    
+    AreaStart = [None]*len(newGDs)
+    capAreaStart = [None]*len(newGDs)
+    medAreaStart = [None]*len(newGDs)
+    
+    grouping = []
+    labs = []
+    
+    for GD,lab,i in zip(newGDs,Labels,range(len(newGDs))):
+        
+        # number of ppgs and label
+        nPPG = len(GD.loc[GD['Img'] == 0])
+        lab = lab + '\n n = ' + str(nPPG)
+        labs = np.append(labs,lab)
+        
+        # Retrieve data
+        tdebs[i] = GD.loc[GD['Img'] == 0, 'tdeb']/60
+        taus[i] = GD.loc[GD['Img'] == 0, 'Tau']/60          
+        Area0[i] = GD.loc[GD['Img'] == 0, 'A0fit'] 
+        AreaStart[i] = GD.loc[GD['Img'] == 0, 'GrowthAtStart_flat']*100
+        
+        
+        # swarmplots
+        grouping = np.append(grouping,np.ones(len(tdebs[i]))*i)
+
+
+        plotprops = {'color':'black'}
+        boxprops = {'color':'black','facecolor':colors[i]}
+        
+         
+        bp4 = ax4.boxplot(tdebs[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+        
+        bp5 = ax5.boxplot(taus[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+        
+        bp6 = ax6.boxplot(Area0[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops, 
+            showfliers = False,whiskerprops=plotprops,medianprops =plotprops) 
+        
+        bp26 = ax16.boxplot(AreaStart[i], positions = [i], labels = [lab],patch_artist = True, boxprops=boxprops, capprops =plotprops,
+                    showfliers = False,whiskerprops=plotprops,medianprops =plotprops)
+    
+        captdeb[i] = bp4['caps'][1].get_ydata(orig=True)[0]
+        captau[i] = bp5['caps'][1].get_ydata(orig=True)[0]
+        capArea0[i] = bp6['caps'][1].get_ydata(orig=True)[0] 
+        capAreaStart[i] = bp26['caps'][1].get_ydata(orig=True)[0]
+        medtdeb[i] = bp4['medians'][0].get_ydata(orig=True)[0]
+        medtau[i] = bp5['medians'][0].get_ydata(orig=True)[0]
+        medArea0[i] = bp6['medians'][0].get_ydata(orig=True)[0] 
+        medAreaStart[i] = bp26['medians'][0].get_ydata(orig=True)[0]
+        
+        if len(newGDs) == 2:
+        
+            ax7.hist(taus[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
+            ax8.hist(tdebs[i], nbins, density=True, facecolor=colors[i], alpha=0.5)
+            ax9.hist(taus[i]-np.median(taus[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
+            ax10.hist(tdebs[i]-np.median(tdebs[i]), nbins, density=True, facecolor=colors[i], alpha=0.5)
+
+            
+    sns.swarmplot(x=grouping,y=pd.concat(tdebs),color = 'lightgray', size=2, ax = ax4)
+    sns.swarmplot(x=grouping,y=pd.concat(taus),color = 'lightgray', size=2, ax = ax5)
+    sns.swarmplot(x=grouping,y=pd.concat(Area0),color = 'lightgray', size=2, ax = ax6) 
+    sns.swarmplot(x=grouping,y=pd.concat(AreaStart),color = 'lightgray', size=2, ax = ax16)
+    
+    ax4.set_xticklabels(labs, fontsize = 8)
+    ax5.set_xticklabels(labs, fontsize = 8)
+    ax6.set_xticklabels(labs, fontsize = 8) 
+    ax16.set_xticklabels(labs, fontsize = 8)
+
+    if len(newGDs) == 2:
+        # Distribution comparison with two-sample kolmogorov smirnov test
+        statsTau, pTau =  ks_2samp(taus[0],taus[1])
+        ax7.set_title('KS test - p = ' + str(round(pTau*1000)/1000))
+        fig7.tight_layout()
+        
+        statsTdeb, pTdeb =  ks_2samp(tdebs[0],tdebs[1])
+        ax8.set_title('KS test - p = ' + str(round(pTdeb*1000)/1000))
+        fig8.tight_layout()
+        
+        statsTau, pTau =  ks_2samp(taus[0]-np.median(taus[0]),taus[1]-np.median(taus[1]))
+        ax9.set_title('KS test - p = ' + str(round(pTau*1000)/1000))
+        fig9.tight_layout()
+        
+        statsTdeb, pTdeb =  ks_2samp(tdebs[0]-np.median(tdebs[0]),tdebs[1]-np.median(tdebs[1]))
+        ax10.set_title('KS test - p = ' + str(round(pTdeb*1000)/1000))
+        fig10.tight_layout()
+        
+        if not showhist:
+            plt.close(fig7)
+            plt.close(fig8)
+            plt.close(fig9)
+            plt.close(fig10)
+    
+    steptdeb = np.max(captdeb)*0.125
+    steptau = np.max(captau)*0.125
+    stepArea0 = np.max(capArea0)*0.125 
+    stepAreaStart = np.max(capAreaStart)*0.125
+    
+    fullsteptdeb = 0
+    fullsteptau = 0
+    fullstepArea0 = 0 
+    fullstepAreaStart = 0
+    
+    hmaxtdeb = np.max(captdeb)
+    hmaxtau = np.max(captau)
+    hmaxArea0 = np.max(capArea0) 
+    hmaxAreaStart = np.max(capAreaStart)
+    
+    if stats=='ranksum':
+        if AllSigs:
+            for i in range(len(newGDs)-1):
+                for j in range(i+1,len(newGDs)):
+
+                    fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
+
+                    fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+                    
+                    fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
+
+                    fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
+                    
+        else:
+            for i,j in sigpairs:
+
+                fullsteptdeb = plotSig(ax4,hmaxtdeb,steptdeb,fullsteptdeb,tdebs[i],tdebs[j],i,j)
+
+                fullsteptau = plotSig(ax5,hmaxtau,steptau,fullsteptau,taus[i],taus[j],i,j)
+ 
+                fullstepArea0 = plotSig(ax6,hmaxArea0,stepArea0,fullstepArea0,Area0[i],Area0[j],i,j) 
+
+                fullstepAreaStart = plotSig(ax16,hmaxAreaStart,stepAreaStart,fullstepAreaStart,AreaStart[i],AreaStart[j],i,j)
+
+    elif stats == 'kruskal':
+        
+        StatsKruskal(ax4,tdebs)
+        StatsKruskal(ax5,taus)
+        StatsKruskal(ax6,Area0)
+        StatsKruskal(ax16,AreaStart)
+               
+ 
+ 
+    if stats=='ranksum':
+        fig4.savefig(P + '/AreaGrowth/' + Title + '_Tstart.png')
+        fig5.savefig(P + '/AreaGrowth/'+ Title +  '_TauGrowth.png')
+        fig6.savefig(P + '/AreaGrowth/'+ Title +  '_StartingArea.png') 
+        fig16.savefig(P + '/AreaGrowth/'+ Title +  '_InitialGrowth.png')
+        if not showbox:
+            plt.close(fig5)
+            plt.close(fig4)
+            plt.close(fig6)
+            plt.close(fig16)
+        return  
+    elif stats == 'ANOVA':
+        for v,med,fig,ax,dat in zip(['tdeb','Tau','A0fit','GrowthAtStart_flat'],[medtdeb,medtau,medArea0,medAreaStart],[fig4,fig5,fig6,fig16],[ax4,ax5,ax6,ax16],
+                                    [pd.concat(tdebs),pd.concat(taus),pd.concat(Area0),pd.concat(AreaStart)]):
+
+            res = TwowayANOVA(v,diffcat,groupcat,GDs);
+
+            pDC = res.loc['C(Date)','PR(>F)']
+            pGC = res.loc['C(Condition)','PR(>F)']
+
+            ax.set_title('Date significativity (ANOVA) : p = ' + str(round(pDC*1000)/1000))
+            ax.plot([0.3, 0.7],[np.mean(med), np.mean(med)],'-w')
+            ax.text(0.5,np.mean(med)*1.1,'p = ' + str(round(pGC*1000)/1000), ha='center',fontsize='small')
+            
+            ax.set_ylim([np.min(dat)-np.abs(0.3*np.min(dat)), 1.5*np.percentile(dat,90)])
+            
+            
+    
+    else:
+        if not showbox:
+            plt.close(fig5)
+            plt.close(fig4)
+            plt.close(fig6) 
+            plt.close(fig16)
+            return
+        else:
+            return
 
 # 2. Comparison of hydromechanical properties
 
