@@ -251,7 +251,9 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
             Time = Delay
         
         AreaC = savgol_filter(GD.loc[s,'Area'].values, filtervalue, 2)
+        #print(Time, AreaC)
         AreaI = interp1d(Time,AreaC,kind = 'quadratic')
+        #print('here',AreaI)
 
         
         ### Growth rate 1/A * dA/dt computation
@@ -365,8 +367,10 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         else :
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb()
             
+            
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_flat'] = np.argmin(np.abs(Time-FitRes_flat.tdeb())) # img shift for alignement on tdeb
         if FitRes_flat.tdeb() > Time[0]:
+            print('if : ', FitRes_flat.tdeb(),  Time[0])
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
         else : 
             GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = 0
@@ -462,7 +466,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         print('Fitting curve for : ' + s.ljust(5), end='\n')           
         if type(Delay) == float :
             Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
-        if type(Delay) == list :
+        if type(Delay) == np.ndarray :
              Time = Delay
         AreaC = GD.loc[s,'Area'].values
         
