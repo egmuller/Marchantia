@@ -58,6 +58,9 @@ class FitMachin:
     def A0(self):        
         return(self.P[2])
     
+    def T0(self):        
+        return(self.P[3])
+    
     def f(self):
         pass
     
@@ -87,6 +90,23 @@ class ExpDel(FitMachin):
     def fC(self):
         
         return(self.f(self.time,self.P[0],self.P[1],self.P[2]))
+    
+# Exponential growth with initial exp(t**2)  
+
+class ExpDel_t2(FitMachin):   
+    
+
+    def f(self,t,tdeb,T,A0,T0): # Exponential growth with a delay
+        
+        f = np.multiply(A0*np.exp(tdeb**2/T0),np.exp(np.divide((t-tdeb),T)))
+            
+        f[t<tdeb] = np.multiply(A0,np.exp(np.divide(np.multiply(t[t<tdeb],t[t<tdeb]),T0)))
+            
+        return(f) 
+    
+    def fC(self):
+        
+        return(self.f(self.time,self.P[0],self.P[1],self.P[2],self.P[3]))
       
 
     
@@ -210,6 +230,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
     ValidPlots = False
     FitWindow = 15
     filtervalue = 11
+    FitClass = ExpDel
     
     for key, value in kwargs.items(): 
         if key == 'debug':
@@ -222,6 +243,8 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
         elif key == 'fitwindow':
             FitWindow = value
         elif key == 'filterwindow':
+            filtervalue = value
+        elif key == 'FitClass':
             filtervalue = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
@@ -419,6 +442,246 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
     
     return(GD)
 
+
+
+def fitAreaGrowth_ChangeFitClass(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
+    
+    DebugPlots = False
+    Debug = True
+    ValidPlots = False
+    FitWindow = 15
+    filtervalue = 11
+    FitClass = ExpDel
+    name_FitClass = 'ExpDel'
+    
+    
+    for key, value in kwargs.items(): 
+        if key == 'debug':
+            Debug = value
+        elif key == 'debugall':
+            DebugPlots = value
+            Debug = False
+        elif key == 'ValidPlots':
+            ValidPlots = value
+        elif key == 'fitwindow':
+            FitWindow = value
+        elif key == 'filterwindow':
+            filtervalue = value
+        elif key == 'FitClass':
+            FitClass = value
+        elif key == 'name_FitClass':
+            name_FitClass = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+
+    
+    # Matrix for averaging growth rate
+    
+    GRmat = np.empty((200,len(StackList)))
+    GRmat = np.empty((400,len(StackList))) # for longer fit
+    
+    GRmat[:] = np.nan
+            
+    if Debug:
+        fig1,ax1 = plt.subplots(dpi=200)
+      
+    else:
+        ax1=0
+            
+    for ii,s,row in zip(range(len(StackList)),StackList,Rows):
+        
+        print('\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ ')
+        print('\nFitting area curve for : ' + s)           
+        
+        if type(Delay) == float or type(Delay) == int :
+            Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
+        if type(Delay) == np.ndarray :
+            Time = Delay
+        
+        AreaC = savgol_filter(GD.loc[s,'Area'].values, filtervalue, 2)
+        AreaI = interp1d(Time,AreaC,kind = 'quadratic')
+
+        
+        ### Growth rate 1/A * dA/dt computation
+    
+        GR, GR_S, intTime = vf.GrowthRate(AreaC,Time)
+        
+        GD.loc[s,'GR_Full'] = np.concatenate((GR_S,[np.nan]))
+        
+        GR_end = np.mean(GR_S[-4:])
+        
+        ### Computing growth start regime from growth rate
+        
+        r2 = 1
+        Len = 2
+        
+        intTime_linfit = intTime[0:Len]
+        GR_S_linfit = GR_S[0:Len]
+        
+        linreg = linregress(intTime_linfit,GR_S_linfit)
+
+        
+        r2 = np.square(linreg.rvalue)
+        
+        while r2>0.99:
+            
+            Slope = linreg.slope
+            
+            Len += 1
+                                    
+            intTime_linfit = intTime[0:Len]
+            GR_S_linfit = GR_S[0:Len]
+            
+            linreg = linregress(intTime_linfit,GR_S_linfit)
+
+            r2 = np.square(linreg.rvalue)
+            
+        
+        GRmat[50-Len+1:50-Len+1+len(GR_S),ii] = GR_S-GR_S[Len-1]
+        
+        ### Iterative fits for a convergence of Tdeb with different fits   
+        
+        #if name_FitClass == 'ExpDel':
+         #   param0 = [30,100, AreaC[0]]
+        #elif name_FitClass == 'ExpDel_t2':
+        param0 = [500,100, AreaC[0],10**4]
+         
+         
+            
+            
+        
+        FitRes_flat = iterFit(FitClass,str(name_FitClass),FitWindow,Time,AreaC,param0, 0.05, 50, Debug, ax1)
+        print('here : ', FitRes_flat.T0(),FitRes_flat.tau(),FitRes_flat.tdeb())
+        
+        FitResPlot =copy.deepcopy(FitRes_flat)
+        
+        
+        ### Growth rate 1/A * dA/dt computation for fits
+        
+        if not np.array(FitRes_flat.FI).size == 0:
+            GR_flat,FFF,intTime_flat = vf.GrowthRate(FitRes_flat.fC()[FitRes_flat.FI],FitRes_flat.time[FitRes_flat.FI]) 
+        else:
+            GR_flat,intTime_flat = [0,0]
+
+        if ValidPlots:
+            VPlt = FitResPlot.R2() > Th
+        else:
+            VPlt = True
+        
+        if DebugPlots & VPlt:
+            
+            fig0, [ax01,ax02] = plt.subplots(ncols=2, dpi=300)
+            
+            fig0.suptitle(FitResPlot.name)
+
+            ax01.set_title(s + ' - tdeb = ' + str(round(FitResPlot.P_init[0]*10)/10) +' min.\n' +
+            'T = ' + str(round(FitResPlot.P_init[1]/60*10)/10)  + ' hours.\nR2 = ' 
+                          + str(FitResPlot.R2_init))
+            ax01.plot(Time,FitResPlot.values,'*r',ms=3)
+            ax01.plot(Time,FitResPlot.f(Time,*FitResPlot.P_init),'--b')
+            ax01.set_xlabel('Time (min)')
+            ax01.set_ylabel('Area (mm²)')
+            # ax01.set_xscale('log')
+            # ax01.set_yscale('log')
+    
+            ax02.set_title(s + ' - tdeb = ' + str(round(FitResPlot.tdeb()*10)/10) +  ' min.\n' +
+            'T = ' + str(round(FitResPlot.tau()/60*10)/10)  +  ' hours.\nR2 = ' 
+                          + str(FitResPlot.R2()))
+            ax02.plot(Time,AreaC,'*r',ms=3)
+            ax02.plot(Time[FitResPlot.FI],AreaC[FitResPlot.FI],'*g',ms=3)
+            ax02.plot(Time,FitResPlot.fC(),'--b',lw=1)
+            ax02.set_xlabel('Time (min)')
+            ax02.set_ylabel('Area (mm²)')
+            # ax02.set_xscale('log')
+            # ax02.set_yscale('log')
+    
+            fig0.tight_layout()
+            
+            fig,[ax0,ax1] = plt.subplots(nrows = 2, dpi = 300)
+            
+            ax0.plot(intTime,GR*10000,'-*b',lw=1,ms=2)
+            ax0.plot(intTime,GR_S*10000,'-c',lw=2)
+            # ax0.plot(intTime_linfit[0:-2],Intercept + intTime_linfit[0:-2]*Slope,'--r',lw=2)
+            ax0.set_title('Growth rate in time')
+            ax0.set_xlabel('Time (min)')
+            ax0.set_ylabel('Growth rate (A.U.)')
+            
+            ax1.plot(intTime,GR_S,'-c',lw=1,ms=2)
+            ax1.plot(intTime_flat,GR_flat,'--ro',lw=1,ms=2)
+            ax1.set_title('Smoothed GR +'+str(name_FitClass)+' fit')
+           
+            fig.tight_layout()
+            
+            plt.show()
+            
+            print('\nType of fit displayed : ' + FitResPlot.name)
+            print('R2 = ' + str(round(FitResPlot.R2()*1000)/1000) + ' - tdeb lin = ' + str(intTime[Len-1]) + ' - tdeb fit = ' + str(FitResPlot.tdeb()))
+            FitWindow
+        
+        if type(Delay) == float or type(Delay) == int :
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb() + Delay
+        else :
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_flat'] = FitRes_flat.tdeb()
+            
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_flat'] = np.argmin(np.abs(Time-FitRes_flat.tdeb())) # img shift for alignement on tdeb
+        if FitRes_flat.tdeb() > Time[0]:
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = (AreaI(FitRes_flat.tdeb())-AreaC[0])/AreaC[0] # % area increase at tdeb
+        else : 
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_flat'] = 0
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
+        # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0'] = W0*0.47 -138.3
+        
+        
+        # print('\nH0 estimate : W0 * 0.47 - 138.3 ')
+        # print('W0 = ' + str(W0) + ' µm')  
+        # print('H0 = ' + str(W0*0.47 -138.3) + ' µm')
+        
+        
+
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GR_end'] = GR_end*60*24 # in day-1
+        if type(Delay) == float or type(Delay) == int:
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = intTime[Len-1] + Delay
+        else :
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb_GR'] = intTime[Len-1]
+            
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'CaracT_GR'] = 1/np.sqrt(Slope)
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift_GR'] = Len-1 # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'GrowthAtStart_GR'] = (AreaI(intTime[Len-1])-AreaC[0])/AreaC[0] # % area increase at tdeb
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = FitResPlot.name
+        if type(Delay) == float or type(Delay) == int:
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() + Delay
+        else :
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdeb'] = FitResPlot.tdeb() 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-FitResPlot.tdeb())) # img shift for alignement on tdeb
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tau'] = FitResPlot.tau()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0fit'] = FitResPlot.A0()
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = FitResPlot.R2()
+        
+        if name_FitClass == 'ExpDel_t2':
+            GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tau0'] = FitResPlot.T0()
+        
+        
+    if Debug:
+            
+        fulltime = np.linspace(0,100,400)-25 # 400 instead of 200 for longer time course
+        GR_mean = np.nanmean(GRmat,axis = 1)
+        
+        fig00,ax = plt.subplots(dpi=200)
+        fig00.suptitle('Growth rates aligned')
+        ax.plot(fulltime,GRmat,lw = 1)
+        ax.plot(fulltime,GR_mean,'w--',lw = 2)
+        
+        
+        ax.plot(ax.get_xlim(),[0,0],'r-',lw=1.5)
+        
+        plt.show()
+    
+    return(GD)
+
+
+
 #%% Osmotic chocs fit
 
 # Fit the evolution of area in time during osmotic chocs. Compression is 
@@ -431,7 +694,7 @@ def fitAreaGrowth(StackList,Rows,GD,FPH,Delay,Th, **kwargs):
 
 # Kwargs : 'debug' (True/False) for generating debug plots
 
-def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
+def fitOsmoChoc(StackList,Rows,CD,GD,FPH, ImgStartComp,ImgEqComp,TstartComp,ImgStartRel,ImgEqRel,TstartRel, **kwargs):
     
     DebugPlots = False
     Concentration = 100 # mM
@@ -462,7 +725,7 @@ def fitOsmoChoc(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartComp,ImgSt
         print('Fitting curve for : ' + s.ljust(5), end='\n')           
         if type(Delay) == float :
             Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
-        if type(Delay) == list :
+        if type(Delay) == np.ndarray :
              Time = Delay
         AreaC = GD.loc[s,'Area'].values
         
@@ -862,6 +1125,7 @@ def fitOsmoChoc_multiple(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,TstartC
                                                       
         
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params[0] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFluxComp2'] = params2[0] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params[1] 
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params[2]  
         GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq2'] = params2[2]  
@@ -1457,6 +1721,172 @@ def fitOsmoChoc_plateau_plasmo(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,I
         Veq1bis = np.mean(AreaCFitComp3)
 
         ax.hlines(np.mean(AreaCFitComp3),DenseTimeComp3[0],DenseTimeComp3[-1], colors = 'orange', linestyles = 'dashed',lw=1)
+        
+        R2Comp3  = np.round(vf.computeR2(AreaCFitComp3,np.asarray([Veq1]*np.shape(AreaCFitComp3)[0]))*1000)/1000
+    
+        fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Comp2 : ' + str(R2Comp2) +' - R2Comp3 : ' + str(R2Comp3))
+        
+        
+        ## data for compression 4 fit 
+        if type(Delay) == float :
+            TimeFitComp4 = GD.loc[s,'Img'].values.astype(float)[ImgStartComp4:ImgEqComp4]/FPH*60 # in minutes
+        if type(Delay) == np.ndarray:
+            TimeFitComp4 = Delay[ImgStartComp4:ImgEqComp4]
+        TimeFitComp4 = TimeFitComp4 - TimeOffset
+        AreaCFitComp4 = AreaC[ImgStartComp4:ImgEqComp4]
+        
+        DenseTimeComp4 = np.linspace(TimeFitComp4[0],TimeFitComp4[-1],100)
+               
+        ax.plot(TimeFitComp4,AreaCFitComp4,'*m',ms=2,label='FittedDataComp4')
+
+        # fit of compression 2
+        Veq2 = np.mean(AreaCFitComp4)
+
+        ax.hlines(np.mean(AreaCFitComp4),DenseTimeComp4[0],DenseTimeComp4[-1],colors = 'red', linestyles = 'dashed',lw=1)
+        
+        R2Comp4  = np.round(vf.computeR2(AreaCFitComp4,np.asarray([Veq2]*np.shape(AreaCFitComp4)[0]))*1000)/1000
+    
+        fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Comp2 : ' + str(R2Comp2) + ' - R2Comp3 : ' + str(R2Comp3) + ' - R2Comp4 : ' + str(R2Comp4))
+
+
+        # Physical parameters
+                                                      
+    
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = V0
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = Veq1  
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq2'] = Veq1bis
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aplasmo_Comp3'] = Veq2 
+        
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_Comp2'] = R2Comp2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_Comp3'] = R2Comp3
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2_Comp4'] = R2Comp4
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = '3 Osm. shocks - last plasmo'
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'ChipRow'] = row
+        
+
+        fig.tight_layout()
+        
+        if DebugPlots:
+            plt.show()
+        else:
+            plt.close(fig)
+        
+        
+    
+    return(GD)
+
+
+def fitOsmoChoc_plateau_plasmo_peaks(StackList,Rows,CD,GD,FPH,ImgStartComp,ImgEqComp,ImgStartComp2,ImgEqComp2,ImgStartComp3,ImgEqComp3, ImgStartComp4,ImgEqComp4, peaks, **kwargs):
+    
+    DebugPlots = False
+    Concentration = 100 # mM
+    Delay = 0.0
+    Sort = True
+    
+    for key, value in kwargs.items(): 
+        if key == 'debug':
+            DebugPlots = value
+        elif key == "C_osmo":
+            Concentration = value
+        elif key ==  "Delay":
+            Delay = value
+        elif key == 'Sorting':
+            Sort = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    if Sort :
+        print('Sorting data.')
+        CD,GD,StackList = sortChocs(CD,GD,StackList,ImgStartComp,ImgEqComp,DebugPlots)      
+
+    for s,row in zip(StackList,Rows):
+        
+        print('Fitting curve for : ' + s.ljust(5), end='\n')           
+        
+        if type(Delay) == float :
+            Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
+        if type(Delay) == np.ndarray :
+            Time = Delay
+        AreaC = GD.loc[s,'Area'].values
+        
+        ## data for compression 1 fit
+        if type(Delay) == float or type(Delay) == int :
+            TimeFitComp = GD.loc[s,'Img'].values.astype(float)[ImgStartComp:ImgEqComp]/FPH*60 # in minutes
+        if type(Delay) == np.ndarray :
+            TimeFitComp = Delay[ImgStartComp:ImgEqComp]
+        TimeOffset = TimeFitComp[0]
+        Time = Time - TimeOffset
+        TimeFitComp = TimeFitComp - TimeOffset
+        AreaCFitComp = AreaC[ImgStartComp:ImgEqComp]
+               
+        fig,ax = plt.subplots(dpi=300)
+        ax.plot(Time,AreaC,'*y',ms=3,label='FullData')
+        ax.set_xlabel('Time (min)')
+        ax.set_ylabel('Area (mm²)')
+
+        DenseTimeComp = np.linspace(TimeFitComp[0],TimeFitComp[-1],100)
+
+        # fit of compression 1
+        V0 = np.mean(AreaCFitComp)
+        R2 = np.round(vf.computeR2(AreaCFitComp,np.asarray([V0]*np.shape(AreaCFitComp)[0]))*1000)/1000
+
+        fig.suptitle(s + ' - R2Comp : ' + str(R2) )
+        
+        ax.plot(TimeFitComp,AreaCFitComp,'*c',ms=2,label='FittedData')
+        ax.hlines( np.mean(AreaCFitComp),DenseTimeComp[0], DenseTimeComp[-1],colors = 'blue',linestyles = 'dashed', lw=1)
+        
+        ## data for compression 2 fit 
+        if type(Delay) == float :
+            TimeFitComp2 = GD.loc[s,'Img'].values.astype(float)[ImgStartComp2:ImgEqComp2]/FPH*60 # in minutes
+        if type(Delay) == np.ndarray:
+            TimeFitComp2 = Delay[ImgStartComp2:ImgEqComp2]
+        TimeFitComp2 = TimeFitComp2 - TimeOffset
+        AreaCFitComp2 = AreaC[ImgStartComp2:ImgEqComp2]
+        
+        DenseTimeComp2 = np.linspace(TimeFitComp2[0],TimeFitComp2[-1],100)
+               
+        ax.plot(TimeFitComp2,AreaCFitComp2,'*m',ms=2,label='FittedDataComp2')
+
+        # fit of compression 2
+        if peaks[0] == 'max':
+            Veq1 = np.max(AreaCFitComp2)
+        elif peaks[0] == 'min':
+            Veq1 = np.min(AreaCFitComp2)
+        else :
+            Veq1 = np.mean(AreaCFitComp2)
+
+        ax.hlines(Veq1,DenseTimeComp2[0],DenseTimeComp2[-1], colors = 'orange', linestyles = 'dashed',lw=1)
+        
+        R2Comp2  = np.round(vf.computeR2(AreaCFitComp2,np.asarray([Veq1]*np.shape(AreaCFitComp2)[0]))*1000)/1000
+    
+        fig.suptitle(s + ' - R2Comp : ' + str(R2) + ' - R2Comp2 : ' + str(R2Comp2))
+        
+        
+        ## data for compression 3 fit 
+        if type(Delay) == float :
+            TimeFitComp3 = GD.loc[s,'Img'].values.astype(float)[ImgStartComp3:ImgEqComp3]/FPH*60 # in minutes
+        if type(Delay) == np.ndarray:
+            TimeFitComp3 = Delay[ImgStartComp3:ImgEqComp3]
+        TimeFitComp3 = TimeFitComp3 - TimeOffset
+        AreaCFitComp3 = AreaC[ImgStartComp3:ImgEqComp3]
+        
+        DenseTimeComp3 = np.linspace(TimeFitComp3[0],TimeFitComp3[-1],100)
+               
+        ax.plot(TimeFitComp3,AreaCFitComp3,'*m',ms=2,label='FittedDataComp3')
+
+        # fit of compression 3
+        if peaks[1] == 'max':
+            Veq1bis = np.max(AreaCFitComp3)
+        elif peaks[1] == 'min':
+            Veq1bis = np.min(AreaCFitComp3)
+        else :
+            Veq1bis = np.mean(AreaCFitComp3)
+        
+
+        ax.hlines(Veq1bis,DenseTimeComp3[0],DenseTimeComp3[-1], colors = 'orange', linestyles = 'dashed',lw=1)
         
         R2Comp3  = np.round(vf.computeR2(AreaCFitComp3,np.asarray([Veq1]*np.shape(AreaCFitComp3)[0]))*1000)/1000
     
