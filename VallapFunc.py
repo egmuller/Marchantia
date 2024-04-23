@@ -106,6 +106,47 @@ def boxswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
     ax.set_xticklabels(Labels, fontsize = FSize)
     
     return(fig,ax,cap,med)
+
+def vioswarmplot(Title,Ylabel,Data,facecolors,Labels,**kwargs):
+
+    fig,ax = plt.subplots(dpi = 250,facecolor='white',figsize = (5,3.5))
+    fig.suptitle(Title)
+ 
+    FSize = 5
+    
+    for key, value in kwargs.items(): 
+        if key == 'FSize':
+            FSize = value
+    
+    cap= [None]*len(Data)
+    med= [None]*len(Data)
+    
+    grouping = []
+    
+    for dat,col,lab,i in zip(Data,facecolors,Labels,range(len(Data))):
+    
+        # plots properties
+        plotprops = {'color':'black'}
+        #boxprops = {'color':'black','facecolor':col}
+        
+        lab = lab + '\nn = ' + str(len(dat))
+        
+        Labels[i] = lab
+
+        bp = ax.violinplot(dat, positions = [i])
+        
+        
+        grouping = np.append(grouping,np.ones(len(dat))*i)
+    
+        
+    
+    sns.swarmplot(x=grouping,y=pd.concat(Data),color = 'lightgray', size=2, ax = ax)
+    
+    ax.set_ylabel(Ylabel)
+    
+    ax.set_xticklabels(Labels, fontsize = FSize)
+    
+    return(fig,ax,cap,med)
     
 
 # 3. Coordinate conversion from cartesian to circular (in deg) an vice versa
@@ -295,8 +336,8 @@ def GrowthRate(A,Time):
     dt = np.diff(Time)
     
     dAdt = np.divide(dA,dt)
-    #dAdt_S = savgol_filter(dAdt, 11, 3) # usual value 
-    dAdt_S = savgol_filter(dAdt, 9, 3)  # for initial growth   
+    dAdt_S = savgol_filter(dAdt, 11, 3) # usual value 
+    #dAdt_S = savgol_filter(dAdt, 9, 3)  # for initial growth   
     
     intTime = Time[0:-1]+dt/2
     
@@ -304,8 +345,8 @@ def GrowthRate(A,Time):
     inv_f = interp1d(Time,inv_A)
     inv_A_timed = inv_f(intTime)
     
-    #inv_A_S = savgol_filter(inv_A_timed,11, 3) # usual value
-    inv_A_S = savgol_filter(inv_A_timed,9, 3) # for initial growth
+    inv_A_S = savgol_filter(inv_A_timed,11, 3) # usual value
+    #inv_A_S = savgol_filter(inv_A_timed,9, 3) # for initial growth
     
     
     GR = np.multiply(inv_A_timed,dAdt)
