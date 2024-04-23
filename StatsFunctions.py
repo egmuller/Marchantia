@@ -29,11 +29,12 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
     s,p = ranksums(data1,data2)
     mad = np.mean(np.abs(data1-np.median(data1)))
     ES = (np.median(data2)-np.median(data1))/mad
+    RC = (np.median(data2)-np.median(data1))/np.median(data1)*100
                         
     if pos2 == pos1+1: 
         h = np.median([np.median(data1),np.median(data2)])
         ax.plot([pos1+0.2, pos2-0.2], [h ,h], 'k-',zorder=0)
-        ax.text((pos1+pos2)/2,h+1*step,'p = ' + str(np.round(p*1000)/1000) + '\nES = ' + str(np.round(ES*10)/10), ha='center',fontsize='x-small')
+        ax.text((pos1+pos2)/2,h+1*step,'p = ' + str(np.round(p*1000)/1000) + '\nRC = '+str(round(RC))+ '\%\nES = ' + str(np.round(ES*10)/10), ha='center',fontsize='x-small')
         ax.set_ylim(top=hmax+fullstep+step)
             
     else:       
@@ -41,7 +42,7 @@ def plotSig(ax,hmax,step,fullstep,data1,data2,pos1,pos2):
         fullstep += step
         ax.plot([pos1, pos2], [h+fullstep ,h+fullstep], 'k-',zorder=0)
         #ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + str(round(p*1000)/1000), ha='center',fontsize='small')
-        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + str(np.round(p*1000)/1000) + ' - ES = ' + str(np.round(ES*10)/10), ha='center',fontsize='x-small')
+        ax.text((pos1+pos2)/2,h+fullstep+0.2*step,'p = ' + str(np.round(p*1000)/1000)  + '\nRC = '+str(round(RC))+ '\% - ES = ' + str(np.round(ES*10)/10), ha='center',fontsize='x-small')
         ax.set_ylim(top=h+fullstep+step)
 
     return(fullstep)
