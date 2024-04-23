@@ -19,6 +19,9 @@ from IPython import get_ipython
 from scipy.spatial import ConvexHull
 from skimage.morphology import binary_opening, binary_closing, remove_small_holes
 
+import scipy.ndimage
+import scipy as sp
+
 from ContourAnalysis import getLandmarks
 
 import VallapFunc as vf
@@ -135,6 +138,8 @@ def selectGemmae(P, StackList, size = 300, nimg = 10):
         
 
     return OpticalStack, Not2notches, Confined
+
+
 
 #%% Get points of interest
 
@@ -381,7 +386,6 @@ def RotateTranslate_Automatic(GD, StackList,P, stringName,  ** kwargs): # add th
         print('Processing ' + s + ' :')    
         if not DontProcess : 
             for i in range(nimg):
-                
                 img = RGBstack[i]
                 img = cv.copyMakeBorder(
                         img,
@@ -814,22 +818,22 @@ def RemoveBackgroundStack_Flow(StackList, P, Scale, **kwargs):
         RefBright = Brightness.mean()
 
         # harmonizing between images
-        for i in imglist:
+        #for i in imglist:
             
-            HSVslice = cv.cvtColor(RGBstack[i,:,:,:], cv.COLOR_BGR2HSV)
+         #   HSVslice = cv.cvtColor(RGBstack[i,:,:,:], cv.COLOR_BGR2HSV)
         
-            Brightness = HSVslice[:,:,2].astype(float)
-            Bright = Brightness.mean()
-            factor = RefBright / Bright
-            CorrecBright = Brightness*factor
-            CorrecBright = np.round(CorrecBright)
-            CorrecBright[CorrecBright>254] = 255
-            newfactor = RefBright / CorrecBright.mean()
-            TrueCorrecBright = CorrecBright*newfactor
-            TrueCorrecBright = np.round(TrueCorrecBright)
-            TrueCorrecBright[TrueCorrecBright>254] = 255
-            HSVslice[:,:,2] = TrueCorrecBright.astype('uint8')
-            RGBstack[i,:,:,:] = cv.cvtColor(HSVslice, cv.COLOR_HSV2BGR)
+          #  Brightness = HSVslice[:,:,2].astype(float)
+          #  Bright = Brightness.mean()
+          #  factor = RefBright / Bright
+          #  CorrecBright = Brightness*factor
+          #  CorrecBright = np.round(CorrecBright)
+          #  CorrecBright[CorrecBright>254] = 255
+          #  newfactor = RefBright / CorrecBright.mean()
+          #  TrueCorrecBright = CorrecBright*newfactor
+          #  TrueCorrecBright = np.round(TrueCorrecBright)
+          #  TrueCorrecBright[TrueCorrecBright>254] = 255
+           # HSVslice[:,:,2] = TrueCorrecBright.astype('uint8')
+            #RGBstack[i,:,:,:] = cv.cvtColor(HSVslice, cv.COLOR_HSV2BGR)
             
             
         #### adjusting white balance
@@ -1229,6 +1233,9 @@ def MainOpticalFlow_AutomaticLandmarks_RemoveBgLast(P, StackList, Scale, ToDo, s
     else :
         OpticalStack = np.loadtxt(P+"/OpticalStack.csv", delimiter =", ", dtype = str)
         print(OpticalStack)
+        
+    if "UsePPG" in ToDo:
+        OpticalStack = StackList
     
     if DoAlign:
         
@@ -2009,8 +2016,850 @@ def compareFlow(Ps, Stacklists, FPHs, Delays, TimeFrames, nvec = 20, factor = 1.
 """         
 
 
+#%% Compute strain rate
+
+def add_border_right_down(Matrix, size_down, size_right):
+        border = cv.copyMakeBorder(Matrix,
+                                    top=0,
+                                    bottom=size_down,
+                                    left=0,
+                                    right=size_right,
+                                    borderType=cv.BORDER_CONSTANT,
+                                    value=np.nan ) 
+        return border
+    
+    
+def filter_matrix(Mat, sigma, truncate = 4.0):
+    VV=Mat.copy()
+    VV[np.isnan(Mat)]=0
+    VV=sp.ndimage.gaussian_filter(VV,sigma=sigma,truncate=truncate)
+
+    W=0*Mat.copy()+1
+    W[np.isnan(Mat)]=0
+    WW=sp.ndimage.gaussian_filter(W,sigma=sigma,truncate=truncate)
+
+    Mat_filt=VV/WW
+    Mat_filt[np.isnan(Mat)] = np.nan
+    
+    return Mat_filt
+
+
+def add_border_right_down_int(Matrix, size_down, size_right,size_up=0, size_left=0):
+        border = cv.copyMakeBorder(Matrix,
+                                    top=size_up,
+                                    bottom=size_down,
+                                    left=size_left,
+                                    right=size_right,
+                                    borderType=cv.BORDER_CONSTANT,
+                                    value=0 ) 
+        return border
+
+
+
+### Less heavy function
+def StrainRateV2(GD, P, OpticalStack, FiltCoeff = 30.0, t_min = 1, t_max = 30,sizeimg = 1000, th = 0):
+    
+    ## Get reference point
+    
+    if not os.path.exists(P + '/StrainRate/'):
+        os.mkdir(P + '/StrainRate/' )
         
+        
+    if th == 0 : 
+    
+        s = OpticalStack[0]
+        i = 0
+        
+        Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Yn1Al'])
+        Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn1Al'])
+        Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn2Al'])
+        thY = int(Yn1Al)
+        thX = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2) # return at the end of the function
+        
+    else :
+       thX, thY = th
+    
+    
+    for s in OpticalStack : 
+        
+        print(str(s))
+    
+        Pflow = P + '/Flow/' + str(s) + '_FlowNoBackground/'
+        
+        if not os.path.exists(P + '/StrainRate/' + str(s) + '/'):
+            os.mkdir(P + '/StrainRate/'  + str(s) + '/')
+        
+        ## Get reference point for the whole gemmae
+        Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == 0),'Yn1Al'])
+        Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == 0),'Xn1Al'])
+        Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == 0),'Xn2Al'])
+        thYs = int(Yn1Al)
+        thXs = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2)
+        M = np.float32([[1,0,thX-thXs], [0,1,thY-thYs]])
+    
+    
+        for i in range(t_min,t_max):
+            
+            # load data
+            U = io.imread(Pflow+str(i)+"_U.tif")
+            V = io.imread(Pflow+str(i)+"_V.tif")
+            
+            # Align all gemmae
+            shifted_V = cv.warpAffine(V, M, (V.shape[1],V.shape[0]),borderValue = np.nan)
+            shifted_U = cv.warpAffine(U, M, (U.shape[1],U.shape[0]),borderValue = np.nan)
+            
+            # filter
+            Vfilt = filter_matrix(shifted_V, FiltCoeff)
+            Ufilt = filter_matrix(shifted_U, FiltCoeff)
+            
+            # calculate strain rate
+            Gx_dy,Gx_dx = np.gradient(Ufilt) 
+            Gy_dy,Gy_dx = np.gradient(Vfilt)
+            
+            SR = Gx_dx +Gy_dy
+        
+            io.imsave(P + '/StrainRate/' + str(s) + '/t' + str(i) + '.tif', SR, plugin='tifffile')
 
     
+    return thX,thY
 
+
+def ScaleStrainRateV2(GD, P, OpticalStack, t_min, t_max, targetShape, max_size, th = 0):
+    
+    max0 = targetShape[0]
+    max1 = targetShape[1]
+    
+    if th == 0 :
+    
+        s = OpticalStack[0]
+        i = 0
+        
+        Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Yn1Al'])
+        Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn1Al'])
+        Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn2Al'])
+        thY = int(Yn1Al)
+        thX = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2)
+        
+    else :
+        thX, thY = th
+    
+    if not os.path.exists(P + '/StrainRateScaled/'):
+        os.mkdir((P + '/StrainRateScaled/'))
+        
+    if not os.path.exists(P + '/ShapeScaled/'):
+        os.mkdir((P + '/ShapeScaled/'))
+    
+    # Load data
+    for s in OpticalStack:
+        
+        print('\n '+str(s))
+        
+        if not os.path.exists(P + '/StrainRateScaled/'  + str(s) + '/'):
+            os.mkdir(P + '/StrainRateScaled/'  + str(s) + '/')
+            
+        if not os.path.exists(P + '/ShapeScaled/'  + str(s) + '/'):
+            os.mkdir(P + '/ShapeScaled/'  + str(s) + '/')
+            
+        for t in range(t_min,t_max):
+            # load data
+            SR = io.imread(P + '/StrainRate/' + str(s) + '/t' + str(t) + '.tif')
+            
+            # get shape
+            V = np.array(~np.isnan(SR.copy()), dtype=int)
+            
+            # Normalize by area
+            Size = np.sum(V)
+            fac = (max_size/Size)**(1/2) 
+            
+            dsize = ( round(np.shape(V)[1]*fac), round(np.shape(V)[0]*fac) )
+            V_scaled = cv.resize(V.astype('float32'), dsize, interpolation = cv.INTER_LINEAR)
+            SR_scaled = cv.resize(SR.astype('float32'), dsize, interpolation = cv.INTER_LINEAR)
+            
+            SR_scaled[np.isnan(SR_scaled)] = 0 # needed ??
+            
+            #Realign
+            thY_g = thY * fac 
+            thX_g = thX * fac 
+            M = np.float32([[1,0,thX-thX_g], [0,1,thY-thY_g]])
+            
+            Vshifted = cv.warpAffine(V_scaled, M, (V_scaled.shape[1],V_scaled.shape[0]),borderValue = 0)
+            SRshifted = cv.warpAffine(SR_scaled, M, (SR_scaled.shape[1],SR_scaled.shape[0]),borderValue = 0)
+            
+            if np.shape(SRshifted)[0] < max0:
+                size_down = max0 - np.shape(SRshifted)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(SRshifted)[1] < max1:
+                size_right = max1 - np.shape(SRshifted)[1]
+            else :
+                size_right = 0
+                
+            SRend = add_border_right_down_int(SRshifted, size_down, size_right)
+            
+            io.imsave(P + '/StrainRateScaled/' + str(s) + '/t' + str(t) + '.tif', SRend, plugin='tifffile')
+            
+            #U = io.imread(P + '/ShapeScaledTemp/' + str(s) + '/t' + str(t) + '.tif')
+            
+            if np.shape(Vshifted)[0] < max0:
+                size_down = max0 - np.shape(Vshifted)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(Vshifted)[1] < max1:
+                size_right = max1 - np.shape(Vshifted)[1]
+            else :
+                size_right = 0
+                
+            Vend = add_border_right_down_int(Vshifted, size_down, size_right)
+            
+            io.imsave(P + '/ShapeScaled/' + str(s) + '/t' + str(t) + '.tif', Vend, plugin='tifffile')
+             
+    return 
+
+
+
+#%%
+
+
+
+def StrainRate(GD, P, OpticalStack, FiltCoeff = 30.0, t_min = 1, t_max = 30,sizeimg = 1000):
+    
+    ## Load data
+    print('\n Loading data')
+    V_main = []
+    U_main = []
+    
+    for s in OpticalStack : 
+    
+        Pflow = P + '/Flow/' + str(s) + '_FlowNoBackground/'
+    
+        V_list = []
+        U_list = []
+    
+        for i in range(t_min,t_max):
+            U = io.imread(Pflow+str(i)+"_U.tif")
+            V = io.imread(Pflow+str(i)+"_V.tif")
+            V_list.append(V[:sizeimg,:sizeimg]) # change to reduce size
+            U_list.append(U[:sizeimg,:sizeimg]) #change to reduce size
+            
+        V_main.append(V_list)
+        U_main.append(U_list)
+        
+        
+    ## Align
+    print('\n Aligning Gemmae')
+    
+    V_main_shifted = []
+    U_main_shifted = []
+    
+    # Get reference points for the first gemmae
+    s = OpticalStack[0]
+    i = 0
+    
+    Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Yn1Al'])
+    Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn1Al'])
+    Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn2Al'])
+    thY = int(Yn1Al)
+    thX = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2)
+    
+    # add unchange first gemmae
+    V_main_shifted.append(V_main[0])
+    U_main_shifted.append(U_main[0])
+    
+    n_s = 1
+    for s in OpticalStack[1:]:
+        Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Yn1Al'])
+        Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn1Al'])
+        Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn2Al'])
+        thYs = int(Yn1Al)
+        thXs = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2)
+        M = np.float32([[1,0,thX-thXs], [0,1,thY-thYs]])
+        
+        Vshifted = []
+        Ushifted = []
+        for vi in range(len(V_main[n_s])):
+        
+            shifted_V = cv.warpAffine(V_main[n_s][vi], M, (V_main[n_s][vi].shape[1],V_main[n_s][vi].shape[0]),borderValue = np.nan)
+            shifted_U = cv.warpAffine(U_main[n_s][vi], M, (U_main[n_s][vi].shape[1],U_main[n_s][vi].shape[0]),borderValue = np.nan)
+            Vshifted.append(shifted_V)
+            Ushifted.append(shifted_U)
+            
+        V_main_shifted.append(Vshifted)
+        U_main_shifted.append(Ushifted)
+        n_s += 1
+        
+        
+    ## Same Image Size ## ,ot useful yet ?
+    #print('\n Making Matrices the same size')
+    
+    #V_main_size = []
+    #U_main_size = []
+    
+    #Shape0 = [np.shape(V[0])[0] for V in V_main_shifted]
+    #Shape1 = [np.shape(V[0])[1] for V in V_main_shifted]
+    
+    #max0 = max(Shape0)
+    #max1 = max(Shape1)
+    
+    #for s in range(len(OpticalStack)):   
+     #   Vsize = []
+      #  Usize = []
+        
+    
+       # for V,U in zip(V_main_shifted[s],U_main_shifted[s]) :
+    
+        #    if np.shape(V)[0] < max0:
+         #       size_down = max0 - np.shape(V)[0]
+          #  else :
+           #     size_down = 0
+    
+            #if np.shape(V)[1] < max1:
+             #   size_right = max1 - np.shape(V)[1]
+            #else :
+             #   size_right = 0
+    
+            #Vsize.append(add_border_right_down(V, size_down, size_right))
+            #Usize.append(add_border_right_down(U, size_down, size_right))
+            
+        #V_main_size.append(Vsize)
+        #U_main_size.append(Usize)
+        
+    V_main_size = V_main_shifted
+    U_main_size = U_main_shifted
+        
+    ## Filter Matrix
+    print('\n Filtering')
+    
+    U_filt_list = []
+    for Ulist in U_main_size :
+        Ufilt = []
+        for U in Ulist :
+            Ufilt.append(filter_matrix(U, FiltCoeff))
+        U_filt_list.append(Ufilt)
+        
+    V_filt_list = []
+    for Vlist in V_main_size :
+        Vfilt = []
+        for V in Vlist :
+            Vfilt.append(filter_matrix(V, FiltCoeff))
+        V_filt_list.append(Vfilt)
+        
+        
+    ## Calculate Grad
+    print('\n Calculating strain rate tensor component')
+    
+    Grad_U_dx = []
+    Grad_U_dy = []
+    for U_filt in U_filt_list :
+        Gxdx_list = []
+        Gxdy_list = []
+        for U in U_filt :
+            Gx_dy,Gx_dx = np.gradient(U)
+            Gxdx_list.append(Gx_dx)
+            Gxdy_list.append(Gx_dy)
+            
+        Grad_U_dx.append(Gxdx_list)
+        Grad_U_dy.append(Gxdy_list)
+        
+    Grad_V_dx = []
+    Grad_V_dy = []
+    for V_filt in V_filt_list :
+        Gydx_list = []
+        Gydy_list = []
+        for V in V_filt :
+            Gy_dy,Gy_dx = np.gradient(V)
+            Gydx_list.append(Gy_dx)
+            Gydy_list.append(Gy_dy)
+            
+        Grad_V_dx.append(Gydx_list)
+        Grad_V_dy.append(Gydy_list)
+        
+        
+    # Get Strain rate
+    print('\n Calculating strain rate tensor sum(Trace)')
+    SR_list = []
+
+    for GradV, GradU in zip(Grad_V_dy, Grad_U_dx):
+        SR = [V+U for V,U in zip(GradV, GradU)]
+        SR_list.append(SR)
+    
+    # Save Strain rate
+    print('\n Saving data')
+    if not os.path.exists(P + '/StrainRate/'):
+        os.mkdir(P + '/StrainRate/' )
+    for s in range(len(SR_list)):
+        if not os.path.exists(P + '/StrainRate/' + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/StrainRate/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(SR_list[s])):
+            io.imsave(P + '/StrainRate/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', SR_list[s][t], plugin='tifffile')
+
+    
+    return SR_list
+
+def ScaleStrainRatePart1(GD, P, OpticalStack, t_min, t_max,sizeimg = 1000):
+    
+    # Load data
+    print('\n load data')
+    SR_list = []
+    for s in OpticalStack:
+        SR_lists = []
+        for t in range(t_min,t_max):
+            U = io.imread(P + '/StrainRate/' + str(s) + '/t' + str(t) + '.tif')
+            SR_lists.append(U[:sizeimg, :sizeimg])
+             
+        SR_list.append(SR_lists)
+       
+    # get shape
+    print('\n Get gemae shape')
+    SR_int = [[ np.array(~np.isnan(V.copy()), dtype=int) for V in SR] for SR in SR_list]
+    
+    # normaliser en fonction de la taille
+    print('\n Area normalization')
+    Size = [[np.sum(V) for V in SR_int_PPG] for SR_int_PPG in SR_int]
+    
+    max_size = max([max(s) for s in Size])
+    print('\n maximum size is : ', max_size)
+    fac_list = [[(max_size/si)**(1/2) for si in SizeList] for SizeList in Size]
+    
+    SR_int_scaled = []
+    
+    for Vppg in range(len(SR_int)):
+        print(Vppg)
+        
+        Vlist_scaled = []
+        for i in range(len(SR_int[Vppg])): 
+            fac = fac_list[Vppg][i]
+            V = SR_int[Vppg][i]
+            dsize = ( round(np.shape(V)[1]*fac), round(np.shape(V)[0]*fac) )
+            Vlist_scaled.append(cv.resize(V.astype('float32'), dsize, interpolation = cv.INTER_LINEAR))
+        
+        SR_int_scaled.append(Vlist_scaled)
+        
+    SR_scaled = []
+
+    for Vppg in range(len(SR_list)):
+        print(Vppg)
+        
+        Slist_scaled = []
+        for i in range(len(SR_list[Vppg])): 
+            fac = fac_list[Vppg][i]
+            V = SR_list[Vppg][i]
+            dsize = ( round(np.shape(V)[1]*fac), round(np.shape(V)[0]*fac) )
+            Slist_scaled.append(cv.resize(V.astype('float32'), dsize, interpolation = cv.INTER_LINEAR))
+        
+        SR_scaled.append(Slist_scaled)
+        
+    for i in range(len(SR_scaled)):
+        for j in range(len(SR_scaled[i])):
+            SR_scaled[i][j][np.isnan(SR_scaled[i][j])] = 0
+            
+            
+    # Get landamarks
+    print('\n Realigning')
+    s = OpticalStack[0]
+    i = 0
+    
+    Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Yn1Al'])
+    Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn1Al'])
+    Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn2Al'])
+    thY = int(Yn1Al)
+    thX = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2)
+    
+    thY_list = [[thY * fac for fac in fac_list[i]] for i in range(len(fac_list))]
+    thX_list = [[thX * fac for fac in fac_list[i]] for i in range(len(fac_list))]
+    
+    # Realigned
+    V_scaled_shifted = []
+
+    ns = 0
+    for Vlist in SR_int_scaled:
+        ns2 = 0
+        V_list_shifted = []
+        for V in Vlist:
+        
+            M = np.float32([[1,0,thX_list[0][0]-thX_list[ns][ns2]], [0,1,thY_list[0][0]-thY_list[ns][ns2]]])
+            shifted = cv.warpAffine(V, M, (V.shape[1],V.shape[0]),borderValue = 0)
+            V_list_shifted.append(shifted)
+            ns2 += 1
+        
+        V_scaled_shifted.append(V_list_shifted)
+        ns += 1
+        
+    SR_scaled_shifted = []
+
+    ns = 0
+    for SRlist in SR_scaled:
+        ns2 = 0
+        SR_list_shifted = []
+        for SR in SRlist:
+            M = np.float32([[1,0,thX_list[0][0]-thX_list[ns][ns2]], [0,1,thY_list[0][0]-thY_list[ns][ns2]]])
+            shifted = cv.warpAffine(SR, M, (SR.shape[1],SR.shape[0]),borderValue = 0)
+            SR_list_shifted.append(shifted)
+            ns2 += 1
+        
+        SR_scaled_shifted.append(SR_list_shifted)
+        ns += 1
+        
+        
+    print('\n Saving data')
+        
+    if not os.path.exists(P + '/StrainRateScaledTemp/'):
+        os.mkdir((P + '/StrainRateScaledTemp/'))
+            
+    for s in range(len(SR_scaled_shifted)):
+        if not os.path.exists(P + '/StrainRateScaledTemp/'  + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/StrainRateScaledTemp/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(SR_scaled_shifted[s])):
+            io.imsave(P + '/StrainRateScaledTemp/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', SR_scaled_shifted[s][t], plugin='tifffile')
+         
+            
+    if not os.path.exists(P + '/ShapeScaledTemp/'):
+        os.mkdir((P + '/ShapeScaledTemp/'))
+            
+    for s in range(len(V_scaled_shifted)):
+        if not os.path.exists(P + '/ShapeScaledTemp/'  + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/ShapeScaledTemp/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(V_scaled_shifted[s])):
+            io.imsave(P + '/ShapeScaledTemp/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', V_scaled_shifted[s][t], plugin='tifffile')
+        
+    return V_scaled_shifted, SR_scaled_shifted
+
+def ScaleStrainRate(GD, P, OpticalStack, t_min, t_max,sizeimg = 1000):
+    
+    # Load data
+    print('\n load data')
+    SR_list = []
+    for s in OpticalStack:
+        SR_lists = []
+        for t in range(t_min,t_max):
+            U = io.imread(P + '/StrainRate/' + str(s) + '/t' + str(t) + '.tif')
+            SR_lists.append(U[:sizeimg, :sizeimg])
+             
+        SR_list.append(SR_lists)
+       
+    # get shape
+    print('\n Get gemae shape')
+    SR_int = [[ np.array(~np.isnan(V.copy()), dtype=int) for V in SR] for SR in SR_list]
+    
+    # normaliser en fonction de la taille
+    print('\n Area normalization')
+    Size = [[np.sum(V) for V in SR_int_PPG] for SR_int_PPG in SR_int]
+    
+    max_size = max([max(s) for s in Size])
+    print('\n maximum size is : ', max_size)
+    fac_list = [[(max_size/si)**(1/2) for si in SizeList] for SizeList in Size]
+    
+    SR_int_scaled = []
+    
+    for Vppg in range(len(SR_int)):
+        print(Vppg)
+        
+        Vlist_scaled = []
+        for i in range(len(SR_int[Vppg])): 
+            fac = fac_list[Vppg][i]
+            V = SR_int[Vppg][i]
+            dsize = ( round(np.shape(V)[1]*fac), round(np.shape(V)[0]*fac) )
+            Vlist_scaled.append(cv.resize(V.astype('float32'), dsize, interpolation = cv.INTER_LINEAR))
+        
+        SR_int_scaled.append(Vlist_scaled)
+        
+    SR_scaled = []
+
+    for Vppg in range(len(SR_list)):
+        print(Vppg)
+        
+        Slist_scaled = []
+        for i in range(len(SR_list[Vppg])): 
+            fac = fac_list[Vppg][i]
+            V = SR_list[Vppg][i]
+            dsize = ( round(np.shape(V)[1]*fac), round(np.shape(V)[0]*fac) )
+            Slist_scaled.append(cv.resize(V.astype('float32'), dsize, interpolation = cv.INTER_LINEAR))
+        
+        SR_scaled.append(Slist_scaled)
+        
+    for i in range(len(SR_scaled)):
+        for j in range(len(SR_scaled[i])):
+            SR_scaled[i][j][np.isnan(SR_scaled[i][j])] = 0
+            
+            
+    # Get landamarks
+    print('\n Realigning')
+    s = OpticalStack[0]
+    i = 0
+    
+    Yn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Yn1Al'])
+    Xn1Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn1Al'])
+    Xn2Al = float(GD.loc[(GD.index == s) & (GD['Img'] == i),'Xn2Al'])
+    thY = int(Yn1Al)
+    thX = int(min(Xn1Al, Xn2Al)+ abs(Xn1Al-Xn2Al)/2)
+    
+    thY_list = [[thY * fac for fac in fac_list[i]] for i in range(len(fac_list))]
+    thX_list = [[thX * fac for fac in fac_list[i]] for i in range(len(fac_list))]
+    
+    # Realigned
+    V_scaled_shifted = []
+
+    ns = 0
+    for Vlist in SR_int_scaled:
+        ns2 = 0
+        V_list_shifted = []
+        for V in Vlist:
+        
+            M = np.float32([[1,0,thX_list[0][0]-thX_list[ns][ns2]], [0,1,thY_list[0][0]-thY_list[ns][ns2]]])
+            shifted = cv.warpAffine(V, M, (V.shape[1],V.shape[0]),borderValue = 0)
+            V_list_shifted.append(shifted)
+            ns2 += 1
+        
+        V_scaled_shifted.append(V_list_shifted)
+        ns += 1
+        
+    SR_scaled_shifted = []
+
+    ns = 0
+    for SRlist in SR_scaled:
+        ns2 = 0
+        SR_list_shifted = []
+        for SR in SRlist:
+            M = np.float32([[1,0,thX_list[0][0]-thX_list[ns][ns2]], [0,1,thY_list[0][0]-thY_list[ns][ns2]]])
+            shifted = cv.warpAffine(SR, M, (SR.shape[1],SR.shape[0]),borderValue = 0)
+            SR_list_shifted.append(shifted)
+            ns2 += 1
+        
+        SR_scaled_shifted.append(SR_list_shifted)
+        ns += 1
+        
+    # Matrices at the same size
+    print('\n Making matrices the same size')
+    Shape0 = [[np.shape(V)[0] for V in V_scaled_shifted[i]] for i in range(len(V_scaled_shifted))]
+    Shape1 = [[np.shape(V)[1] for V in V_scaled_shifted[i]] for i in range(len(V_scaled_shifted))]
+    
+    V_end = []
+    
+    max0 = max([max(s) for s in Shape0])
+    max1 = max([max(s) for s in Shape1])
+    
+    for Vlist in V_scaled_shifted:
+        Vend_list = []
+        for V in Vlist:
+            if np.shape(V)[0] < max0:
+                size_down = max0 - np.shape(V)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(V)[1] < max1:
+                size_right = max1 - np.shape(V)[1]
+            else :
+                size_right = 0
+    
+            Vend_list.append(add_border_right_down_int(V, size_down, size_right))
+            
+        V_end.append(Vend_list)
+        
+    Shape0 = [[np.shape(SR)[0] for SR in SR_scaled_shifted[i]] for i in range(len(SR_scaled_shifted))]
+    Shape1 = [[np.shape(SR)[1] for SR in SR_scaled_shifted[i]] for i in range(len(SR_scaled_shifted))]
+    
+    SR_end = []
+    
+    max0 = max([max(s) for s in Shape0])
+    max1 = max([max(s) for s in Shape1])
+    
+    for SRlist in SR_scaled_shifted:
+        SRend_list = []
+        for SR in SRlist:
+            if np.shape(SR)[0] < max0:
+                size_down = max0 - np.shape(SR)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(SR)[1] < max1:
+                size_right = max1 - np.shape(SR)[1]
+            else :
+                size_right = 0
+    
+            SRend_list.append(add_border_right_down_int(SR, size_down, size_right))
+            
+        SR_end.append(SRend_list)
+        
+    print('\n Saving data')
+        
+    if not os.path.exists(P + '/StrainRateScaled/'):
+        os.mkdir((P + '/StrainRateScaled/'))
+            
+    for s in range(len(SR_end)):
+        if not os.path.exists(P + '/StrainRateScaled/'  + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/StrainRateScaled/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(SR_end[s])):
+            io.imsave(P + '/StrainRateScaled/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', SR_end[s][t], plugin='tifffile')
+         
+            
+    if not os.path.exists(P + '/ShapeScaled/'):
+        os.mkdir((P + '/ShapeScaled/'))
+            
+    for s in range(len(V_end)):
+        if not os.path.exists(P + '/ShapeScaled/'  + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/ShapeScaled/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(V_end[s])):
+            io.imsave(P + '/ShapeScaled/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', V_end[s][t], plugin='tifffile')
+        
+    return V_end, SR_end
+
+
+def ScaleStrainRatePart2(GD, P, OpticalStack, t_min, t_max):
+    
+    # Load data
+    print('\n load data')
+    SR_scaled_shifted = []
+    for s in OpticalStack:
+        SR_lists = []
+        for t in range(t_min,t_max):
+            U = io.imread(P + '/StrainRateScaledTemp/' + str(s) + '/t' + str(t) + '.tif')
+            SR_lists.append(U)
+             
+        SR_scaled_shifted.append(SR_lists)
+        
+    V_scaled_shifted = []
+    for s in OpticalStack:
+         SR_lists = []
+         for t in range(t_min,t_max):
+             U = io.imread(P + '/ShapeScaledTemp/' + str(s) + '/t' + str(t) + '.tif')
+             SR_lists.append(U)
+              
+         V_scaled_shifted.append(SR_lists)
+       
+    
+        
+    # Matrices at the same size
+    print('\n Making matrices the same size')
+    Shape0 = [[np.shape(V)[0] for V in V_scaled_shifted[i]] for i in range(len(V_scaled_shifted))]
+    Shape1 = [[np.shape(V)[1] for V in V_scaled_shifted[i]] for i in range(len(V_scaled_shifted))]
+    
+    V_end = []
+    
+    max0 = max([max(s) for s in Shape0])
+    max1 = max([max(s) for s in Shape1])
+    
+    for Vlist in V_scaled_shifted:
+        Vend_list = []
+        for V in Vlist:
+            if np.shape(V)[0] < max0:
+                size_down = max0 - np.shape(V)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(V)[1] < max1:
+                size_right = max1 - np.shape(V)[1]
+            else :
+                size_right = 0
+    
+            Vend_list.append(add_border_right_down_int(V, size_down, size_right))
+            
+        V_end.append(Vend_list)
+        
+    Shape0 = [[np.shape(SR)[0] for SR in SR_scaled_shifted[i]] for i in range(len(SR_scaled_shifted))]
+    Shape1 = [[np.shape(SR)[1] for SR in SR_scaled_shifted[i]] for i in range(len(SR_scaled_shifted))]
+    
+    SR_end = []
+    
+    max0 = max([max(s) for s in Shape0])
+    max1 = max([max(s) for s in Shape1])
+    
+    for SRlist in SR_scaled_shifted:
+        SRend_list = []
+        for SR in SRlist:
+            if np.shape(SR)[0] < max0:
+                size_down = max0 - np.shape(SR)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(SR)[1] < max1:
+                size_right = max1 - np.shape(SR)[1]
+            else :
+                size_right = 0
+    
+            SRend_list.append(add_border_right_down_int(SR, size_down, size_right))
+            
+        SR_end.append(SRend_list)
+        
+    print('\n Saving data')
+        
+    if not os.path.exists(P + '/StrainRateScaled/'):
+        os.mkdir((P + '/StrainRateScaled/'))
+            
+    for s in range(len(SR_end)):
+        if not os.path.exists(P + '/StrainRateScaled/'  + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/StrainRateScaled/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(SR_end[s])):
+            io.imsave(P + '/StrainRateScaled/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', SR_end[s][t], plugin='tifffile')
+         
+            
+    if not os.path.exists(P + '/ShapeScaled/'):
+        os.mkdir((P + '/ShapeScaled/'))
+            
+    for s in range(len(V_end)):
+        if not os.path.exists(P + '/ShapeScaled/'  + str(OpticalStack[s]) + '/'):
+            os.mkdir(P + '/ShapeScaled/'  + str(OpticalStack[s]) + '/')
+        for t in range(len(V_end[s])):
+            io.imsave(P + '/ShapeScaled/' + str(OpticalStack[s]) + '/t' + str(t) + '.tif', V_end[s][t], plugin='tifffile')
+        
+    return V_end, SR_end
+
+
+def ScaleStrainRatePart2V2(GD, P, OpticalStack, t_min, t_max, targetShape):
+    
+    max0 = targetShape[0]
+    max1 = targetShape[1]
+    
+    if not os.path.exists(P + '/StrainRateScaled/'):
+        os.mkdir((P + '/StrainRateScaled/'))
+        
+    if not os.path.exists(P + '/ShapeScaled/'):
+        os.mkdir((P + '/ShapeScaled/'))
+    
+    # Load data
+    for s in OpticalStack:
+        
+        print('\n '+str(s))
+        print(P + '/StrainRateScaled/'  + str(s) + '/')
+        
+        if not os.path.exists(P + '/StrainRateScaled/'  + str(s) + '/'):
+            os.mkdir(P + '/StrainRateScaled/'  + str(s) + '/')
+            
+        if not os.path.exists(P + '/ShapeScaled/'  + str(s) + '/'):
+            os.mkdir(P + '/ShapeScaled/'  + str(s) + '/')
+            
+        for t in range(t_min,t_max):
+            V = io.imread(P + '/StrainRateScaledTemp/' + str(s) + '/t' + str(t) + '.tif')
+            
+            if np.shape(V)[0] < max0:
+                size_down = max0 - np.shape(V)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(V)[1] < max1:
+                size_right = max1 - np.shape(V)[1]
+            else :
+                size_right = 0
+                
+            V = add_border_right_down_int(V, size_down, size_right)
+            
+            io.imsave(P + '/StrainRateScaled/' + str(s) + '/t' + str(t) + '.tif', V, plugin='tifffile')
+            
+            U = io.imread(P + '/ShapeScaledTemp/' + str(s) + '/t' + str(t) + '.tif')
+            
+            if np.shape(U)[0] < max0:
+                size_down = max0 - np.shape(U)[0]
+            else :
+                size_down = 0
+    
+            if np.shape(U)[1] < max1:
+                size_right = max1 - np.shape(U)[1]
+            else :
+                size_right = 0
+                
+            U = add_border_right_down_int(U, size_down, size_right)
+            
+            io.imsave(P + '/ShapeScaled/' + str(s) + '/t' + str(t) + '.tif', U, plugin='tifffile')
+             
+    return 
 
