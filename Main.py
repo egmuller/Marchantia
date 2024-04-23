@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double, fitOsmoChoc_Double_non_plasmo, fitOsmoChoc_plateau, fitOsmoChoc_plateau_plasmo, fitOsmoChoc_4x
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double, fitOsmoChoc_Double_non_plasmo, fitOsmoChoc_plateau, fitOsmoChoc_plateau_plasmo, fitOsmoChoc_4x, fitOsmoChoc_plateau_plasmo_peaks
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
@@ -213,10 +213,12 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     DoFit4x = False
     DoFitPlateauPlasmo = False
     DoFitDoublePlateau = False
+    DoFitPlateauPlasmoPeaks = False
     factor1 = 2
     factor2 = 30
     Delay = 0.0
     Sort = True
+    peaks = ['mean','mean']
     
     for key, value in kwargs.items(): 
         if key == 'showHist':
@@ -261,6 +263,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             Delay = value
         elif key == 'Sorting':
             Sort = value
+        elif key == 'peaks':
+            peaks = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -313,6 +317,11 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         DoCont = False
         DoFit = True
         DoFitPlateauPlasmo = True
+    elif ToDo == 'FPlateauPlasmoPeaks':
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitPlateauPlasmoPeaks = True
     elif ToDo == 'F4x':
         DoBin = False
         DoCont = False
@@ -391,6 +400,12 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         elif DoFitPlateauPlasmo:
              GD = fitOsmoChoc_plateau_plasmo(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],FitIntervalComp2[0],FitIntervalComp2[1],FitIntervalComp3[0],FitIntervalComp3[1],FitIntervalComp4[0],FitIntervalComp4[1], debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
              GD.loc[:,'Expe'] = stringName
+             
+        elif DoFitPlateauPlasmoPeaks:
+             GD = fitOsmoChoc_plateau_plasmo_peaks(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],FitIntervalComp2[0],FitIntervalComp2[1],FitIntervalComp3[0],FitIntervalComp3[1],FitIntervalComp4[0],FitIntervalComp4[1], peaks, debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
+             GD.loc[:,'Expe'] = stringName
+             
+        
         
         else :
             GD = fitOsmoChoc(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalRel[0],FitIntervalRel[1],TstartRel,debug = DebugPlots,  C_osmo = Concentration, Delay = Delay, Sorting = Sort)
