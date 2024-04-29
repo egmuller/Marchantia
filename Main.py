@@ -7,7 +7,7 @@ Created on Tue Jun 21 16:42:37 2022
 
 # Imports 
 from GemmaeDetection import BinarizeStack, GetContours, FindChipPos
-from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double, fitOsmoChoc_Double_non_plasmo, fitOsmoChoc_plateau, fitOsmoChoc_plateau_plasmo, fitOsmoChoc_4x, fitOsmoChoc_plateau_plasmo_peaks
+from AreaCurveFitting import fitAreaGrowth,fitOsmoChoc,selectR2s, fitOsmoChoc_multiple, fitOsmoChoc_double, fitOsmoChoc_Double_non_plasmo, fitOsmoChoc_plateau, fitOsmoChoc_plateau_plasmo, fitOsmoChoc_4x, fitOsmoChoc_plateau_plasmo_peaks, fitImbibition
 from StatsFunctions import plotSig, Corr,TwowayANOVA, StatsKruskal
 from ContourAnalysis import getLandmarks, rotateAndCenterShape, curvAbsci
 
@@ -214,6 +214,7 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
     DoFitPlateauPlasmo = False
     DoFitDoublePlateau = False
     DoFitPlateauPlasmoPeaks = False
+    DoFitImbibition = False
     factor1 = 2
     factor2 = 30
     Delay = 0.0
@@ -327,6 +328,11 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
         DoCont = False
         DoFit = True
         DoFit4x = True
+    elif ToDo == "FitImbibition":
+        DoBin = False
+        DoCont = False
+        DoFit = True
+        DoFitImbibition = True
         
         
     else:
@@ -378,7 +384,8 @@ def BinarizeAndFitOsChoc(stringName,StackList,Path,Scale,FPH,R2Threshold,Ori,ToD
             
             GD, CD, R2s, goodList = selectR2s(GD, CD, R2Threshold, stringName,showHist=showHist)
         
-            
+        elif DoFitImbibition:
+            fitImbibition(StackList,CD,GD,FPH, FitIntervalComp[0],FitIntervalComp[1], debug = DebugPlots,  C_osmo = Concentration, Delay = Delay)
             
         elif DoFitDoubleNonPlasmo:
             GD = fitOsmoChoc_Double_non_plasmo(StackList,Rows,CD,GD,FPH,FitIntervalComp[0],FitIntervalComp[1],TstartComp,FitIntervalComp2[0],FitIntervalComp2[1],TstartComp2,debug = DebugPlots,  C_osmo = Concentration, C_osmo2 = Concentration2, Delay = Delay, Sorting = Sort)

@@ -1996,6 +1996,100 @@ def sortChocs(CD,GD,StackList,ImgStart,ImgEq,Plots):
 
     return(CD.loc[GoodStacks],GD.loc[GoodStacks],GoodStacks)
 
+#%% For imbibition
+
+def fitImbibition(StackList,CD,GD,FPH, ImgStartComp,ImgEqComp,TstartComp, **kwargs):
+    
+    DebugPlots = False
+    Concentration = 30 # mM
+    Delay = 0
+    Sort = True
+    
+    for key, value in kwargs.items(): 
+        if key == 'debug':
+            DebugPlots = value
+        if key == 'C_osmo':
+            Concentration = value
+        if key == 'Delay':
+            Delay = value
+        elif key == 'Sorting':
+            Sort = value
+        else:
+            print('Unknown key : ' + key + '. Kwarg ignored.')
+    
+    
+    for s in StackList:
+
+        print('Fitting curve for : ' + s.ljust(5), end='\n')           
+        if type(Delay) == float or type(Delay) == int:
+            Time = GD.loc[s,'Img'].values.astype(float)/FPH*60 # in minutes
+        if type(Delay) == np.ndarray :
+             Time = Delay
+        AreaC = GD.loc[s,'Area'].values
+        
+        
+        # data for compression fit
+        if type(Delay) == float :
+            TimeFitComp = GD.loc[s,'Img'].values.astype(float)[ImgStartComp:ImgEqComp]/FPH*60 # in minutes
+        if type(Delay) == np.ndarray :
+            TimeFitComp = Delay[ImgStartComp:ImgEqComp]
+        TimeOffset = TimeFitComp[0]
+        Time = Time - TimeOffset
+        TimeFitComp = TimeFitComp - TimeOffset
+        AreaCFitComp = AreaC[ImgStartComp:ImgEqComp]
+               
+        fig,ax = plt.subplots(dpi=300)
+        ax.plot(Time,AreaC,'*y',ms=3,label='FullData')
+        ax.set_xlabel('Time (min)')
+        ax.set_ylabel('Area (mm²)')
+
+        DenseTimeComp = np.linspace(TimeFitComp[0],TimeFitComp[-1],100)
+
+        # fit of compression
+        params, cov = curve_fit(f=fitFuncOsmChoc, xdata=TimeFitComp, ydata=AreaCFitComp, 
+                                p0=[1, AreaCFitComp[0:TstartComp].mean(),AreaCFitComp[0:TstartComp].mean()*0.98,TimeFitComp[TstartComp]],
+                                bounds = (0, np.inf), method='trf',loss='soft_l1')
+
+        R2 = np.round(vf.computeR2(AreaCFitComp,fitFuncOsmChoc(TimeFitComp,params[0],params[1],params[2],params[3]))*1000)/1000
+
+        fig.suptitle(s + ' - R2 : ' + str(R2))
+        
+        # Physical parameters
+        DeltaPiOut = 8.314*298*Concentration/1e6 # en MPa, R (gaz parfait) * Temp (K, 25°) * 0.1 (100mM = 100 mol/m3 de choc)
+        
+        E = params[1]/(params[1]-params[2])*DeltaPiOut # en MPa ## verif
+        Lh = 1/(params[0]*60*E*1e6) # en m/s/Pa
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'TauFlux'] = params[0] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0'] = params[1] 
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Aeq'] = params[2]   
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'A0-Aeq'] = params[1]-params[2]        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Ecomp'] = E             
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/Ecomp'] = 1/E       
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L/H_Comp'] = Lh      
+        # GD.loc[(GD.index == s) & (GD['Img'] == 0), 'L_Comp'] = Lh*GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H/L_Comp'] = 1/Lh
+        # GD.loc[(GD.index == s) & (GD['Img'] == 0), '1/L_Comp'] = 1/(GD.loc[(GD.index == s) & (GD['Img'] == 0), 'H0']*Lh)
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'Tdeb'] = params[3]
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'tdebShift'] = np.argmin(np.abs(Time-params[3])) # img shift for alignemen
+        
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fitR2'] = R2
+        GD.loc[(GD.index == s) & (GD['Img'] == 0), 'fit_name'] = 'Osmotic choc fit'
+        
+        ax.plot(TimeFitComp,AreaCFitComp,'*c',ms=2,label='FittedData')
+        ax.plot(DenseTimeComp,fitFuncOsmChoc(DenseTimeComp,params[0],params[1],params[2],params[3]),'--b',lw=1,label='SoftL1')
+
+        fig.tight_layout()
+        
+        if DebugPlots:
+            plt.show()
+        else:
+            plt.close(fig)
+        
+        
+    
+    return(GD)
+
 
 #%% Fits validation and sorting
 
