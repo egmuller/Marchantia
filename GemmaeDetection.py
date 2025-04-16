@@ -234,6 +234,10 @@ def BinarizeStack(StackList, P, Scale, **kwargs):
 
         RGBstack = io.imread(P + '/' + s + '.tif') # get the tiff stack
         Bckp_RGBstack = io.imread(P + '/' + s + '.tif') # get the tiff stack for comparison
+        if len(np.shape(RGBstack)) == 3:
+            print('\n Warning duplicated slide')
+            RGBstack = np.asarray([RGBstack, RGBstack])
+            Bckp_RGBstack = np.asarray([Bckp_RGBstack,Bckp_RGBstack])
         
         if DebugPlots:            
             imglist = ImgList
