@@ -1174,6 +1174,9 @@ def MainOpticalFlow_AutomaticLandmarks_RemoveBgLast(P, StackList, Scale, ToDo, s
     factor2 = 30
     Areath = 5*1e3
     DebugPlotsFlow = False
+    NoFit = False
+    Dmax = 20
+    Dmax2 = 30
     
     # keyword arguments for optical flow
     to_gray = True
@@ -1204,6 +1207,12 @@ def MainOpticalFlow_AutomaticLandmarks_RemoveBgLast(P, StackList, Scale, ToDo, s
             to_gray = value
         elif key == 'DebugPlotsFlow':
             DebugPlotsFlow = value
+        elif key == "NoFit":
+            NoFit = value
+        elif key == "Dmax":
+            Dmax = value
+        elif key == "Dmax2":
+            Dmax2 = value
         else:
             print('Unknown key : ' + key + '. Kwarg ignored.')
     
@@ -1223,6 +1232,8 @@ def MainOpticalFlow_AutomaticLandmarks_RemoveBgLast(P, StackList, Scale, ToDo, s
     
     if DoSelect:
         GlobalData = pd.read_csv(P + '/GlobalData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+        if NoFit:
+            GlobalData = pd.read_csv(P + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
         StackList = [s for s in StackList if (s in np.unique(GlobalData.index.values)) ]
         OpticalStack, Not2notches, Confined = selectGemmae(P, StackList, size = 300, nimg = 10)
         
@@ -1243,6 +1254,9 @@ def MainOpticalFlow_AutomaticLandmarks_RemoveBgLast(P, StackList, Scale, ToDo, s
             if not os.path.exists(P + '/GlobalData' + stringName + '_Landmarks_tmp.csv'):
                 ContourData = pd.read_csv(P + '/ContourData' + stringName + '_AreaFit.csv', index_col = 'Ind')
                 GlobalData = pd.read_csv(P + '/GlobalData' + stringName + '_AreaFit.csv', index_col = 'Ind')
+                if NoFit:
+                    GlobalData = pd.read_csv(P + '/GlobalData' + stringName + '_AreaCont.csv', index_col = 'Ind')
+                    ContourData = pd.read_csv(P + '/ContourData' + stringName + '_AreaCont.csv', index_col = 'Ind')
                 print('\n Loaded AreaFit file.')
             else:            
                 ContourData = pd.read_csv(P + '/ContourData' + stringName + '_Landmarks_tmp.csv', index_col = 'Ind')
@@ -1253,7 +1267,7 @@ def MainOpticalFlow_AutomaticLandmarks_RemoveBgLast(P, StackList, Scale, ToDo, s
             GlobalData = pd.read_csv(P + '/GlobalData' + stringName + '_Landmarks.csv', index_col = 'Ind')
             print('\n Loaded Landmarks file.')
         
-        ContourData_LM, GlobalData_LM =getLandmarks(ContourData,GlobalData,OpticalStack,Scale,P,stringName, FirstSlice=False, Overwrite = overwriteRefs)
+        ContourData_LM, GlobalData_LM =getLandmarks(ContourData,GlobalData,OpticalStack,Scale,P,stringName, FirstSlice=False, Overwrite = overwriteRefs, Dmax = Dmax, Dmax2 = Dmax2)
         
         if os.path.exists(P + '/GlobalData' + stringName + '_Landmarks_aligned.csv'):
             GlobalData_LM = pd.read_csv(P + '/GlobalData' + stringName + '_Landmarks_aligned.csv', index_col = 'Ind')
@@ -1544,7 +1558,7 @@ def OpticalFlow(P, s, to_gray=True):
 
 def OpticalFlow_Bckg(P, s, to_gray=True):
     
-    ProcessedPath = P + '/Aligned/' + s + '_aligned/'
+    ProcessedPath = P + '/Aligned/' + s + '_Aligned/'
     FlowPath = P + '/Flow/' + s + '_Flow/'
 
     nimg = len([entry for entry in os.listdir(ProcessedPath) if os.path.isfile(os.path.join(ProcessedPath, entry))]) # number of images
