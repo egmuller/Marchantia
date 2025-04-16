@@ -491,6 +491,167 @@ Delay240408 = 20 # Delay between imbibition and experiment start
 Scale240320 = 1.94 # Spatial scale
 FPH240320 = 120 # Frames per hour
 
+Scale240321 = 1.94 # Spatial scale
+FPH240321 = 120 # Frames per hour
+
+Scale240416 = 1.94 # Spatial scale
+FPH240416 = 120 # Frames per hour
+
+Scale240415 = 1.94 # Spatial scale
+FPH240415 = 120 # Frames per hour
+
+Scale240422 = 1.94 # Spatial scale
+FPH240422 = 2 # Frames per hour
+Delay240422 = 34
+
+Scale240424 = 1.94 # Spatial scale
+FPH240424 = 2 # Frames per hour
+Delay240424 = 22
+
+Scale240430 = 1.94 # Spatial scale
+FPH240430 = 2 # Frames per hour
+Delay240430 = 26
+
+Scale240503 = 1.94 # Spatial scale
+FPH240503 = 2 # Frames per hour
+Delay240503 = 25
+
+Scale240522 = 1.94 # Spatial scale
+FPH240522 = 2 # Frames per hour
+Delay240522 = 39
+
+Scale240517 = 1.94 # Spatial scale
+FPH240517 = 120 # Frames per hour
+
+Scale240531 = 1.94 # Spatial scale
+FPH240531 = 2 # Frames per hour
+Delay240531 = 19
+
+Scale240605 = 1.94 # Spatial scale
+FPH240605 = 2 # Frames per hour
+Delay240605 = 34
+
+Scale240607 = 1.94 # Spatial scale
+FPH240607 = 2 # Frames per hour
+Delay240607 = 25
+
+Scale240610 = 1.94 # Spatial scale
+FPH240610 = 2 # Frames per hour
+Delay240610 = 33
+
+Scale240618 = 1.94 # Spatial scale
+FPH240618 = 120 # Frames per hour
+
+Scale240614 = 1.94 # Spatial scale
+FPH240614 = 2 # Frames per hour
+Delay240614 = 26
+
+Scale240828 = 1.94 # Spatial scale
+FPH240828 = 2 # Frames per hour
+Delay240828 = 25
+
+Scale240905 = 1.94 # Spatial scale
+FPH240905 = 1/24/4 # Frames per hour
+Delay240905 = 0
+
+Scale240923 = 1.94 # Spatial scale
+FPH240923 = 120 # Frames per hour
+Delay240923 = 0
+
+Scale240930 = 1.94 # Spatial scale
+FPH240930 = 120 # Frames per hour
+Delay240930 = 0
+
+Scale241002 = 1.94 # Spatial scale
+FPH241002 = 120 # Frames per hour
+Delay241002 = 0
+
+Scale241015 = 1.94 # Spatial scale
+FPH241015 = 120 # Frames per hour
+Delay241015 = 0
+
+
+Scale241017 = 1.94 # Spatial scale
+FPH241017 = 120 # Frames per hour
+Delay241017 = 0
+
+Scale241022 = 1.94 # Spatial scale
+FPH241022 = 120 # Frames per hour
+Delay241022 = 0
+
+Scale241023 = 1.94 # Spatial scale
+FPH241023 = 120 # Frames per hour
+Delay241023 = 0
+
+Scale241012 = 1.94
+Scale241022 = 1.94
+
+Scale241105 = 1.94 # Spatial scale
+FPH241105 = 120 # Frames per hour
+Delay241105 = 0
+
+Scale241108 = 1.94 # Spatial scale
+FPH241108 = 2 # Frames per hour
+Delay241108 = 18
+
+Scale241114 = 1.94 # Spatial scale
+FPH241114_chocs = 120 # Frames per hour
+FPH241114 = 2
+Delay241114 = 15
+
+Scale250102 = 1.94 # Spatial scale
+FPH250102 = 2 # Frames per hour
+Delay250102 = 22
+
+Scale250106 = 1.94 # Spatial scale
+FPH250106 = 2 # Frames per hour
+Delay250106 = 14
+
+Scale250107 = 1.94 # Spatial scale
+FPH250107 = 2 # Frames per hour
+Delay250107 = 22
+
+Scale250114 = 1.94 # Spatial scale
+FPH250114 = 2 # Frames per hour
+Delay250114 = 28
+
+Scale250205 = 1.94 # Spatial scale
+FPH250205 = 2 # Frames per hour
+Delay250205 = 21
+
+Scale250211 = 1.94 # Spatial scale
+FPH250211 = 2 # Frames per hour
+Delay250211 = 23
+
+Scale250213 = 1.94 # Spatial scale
+FPH250213 = 2 # Frames per hour
+Delay250213 = 20
+
+Scale250227 = 1.94 # Spatial scale
+FPH250227 = 2 # Frames per hour
+Delay250227 = 13
+
+Scale250303 = 1.94 # Spatial scale
+FPH250303 = 2 # Frames per hour
+Delay250303 = 23
+
+Scale250307 = 1.94 # Spatial scale
+FPH250307 = 2 # Frames per hour
+Delay250307 = 13
+
+Scale250314 = 1.94 # Spatial scale
+FPH250314 = 2 # Frames per hour
+Delay250314 = 12
+
+Scale_Jordan = 1.94 # Spatial scale
+FPH_Jordan = 2 # Frames per hour
+Delay_Jordan = 30
+
+Scale250401 = 1.94 # Spatial scale
+FPH250401 = 2 # Frames per hour
+Delay250401 = 12
+
+
 
 P_Ct_Val =r'/run/media/emuller/Elise_4T/Data/Chip/2022/Data_Ct_Valentin'
 
@@ -834,9 +995,12 @@ P231127choc1_PME1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231127_PME1_20
 P231127choc1_ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231127_PME1_20e/mecanique/ctrl/bck1/PPGs/'
 
 P231026_Tak1_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231026_fer2/Tak1_0mM/PPGs/'
-P231026_Tak1_100mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231026_fer2/Tak1_100mM/PPGs/'
+#P231026_Tak1_100mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231026_fer2/Tak1_100mM/PPGs/'
 P231026_fer2_0mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231026_fer2/fer2_0mM/PPGs/'
-P231026_fer2_100mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231026_fer2/fer2_100mM/PPGs/'
+#P231026_fer2_100mM = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231026_fer2/fer2_100mM/PPGs/'
+
+P231026_Tak1_100mM = r'/run/media/emuller/ecureuil/ForOpticalFlow/231026_fer2/Tak1_100mM/PPGs'
+P231026_fer2_100mM = r'/run/media/emuller/ecureuil/ForOpticalFlow/231026_fer2/fer2_100mM/PPGs'
 
 P231129_ctrl = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231129_storedgrowthPME1/block1/C/PPGs/'
 P231129_ctrl_step = r'/run/media/emuller/TRANSCEND/Data/Chip/2023/231129_storedgrowthPME1/block1/D/PPGs/'
@@ -854,6 +1018,8 @@ P231214_choc1h_mri = r'/run/media/emuller/Elise_these/Chip/2023/231214_tak1_mri_
 P231214_choc1h_tak1 = r'/run/media/emuller/Elise_these/Chip/2023/231214_tak1_mri_meca/choc1h/tak/PPGs/'
 P231214_choc8h_mri = r'/run/media/emuller/Elise_these/Chip/2023/231214_tak1_mri_meca/choc8h/mri/PPGs/'
 P231214_choc8h_tak1 = r'/run/media/emuller/Elise_these/Chip/2023/231214_tak1_mri_meca/choc8h/tak/PPGs/'
+P231214_croissance_mri = r'/run/media/emuller/Elise_these/Chip/2023/231214_tak1_mri_meca/croissance/mri/PPGs/'
+P231214_croissance_tak1 = r'/run/media/emuller/Elise_these/Chip/2023/231214_tak1_mri_meca/croissance/tak/PPGs/'
 
 P231215_choc8h_mri = r'/run/media/emuller/Elise_these/Chip/2023/231215_tak2_mri_meca/8h/choc_mri/PPGs/'
 P231215_choc8h_tak2 = r'/run/media/emuller/Elise_these/Chip/2023/231215_tak2_mri_meca/8h/choc_tak2/PPGs/'
@@ -973,6 +1139,166 @@ P240320_choc1h_pme2b = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240320_pme2
 P240320_choc1h_Tak1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240320_pme2_Tak1_meca/1h/Tak1S/PPGs/'
 P240320_choc8h_pme2b = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240320_pme2_Tak1_meca/8h/pme2b/PPGs/'
 P240320_choc8h_Tak1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240320_pme2_Tak1_meca/8h/Tak1/PPGs/'
+
+P240416_choc1h_pme2b = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240416_pme2b_meca/1h/pme2b/PPGs/'
+P240416_choc1h_Tak1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240416_pme2b_meca/1h/Tak1/PPGs/'
+P240416_choc8h_pme2b = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240416_pme2b_meca/8h/pme2b/PPGs/'
+P240416_choc8h_Tak1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240416_pme2b_meca/8h/Tak1/PPGs/'
+
+P240415_Tak1 = r'/run/media/emuller/Elise_these/Chip/2024/240415_chocs_PMEs/Tak1/PPGs/'
+P240415_pme11_4 = r'/run/media/emuller/Elise_these/Chip/2024/240415_chocs_PMEs/pme11_4/PPGs/'
+P240415_pme1_11 = r'/run/media/emuller/Elise_these/Chip/2024/240415_chocs_PMEs/pme1-11/PPGs/'
+P240415_PME1ox_6 = r'/run/media/emuller/Elise_these/Chip/2024/240415_chocs_PMEs/PME1ox-6/PPGs/'
+
+P240321_Tak1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240321_choc_PME/Tak1/PPGs/'
+P240321_PME11ox_21 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240321_choc_PME/PME11ox_21/PPGs/'
+P240321_PME2ox_6 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240321_choc_PME/PME2ox_6/PPGs/'
+P240321_PME2ox_6_V2 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240321_choc_PME/PME2ox_6_V2/PPGs/'
+
+P240422_5h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240422_storedgrowth/5h_200/PPGs/'
+P240422_10h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240422_storedgrowth/10h_200/PPGs/'
+
+P240424_10h_400 = r'/run/media/emuller/12T_Elise/Chip/2024/240424_storedgrowth/10h_400/PPGs/'
+
+P240430_10h_400 = r'/run/media/emuller/12T_Elise/Chip/2024/240430_stored_growth/10h_400/PPGs/'
+P240430_2h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240430_stored_growth/2h_200/PPGs/'
+
+P240503_2h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240503_storedgrowth/2h_200/PPGs/'
+P240503_5h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240503_storedgrowth/5h_200/PPGs/'
+
+P240522_MRIox = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240522_vortex_MRIox_PME1ox6/MRIox/PPGs/'
+P240522_PME1ox6 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240522_vortex_MRIox_PME1ox6/PME1ox6/PPGs/'
+P240522_Tak1 = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240522_vortex_MRIox_PME1ox6/Tak1/PPGs/'
+P240522_vortex = r'/run/media/emuller/TRANSCEND/Data/Chip/2024/240522_vortex_MRIox_PME1ox6/Tak1_vortex/PPGs/'
+
+P240517_Tak1 = r'/run/media/emuller/Elise_4T/Data/Chip/2024/240517_PMEs_shock/Tak1/PPGs/'
+P240517_pme1_11 = r'/run/media/emuller/Elise_4T/Data/Chip/2024/240517_PMEs_shock/pme1-11/PPGs/'
+P240517_pme2b = r'/run/media/emuller/Elise_4T/Data/Chip/2024/240517_PMEs_shock/pme2b/PPGs/'
+P240517_pme11_4 = r'/run/media/emuller/Elise_4T/Data/Chip/2024/240517_PMEs_shock/pme11-4/PPGs/'
+
+P240531_10h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240531_storedgrowth/step/PPGs'
+P240531_10h_ctrl = r'/run/media/emuller/12T_Elise/Chip/2024/240531_storedgrowth/control/PPGs'
+
+P240605_vortex_5min = r'/run/media/emuller/Elise_these/Chip/2024/240605_vortex/5min/PPGs/'
+P240605_vortex_5sec = r'/run/media/emuller/Elise_these/Chip/2024/240605_vortex/5sec/PPGs/'
+P240605_vortex_10min = r'/run/media/emuller/Elise_these/Chip/2024/240605_vortex/10min/PPGs/'
+P240605_vortex_1min = r'/run/media/emuller/Elise_these/Chip/2024/240605_vortex/1min/PPGs/'
+
+P240607_10h_400 = r'/run/media/emuller/12T_Elise/Chip/2024/240607_storedgrowth/10h_400/PPGs/'
+P240607_10h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240607_storedgrowth/10h_200/PPGs/'
+
+P240610_Tak1_5sec = r'/run/media/emuller/Elise_these/Chip/2024/240610_fer_vortex/Tak1_5sec/PPGs'
+P240610_Tak1_10min = r'/run/media/emuller/Elise_these/Chip/2024/240610_fer_vortex/Tak1_10min/PPGs'
+P240610_fer2_5sec = r'/run/media/emuller/Elise_these/Chip/2024/240610_fer_vortex/fer2_5sec/PPGs'
+P240610_fer2_10min = r'/run/media/emuller/Elise_these/Chip/2024/240610_fer_vortex/fer2_10min/PPGs'
+
+P240618_Tak1 = r'/run/media/emuller/Elise_these/Chip/2024/240618_PMEs_chocs/Tak1/PPGs'
+P240618_pme1_11 = r'/run/media/emuller/Elise_these/Chip/2024/240618_PMEs_chocs/pme1-11/PPGs'
+P240618_PME1ox_V1 = r'/run/media/emuller/Elise_these/Chip/2024/240618_PMEs_chocs/PME1ox_V1/PPGs'
+P240618_PME1ox_V2 = r'/run/media/emuller/Elise_these/Chip/2024/240618_PMEs_chocs/PME1ox_V2/PPGs'
+P240618_pme2b = r'/run/media/emuller/12T_Elise/Chip/2024/240618_PMEs_chocs/pme2b/PPGs'
+P240618_pme11_4 = r'/run/media/emuller/12T_Elise/Chip/2024/240618_PMEs_chocs/pme11-4/PPGs'
+P240618_PME11ox_21 = r'/run/media/emuller/12T_Elise/Chip/2024/240618_PMEs_chocs/PME11ox-21/PPGs'
+P240618_Tak1_V2 = r'/run/media/emuller/12T_Elise/Chip/2024/240618_PMEs_chocs/Tak1_V2/PPGs'
+
+P240614_5h_200 = r'/run/media/emuller/12T_Elise/Chip/2024/240614_storedgrowth/step/PPGs'
+P240614_5h_ctrl = r'/run/media/emuller/12T_Elise/Chip/2024/240614_storedgrowth/ctrl/PPGs'
+
+P240828_10h_fer_ctrl = r'/run/media/emuller/Elise_these/Chip/2024/240828_stored_growth_fer2/control/PPGs'
+P240828_10h_fer_step = r'/run/media/emuller/Elise_these/Chip/2024/240828_stored_growth_fer2/step/PPGs'
+
+P240905_10min_Ca = r'/run/media/emuller/Elise_these/axiozoom/240905_test_CaCl2/CaCl2_10min_tiles_EDF/PPGs'
+P240905_4j_Ca = r'/run/media/emuller/Elise_these/axiozoom/240905_test_CaCl2/CaCl2_4j_tiles_EDF/PPGs'
+P240905_10min_Man = r'/run/media/emuller/Elise_these/axiozoom/240905_test_CaCl2/Mannitol_10min_tiles_EDF/PPGs'
+P240905_4j_Man = r'/run/media/emuller/Elise_these/axiozoom/240905_test_CaCl2/Mannitol_4j_tiles_EDF/PPGs'
+
+P240923_0mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/240923_modulus_mannitol/chocs_0mM/PPGs'
+P240923_100mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/240923_modulus_mannitol/chocs_100mM/PPGs'
+
+P240923_0mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/240923_modulus_mannitol/0mM/PPGs'
+
+P240930_0mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/240930_modulus_mannitol_V2/chocs_0mM/PPGs'
+P240930_100mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/240930_modulus_mannitol_V2/chocs_100mM/PPGs'
+P240930_0mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/240930_modulus_mannitol_V2/croissance/0mM/PPGs'
+P240930_100mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/240930_modulus_mannitol_V2/croissance/100mM/PPGs'
+
+P241002_fer_0mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/241002_modulus_mannitol_fer2/chocs_0mM/PPGs'
+P241002_fer_100mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/241002_modulus_mannitol_fer2/chocs_100mM/PPGs'
+P241002_fer_0mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/241002_modulus_mannitol_fer2/croissance/0mM/PPGs'
+P241002_fer_100mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/241002_modulus_mannitol_fer2/croissance/100mM/PPGs'
+
+P241015_fer_0mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/241015_modulus_mannitol_fer2_V2/chocs_0mM/PPGs'
+P241015_fer_100mM_chocs = r'/run/media/emuller/Elise_these/Chip/2024/241015_modulus_mannitol_fer2_V2/chocs_100mM/PPGs'
+P241015_fer_0mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/241015_modulus_mannitol_fer2_V2/croissance/0mM/PPGs'
+P241015_fer_100mM_croissance = r'/run/media/emuller/Elise_these/Chip/2024/241015_modulus_mannitol_fer2_V2/croissance/100mM/PPGs'
+
+P241017_0mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241017_modulus_mannitol_Tak1_V3/chocs_0mM/PPGs'
+P241017_100mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241017_modulus_mannitol_Tak1_V3/chocs_100mM/PPGs'
+P241017_0mM_croissance = r'/run/media/emuller/ecureuil/Data/Chip/2024/241017_modulus_mannitol_Tak1_V3/croissance/0mM/PPGs'
+P241017_100mM_croissance = r'/run/media/emuller/ecureuil/Data/Chip/2024/241017_modulus_mannitol_Tak1_V3/croissance/100mM/PPGs'
+
+P241022_0mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241022_modulus_mannitol_Tak1_V4/chocs_0mM/PPGs'
+P241022_100mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241022_modulus_mannitol_Tak1_V4/chocs_100mM/PPGs'
+P241022_0mM_croissance = r'/run/media/emuller/ecureuil/Data/Chip/2024/241022_modulus_mannitol_Tak1_V4/croissance/0mM/PPGs'
+P241022_100mM_croissance = r'/run/media/emuller/ecureuil/Data/Chip/2024/241022_modulus_mannitol_Tak1_V4/croissance/100mM/PPGs'
+
+P241014_fer2_CaCl2 = r'/run/media/emuller/ecureuil/Data/Chip/2024/241014_CaCl2_tak_fer/fer2_CaCl2'
+P241014_fer2_Mann = r'/run/media/emuller/ecureuil/Data/Chip/2024/241014_CaCl2_tak_fer/fer2_Mann'
+P241014_Tak1_CaCl2 = r'/run/media/emuller/ecureuil/Data/Chip/2024/241014_CaCl2_tak_fer/Tak1_CaCl2'
+P241014_Tak1_Mann = r'/run/media/emuller/ecureuil/Data/Chip/2024/241014_CaCl2_tak_fer/Tak1_Mann'
+
+P241023_fer_0mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241023_modulus_mannitol_fer2_V3/chocs_0mM/PPGs'
+P241023_fer_100mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241023_modulus_mannitol_fer2_V3/chocs_100mM/PPGs'
+P241023_fer_0mM_croissance = r'/run/media/emuller/ecureuil/Data/Chip/2024/241023_modulus_mannitol_fer2_V3/croissance/0mM/PPGs'
+P241023_fer_100mM_croissance = r'/run/media/emuller/ecureuil/Data/Chip/2024/241023_modulus_mannitol_fer2_V3/croissance/100mM/PPGs'
+
+P241012_boites = r'/run/media/emuller/ecureuil/Data/Chip/2024/241014_CaCl2_tak_fer'
+P241022_boites_ECGC = r'/run/media/emuller/ecureuil/Data/Chip/2024/241022_traitement_boite/ECGC'
+P241022_boites_ISX = r'/run/media/emuller/ecureuil/Data/Chip/2024/241022_traitement_boite/ISX'
+
+P241105_fer_0mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241105_modulus_mannitol_fer2_V4/chocs_0mM/PPGs'
+P241105_fer_100mM_chocs = r'/run/media/emuller/ecureuil/Data/Chip/2024/241105_modulus_mannitol_fer2_V4/chocs_100mM/PPGs'
+
+P241108_10h_400 = r'/run/media/emuller/ecureuil/Data/Chip/2024/241108_stored_growth_400mM/step_400mM/PPGs/'
+P241108_10h_0 = r'/run/media/emuller/ecureuil/Data/Chip/2024/241108_stored_growth_400mM/control_0mM/PPGs/'
+
+P241114_chocs_100mM = r'/run/media/emuller/ecureuil/Data/Chip/2024/241114_modulus_mannitol_Tak1_V5/chocs_100mM/PPGs'
+P241114_chocs_0mM = r'/run/media/emuller/ecureuil/Data/Chip/2024/241114_modulus_mannitol_Tak1_V5/chocs_0mM/PPGs'
+P241114_croissance_0mM = r'/run/media/emuller/ecureuil/Data/Chip/2024/241114_modulus_mannitol_Tak1_V5/croissance/0mM/PPGs'
+P241114_croissance_100mM = r'/run/media/emuller/ecureuil/Data/Chip/2024/241114_modulus_mannitol_Tak1_V5/croissance/100mM/PPGs'
+
+P250102_step = r'/run/media/emuller/ecureuil/Data/Chip/2025/250102_100mM_10h_stored_growth/step/PPGs'
+P250102_ctrl = r'/run/media/emuller/ecureuil/Data/Chip/2025/250102_100mM_10h_stored_growth/control/PPGs'
+
+P250106_step = r'/run/media/emuller/ecureuil/Data/Chip/2025/250106_100mM_10h_modulus/PPGs'
+
+P250107_BFA = r'/run/media/emuller/ecureuil/Data/Chip/2025/250107_storedgrowth_BFA/BFA/PPGs'
+P250107_DMSO = r'/run/media/emuller/ecureuil/Data/Chip/2025/250107_storedgrowth_BFA/DMSO/PPGs'
+
+P250114_BFA = r'/run/media/emuller/ecureuil/Data/Chip/2025/250114_10uM_BFA_stored_growth/BFA/PPGs'
+P250114_DMSO = r'/run/media/emuller/ecureuil/Data/Chip/2025/250114_10uM_BFA_stored_growth/DMSO/PPGs'
+
+P250205_BFA = r'/run/media/emuller/ecureuil/Data/Chip/2025/250205_10uM_BFA_SG_rep2/BFA/PPGs'
+P250205_DMSO = r'/run/media/emuller/ecureuil/Data/Chip/2025/250205_10uM_BFA_SG_rep2/DMSO/PPGs'
+
+P250211_BFA = r'/run/media/emuller/ecureuil/Data/Chip/2025/250211_10uM_BFA_ctrl/BFA/PPGs'
+P250211_DMSO = r'/run/media/emuller/ecureuil/Data/Chip/2025/250211_10uM_BFA_ctrl/DMSO/PPGs'
+
+P250213_control = r'/run/media/emuller/ecureuil/Data/Chip/2025/250213_10h_100mM_SG/control/PPGs'
+P250213_step = r'/run/media/emuller/ecureuil/Data/Chip/2025/250213_10h_100mM_SG/step/PPGs'
+
+P250227_step = r'/run/media/emuller/ecureuil/Data/Chip/2025/250227_SG_modulus/PPGs'
+
+P250303_BFA = r'/run/media/emuller/ecureuil/Data/Chip/2025/250303_10uM_BFA_SG/BFA/PPGs'
+P250303_DMSO = r'/run/media/emuller/ecureuil/Data/Chip/2025/250303_10uM_BFA_SG/DMSO/PPGs'
+
+P250307_step = r'/run/media/emuller/ecureuil/Data/Chip/2025/250307_modulus_100mM/PPGs'
+P250314_step = r'/run/media/emuller/ecureuil/Data/Chip/2025/250314_modulus_100mM/PPGs'
+
+P_Jordan_tak = r'/run/media/emuller/ecureuil/data_Jordan/tak'
+P_Jordan_fer = r'/run/media/emuller/ecureuil/data_Jordan/fer'
+
+P250401_fer3 = r'/run/media/emuller/ecureuil/Data/Chip/2025/250401_fer3/PPGs'
 
 PFig = r'/home/emuller/Documents/data/Chip_experiments/Figures'
 
@@ -1604,6 +1930,8 @@ StackList231214_choc1h_mri = ['PPG'+str(i) for i in range(1,20+1)]
 StackList231214_choc1h_tak1 = ['PPG'+str(i) for i in range(1,29+1)]
 StackList231214_choc8h_mri = ['PPG'+str(i) for i in range(1,58+1)]
 StackList231214_choc8h_tak1 = ['PPG'+str(i) for i in range(1,51+1)]
+StackList231214_croissance_mri = ['PPG'+str(i) for i in range(1,43+1)]
+StackList231214_croissance_tak1 = ['PPG'+str(i) for i in range(1,39+1)]
 
 StackList231215_choc1h_mri = ['PPG'+str(i) for i in range(1,52+1)]
 StackList231215_choc1h_tak2 = ['PPG'+str(i) for i in range(1,42+1)]
@@ -1725,9 +2053,154 @@ StackList240320_choc1h_Tak1 = ['PPG'+str(i) for i in range(1,83+1)]
 StackList240320_choc8h_pme2b = ['PPG'+str(i) for i in range(1,37+1)]
 StackList240320_choc8h_Tak1 = ['PPG'+str(i) for i in range(1,55+1)]
 
+StackList240416_choc1h_pme2b = ['PPG'+str(i) for i in range(1,34+1)]
+StackList240416_choc1h_Tak1 = ['PPG'+str(i) for i in range(1,52+1)]
+StackList240416_choc8h_pme2b = ['PPG'+str(i) for i in range(1,28+1)]
+StackList240416_choc8h_Tak1 = ['PPG'+str(i) for i in range(1,50+1)]
 
+StackList240415_pme11_4 = ['PPG'+str(i) for i in range(1,85+1)]
+StackList240415_Tak1 = ['PPG'+str(i) for i in range(1,59+1)]
+StackList240415_pme1_11 = ['PPG'+str(i) for i in range(1,12+1)]
+StackList240415_PME1ox_6 = ['PPG'+str(i) for i in range(1,51+1)]
 
+StackList240321_PME11ox_21 = ['PPG'+str(i) for i in range(1,55+1)]
+StackList240321_Tak1 = ['PPG'+str(i) for i in range(1,62+1)]
+StackList240321_PME2ox_6 = ['PPG'+str(i) for i in range(1,21+1)]
+StackList240321_PME2ox_6_V2 = ['PPG'+str(i) for i in range(1,45+1)]
 
+StackList240422_5h_200 = ['PPG'+str(i) for i in range(1,36+1)]
+StackList240422_10h_200 = ['PPG'+str(i) for i in range(1,49+1)]
 
+StackList240424_10h_400 = ['PPG'+str(i) for i in range(1,65+1)]
+
+StackList240430_10h_400 = ['PPG'+str(i) for i in range(1,39+1)]
+StackList240430_2h_200 = ['PPG'+str(i) for i in range(1,67+1)]
+
+StackList240503_5h_200 = ['PPG'+str(i) for i in range(1,37+1)]
+StackList240503_2h_200 = ['PPG'+str(i) for i in range(1,62+1)]
+
+StackList240522_MRIox = ['PPG'+str(i) for i in range(1,72+1)]
+StackList240522_PME1ox6 = ['PPG'+str(i) for i in range(1,39+1)]
+StackList240522_Tak1 = ['PPG'+str(i) for i in range(1,36+1)]
+StackList240522_vortex = ['PPG'+str(i) for i in range(1,51+1)]
+
+StackList240517_Tak1 = ['PPG'+str(i) for i in range(1,50+1)]
+StackList240517_pme1_11 = ['PPG'+str(i) for i in range(1,29+1)]
+StackList240517_pme2b = ['PPG'+str(i) for i in range(1,17+1)]
+StackList240517_pme11_4 = ['PPG'+str(i) for i in range(1,55+1)]
+
+StackList240531_10h_200 = ['PPG'+str(i) for i in range(1,40+1)]
+StackList240531_10h_ctrl = ['PPG'+str(i) for i in range(1,42+1)]
+
+StackList240605_vortex_5min = ['PPG'+str(i) for i in range(1,48+1)]
+StackList240605_vortex_5sec = ['PPG'+str(i) for i in range(1,32+1)]
+StackList240605_vortex_10min = ['PPG'+str(i) for i in range(1,29+1)]
+StackList240605_vortex_1min = ['PPG'+str(i) for i in range(1,34+1)]
+
+StackList240607_10h_200 = ['PPG'+str(i) for i in range(1,49+1)]
+StackList240607_10h_400 = ['PPG'+str(i) for i in range(1,48+1)]
+
+StackList240610_Tak1_5sec = ['PPG'+str(i) for i in range(1,32+1)]
+StackList240610_Tak1_10min = ['PPG'+str(i) for i in range(1,28+1)]
+StackList240610_fer2_5sec = ['PPG'+str(i) for i in range(1,50+1)]
+StackList240610_fer2_10min = ['PPG'+str(i) for i in range(1,44+1)]
+
+StackList240618_Tak1 = ['PPG'+str(i) for i in range(1,60+1)]
+StackList240618_pme1_11 = ['PPG'+str(i) for i in range(1,36+1)]
+StackList240618_PME1ox_V1 = ['PPG'+str(i) for i in range(1,37+1)]
+StackList240618_PME1ox_V2 = ['PPG'+str(i) for i in range(1,8+1)]
+StackList240618_Tak1_V2 = ['PPG'+str(i) for i in range(1,61+1)]
+StackList240618_pme2b = ['PPG'+str(i) for i in range(1,19+1)]
+StackList240618_pme11_4 = ['PPG'+str(i) for i in range(1,46+1)]
+StackList240618_PME11ox_21 = ['PPG'+str(i) for i in range(1,34+1)]
+
+StackList240614_5h_200 = ['PPG'+str(i) for i in range(1,38+1)]
+StackList240614_5h_ctrl = ['PPG'+str(i) for i in range(1,28+1)]
+
+StackList240828_10h_fer_step = ['PPG'+str(i) for i in range(1,54+1)]
+StackList240828_10h_fer_ctrl = ['PPG'+str(i) for i in range(1,55+1)]
+
+StackList240905_10min_Ca = ['PPG'+str(i) for i in range(1,46+1) if (i != 48 and i != 47 and i != 24 and i != 25 and i != 26 and i != 27 and i != 5 and i != 6)]
+StackList240905_10min_Man = ['PPG'+str(i) for i in range(1,65+1) if (i != 7 and i != 9 and i != 12 and i != 13 and i != 17 and i != 18 and i != 22 and i != 25 and i != 34 and i != 40 and i != 43 and i != 48 and i != 49 and i != 51)]
+StackList240905_4j_Man = StackList240905_10min_Man
+StackList240905_4j_Ca = StackList240905_10min_Ca
+
+StackList240923_0mM_chocs = ['PPG'+str(i) for i in range(1,76+1)]
+StackList240923_0mM_croissance = ['PPG'+str(i) for i in range(1,63+1)]
+StackList240923_100mM_chocs = ['PPG'+str(i) for i in range(1,38+1)]
+
+StackList240930_0mM_chocs = ['PPG'+str(i) for i in range(1,89+1)]
+StackList240930_0mM_croissance = ['PPG'+str(i) for i in range(1,84+1)]
+StackList240930_100mM_chocs = ['PPG'+str(i) for i in range(1,92+1)]
+StackList240930_100mM_croissance = ['PPG'+str(i) for i in range(1,88+1)]
+
+StackList241002_fer_0mM_chocs = ['PPG'+str(i) for i in range(1,36+1)]
+StackList241002_fer_100mM_chocs = ['PPG'+str(i) for i in range(1,36+1)]
+StackList241002_fer_0mM_croissance = ['PPG'+str(i) for i in range(1,43+1)]
+StackList241002_fer_100mM_croissance = ['PPG'+str(i) for i in range(1,56+1)]
+
+StackList241015_fer_0mM_chocs = ['PPG'+str(i) for i in range(1,44+1)]
+StackList241015_fer_100mM_chocs = ['PPG'+str(i) for i in range(1,52+1)]
+StackList241015_fer_0mM_croissance = ['PPG'+str(i) for i in range(1,35+1)]
+StackList241015_fer_100mM_croissance = ['PPG'+str(i) for i in range(1,59+1)]
+
+StackList241017_0mM_chocs = ['PPG'+str(i) for i in range(1,91+1)]
+StackList241017_0mM_croissance = ['PPG'+str(i) for i in range(1,89+1)]
+StackList241017_100mM_chocs = ['PPG'+str(i) for i in range(1,97+1)]
+StackList241017_100mM_croissance = ['PPG'+str(i) for i in range(1,94+1)]
+
+StackList241022_0mM_chocs = ['PPG'+str(i) for i in range(1,66+1)]
+StackList241022_0mM_croissance = ['PPG'+str(i) for i in range(1,73+1)]
+StackList241022_100mM_chocs = ['PPG'+str(i) for i in range(1,82+1)]
+StackList241022_100mM_croissance = ['PPG'+str(i) for i in range(1,71+1)]
+
+StackList241023_fer_0mM_chocs = ['PPG'+str(i) for i in range(1,39+1)]
+StackList241023_fer_100mM_chocs = ['PPG'+str(i) for i in range(1,46+1)]
+StackList241023_fer_0mM_croissance = ['PPG'+str(i) for i in range(1,39+1)]
+StackList241023_fer_100mM_croissance = ['PPG'+str(i) for i in range(1,45+1)]
+
+StackList241105_fer_0mM_chocs = ['PPG'+str(i) for i in range(1,17+1)]
+StackList241105_fer_100mM_chocs = ['PPG'+str(i) for i in range(1,42+1)]
+
+StackList241108_10h_400 = ['PPG'+str(i) for i in range(1,70+1)]
+StackList241108_10h_0 = ['PPG'+str(i) for i in range(1,40+1)]
+
+StackList241114_chocs_100mM= ['PPG'+str(i) for i in range(1,52+1)]
+StackList241114_chocs_0mM = ['PPG'+str(i) for i in range(1,44+1)]
+StackList241114_croissance_0mM = ['PPG'+str(i) for i in range(1,48+1)]
+StackList241114_croissance_100mM = ['PPG'+str(i) for i in range(1,82+1)]
+
+StackList250102_ctrl = ['PPG'+str(i) for i in range(1,48+1)]
+StackList250102_step = ['PPG'+str(i) for i in range(1,41+1)]
+
+StackList250106_step = ['PPG'+str(i) for i in range(1,71+1)]
+
+StackList250107_DMSO = ['PPG'+str(i) for i in range(1,46+1)]
+StackList250107_BFA = ['PPG'+str(i) for i in range(1,54+1)]
+
+StackList250114_DMSO = ['PPG'+str(i) for i in range(1,54+1)]
+StackList250114_BFA = ['PPG'+str(i) for i in range(1,55+1)]
+
+StackList250205_DMSO = ['PPG'+str(i) for i in range(1,44+1)]
+StackList250205_BFA = ['PPG'+str(i) for i in range(1,71+1)]
+
+StackList250211_DMSO = ['PPG'+str(i) for i in range(1,40+1)]
+StackList250211_BFA = ['PPG'+str(i) for i in range(1,41+1)]
+
+StackList250213_control = ['PPG'+str(i) for i in range(1,37+1)]
+StackList250213_step = ['PPG'+str(i) for i in range(1,44+1)]
+
+StackList250227_step = ['PPG'+str(i) for i in range(1,52+1)]
+
+StackList250303_BFA = ['PPG'+str(i) for i in range(1,58+1)]
+StackList250303_DMSO = ['PPG'+str(i) for i in range(1,53+1)]
+
+StackList250307_step = ['PPG'+str(i) for i in range(1,58+1)]
+StackList250314_step = ['PPG'+str(i) for i in range(1,63+1)]
+
+StackList250401_fer3 = ['PPG'+str(i) for i in range(1,51+1)]
+
+StackList_Jordan_tak = ['PPG'+str(i) for i in range(1,4+1)]
+StackList_Jordan_fer = ['PPG'+str(i) for i in range(1,6+1)]
 
 print('Data choice made.')
